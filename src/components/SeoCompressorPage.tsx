@@ -25,18 +25,20 @@ type SeoCompressorPageProps = {
   breadcrumbs: { name: string; path: string }[];
   howToTitle?: string;
   howToSteps?: string[];
+  webpWhyH2?: string;
+  webpWhyText?: string;
 };
 
 const defaultFaqs: FaqItem[] = [
   {
     question: "Can I compress an image to exactly 100KB?",
     answer:
-      "The tool compresses images to 100KB or less. The final file may be slightly below 100KB to make sure it never exceeds the limit.",
+      "The tool compresses images to 100KB or less. The final file may be slightly below 100KB so it never exceeds the limit.",
   },
   {
     question: "Will my image stay in WebP format?",
     answer:
-      "Yes. All downloaded images are saved as WebP because WebP is usually smaller and better for SEO performance than older formats like JPG or PNG.",
+      "Yes. All downloaded images are saved as WebP because WebP produces smaller files than JPG and PNG while keeping good visual quality.",
   },
   {
     question: "Are my images uploaded?",
@@ -46,12 +48,12 @@ const defaultFaqs: FaqItem[] = [
   {
     question: "Will image dimensions change?",
     answer:
-      "The tool first tries to keep the original dimensions. If the image cannot fit under the target size, it may slightly reduce dimensions to guarantee the WebP file stays under the target KB.",
+      "The tool first tries to keep the original dimensions. If the image cannot fit under the target size, it may reduce dimensions slightly so the WebP file stays under the target KB.",
   },
   {
     question: "Why WebP?",
     answer:
-      "WebP usually gives smaller file sizes than JPG and PNG while keeping good visual quality, which makes it useful for faster pages and SEO-friendly images.",
+      "WebP produces smaller file sizes than JPG and PNG while keeping good visual quality. Smaller files help pages load faster and reduce bandwidth.",
   },
 ];
 
@@ -67,6 +69,8 @@ export default function SeoCompressorPage({
   breadcrumbs,
   howToTitle,
   howToSteps,
+  webpWhyH2,
+  webpWhyText,
 }: SeoCompressorPageProps) {
   const faqs = faqItems ?? defaultFaqs;
 
@@ -77,6 +81,9 @@ export default function SeoCompressorPage({
     `Review the original and compressed sizes and dimensions.`,
     `Download the WebP file — it's guaranteed under ${targetKB}KB.`,
   ];
+  const renderWebpWhyH2 = webpWhyH2 ?? "Why WebP Is Best for Small SEO-Friendly Images";
+  const renderWebpWhyText = webpWhyText ??
+    "WebP typically produces smaller file sizes than JPG and PNG while maintaining good visual quality. Smaller images load faster, improve Core Web Vitals, and help with SEO rankings. All downloads from this tool are WebP format, so your images are ready for the web.";
 
   return (
     <div className="flex-1 w-full max-w-3xl mx-auto px-4 py-12">
@@ -126,13 +133,10 @@ export default function SeoCompressorPage({
 
       <section className="mt-12 max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold mb-4">
-          Why WebP Is Best for Small SEO-Friendly Images
+          {renderWebpWhyH2}
         </h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          WebP typically produces smaller file sizes than JPG and PNG while
-          maintaining good visual quality. Smaller images load faster, improve
-          Core Web Vitals, and help with SEO rankings. All downloads from this
-          tool are WebP format, so your images are ready for the web.
+          {renderWebpWhyText}
         </p>
       </section>
 

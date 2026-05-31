@@ -25,9 +25,11 @@ export default function ImageCompressorPage() {
       intent="general"
       pagePath={pagePath}
       description={pageDescription}
+      webpWhyH2="Why WebP helps reduce image file size"
+      webpWhyText="WebP typically produces smaller file sizes than JPG and PNG while maintaining good visual quality. Smaller images use less bandwidth and help pages load faster. All downloads from this tool are WebP format."
       breadcrumbs={[
         { name: "Home", path: "/" },
-        { name: "Image Compressor Under 100KB", path: pagePath },
+        { name: "Image Compressor", path: pagePath },
       ]}
     />
   );

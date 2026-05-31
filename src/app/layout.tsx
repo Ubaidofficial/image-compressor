@@ -10,6 +10,7 @@ import {
   DEFAULT_DESCRIPTION,
   DEFAULT_OG_IMAGE,
 } from "@/lib/seo";
+import { APP_VERSION } from "@/lib/version";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -81,8 +82,8 @@ export default function RootLayout({
         <JsonLd data={createWebsiteSchema()} />
         <header className="border-b border-zinc-200 dark:border-zinc-800">
           <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2.5 shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true" className="shrink-0">
+            <Link href="/" className="flex items-center gap-2.5 shrink-0" aria-label="100KB Converter home">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false" className="shrink-0">
                 <rect width="32" height="32" rx="6" fill="#2563eb"/>
                 <text x="16" y="22" textAnchor="middle" fill="#fff" fontSize="14" fontFamily="system-ui, sans-serif" fontWeight="800">100</text>
               </svg>
@@ -143,6 +144,7 @@ export default function RootLayout({
           <div className="max-w-3xl mx-auto px-4 mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800">
             <p className="text-xs text-zinc-400 text-center">
               All images are compressed in your browser and never uploaded.
+              <span className="ml-2 opacity-60">v{APP_VERSION}</span>
             </p>
           </div>
         </footer>

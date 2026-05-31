@@ -120,13 +120,13 @@ export default function BulkImageToWebp() {
 
       <section className="mt-12 max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold mb-4">
-          Why Use WebP for SEO Images
+          Why bulk WebP conversion helps website workflows
         </h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          WebP typically produces smaller files than JPG and PNG, which means
-          faster page loads, better Core Web Vitals, and improved search
-          rankings. Converting your entire image library to WebP in bulk saves
-          time and ensures consistency across your site.
+          Converting your image library to WebP in bulk saves time and ensures
+          consistency. WebP files are typically smaller than JPG and PNG, which
+          means faster page loads and less bandwidth. The bulk tool processes up
+          to 20 images and lets you download them as a single ZIP.
         </p>
       </section>
 

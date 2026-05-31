@@ -1,5 +1,25 @@
 import { clampTargetKB, MAX_OUTPUT_KB } from "./constants";
 
+export type CompressionMode = "best-quality" | "balanced" | "smallest-file";
+
+export const COMPRESSION_MODE_CONFIG = {
+  "best-quality": {
+    label: "Best Quality",
+    description:
+      "Prioritizes image quality and preserves dimensions when possible.",
+  },
+  balanced: {
+    label: "Balanced",
+    description:
+      "Recommended. Balances visual quality and file size.",
+  },
+  "smallest-file": {
+    label: "Smallest File",
+    description:
+      "Uses stronger compression and resizes earlier if needed.",
+  },
+} as const;
+
 export type CompressToWebpOptions = {
   file: File;
   targetKB: number;
@@ -8,6 +28,9 @@ export type CompressToWebpOptions = {
   minQuality?: number;
   maxQuality?: number;
   maxIterations?: number;
+  compressionMode?: CompressionMode;
+  resizeBeforeCompress?: boolean;
+  maxWidth?: number;
 };
 
 export type CompressToWebpResult = {
@@ -26,7 +49,41 @@ export type CompressToWebpResult = {
   savingsPercent: number;
 };
 
-const SCALE_STEPS = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5];
+const SCALE_STEPS_BALANCED = [
+  0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5,
+];
+
+const SCALE_STEPS_BEST = [0.98, 0.95, 0.92, 0.9, 0.88, 0.85, 0.8];
+
+const SCALE_STEPS_SMALLEST = [
+  0.85, 0.75, 0.65, 0.55, 0.45, 0.4, 0.35, 0.3, 0.25,
+];
+
+function getModeDefaults(mode: CompressionMode) {
+  switch (mode) {
+    case "best-quality":
+      return {
+        minQuality: 0.3,
+        maxQuality: 0.97,
+        scaleSteps: SCALE_STEPS_BEST,
+        preserveDimensionsFirst: true,
+      };
+    case "smallest-file":
+      return {
+        minQuality: 0.05,
+        maxQuality: 0.85,
+        scaleSteps: SCALE_STEPS_SMALLEST,
+        preserveDimensionsFirst: false,
+      };
+    default:
+      return {
+        minQuality: 0.1,
+        maxQuality: 0.95,
+        scaleSteps: SCALE_STEPS_BALANCED,
+        preserveDimensionsFirst: true,
+      };
+  }
+}
 
 function blobToFile(blob: Blob, filename: string): File {
   return new File([blob], filename, { type: "image/webp" });
@@ -103,10 +160,12 @@ export async function compressToWebp(
   const {
     file,
     targetKB: rawTargetKB,
-    preserveDimensionsFirst = true,
-    minQuality = 0.1,
-    maxQuality = 0.95,
+    compressionMode = "balanced",
+    resizeBeforeCompress = false,
+    maxWidth,
   } = options;
+
+  const modeDefaults = getModeDefaults(compressionMode);
 
   const targetKB = clampTargetKB(rawTargetKB);
   const targetBytes = targetKB * 1024;
@@ -118,43 +177,52 @@ export async function compressToWebp(
   const originalWidth = img.width;
   const originalHeight = img.height;
 
+  // Apply pre-compression resize if enabled
+  let effectiveWidth = originalWidth;
+  let effectiveHeight = originalHeight;
+  let preResizedDimensionsChanged = false;
+
+  if (resizeBeforeCompress && maxWidth && originalWidth > maxWidth) {
+    const ratio = maxWidth / originalWidth;
+    effectiveWidth = maxWidth;
+    effectiveHeight = Math.round(originalHeight * ratio);
+    preResizedDimensionsChanged = effectiveWidth !== originalWidth || effectiveHeight !== originalHeight;
+  }
+
   let bestBlob: Blob | null = null;
   let bestQuality = 0;
-  let outputWidth = originalWidth;
-  let outputHeight = originalHeight;
-  let dimensionsChanged = false;
+  let outputWidth = effectiveWidth;
+  let outputHeight = effectiveHeight;
 
-  // Try original dimensions first
-  if (preserveDimensionsFirst) {
+  // Try with effective dimensions first
+  if (modeDefaults.preserveDimensionsFirst) {
     const result = await binarySearchQuality(
       img,
-      originalWidth,
-      originalHeight,
+      effectiveWidth,
+      effectiveHeight,
       targetBytes,
-      minQuality,
-      maxQuality
+      modeDefaults.minQuality,
+      modeDefaults.maxQuality
     );
     if (result) {
       bestBlob = result.blob;
       bestQuality = result.quality;
-      outputWidth = originalWidth;
-      outputHeight = originalHeight;
     }
   }
 
-  // If original dimensions didn't produce a result, try scaling down
+  // Scale down if initial dimensions didn't produce a result
   if (!bestBlob) {
-    for (const scale of SCALE_STEPS) {
-      const w = Math.round(originalWidth * scale);
-      const h = Math.round(originalHeight * scale);
+    for (const scale of modeDefaults.scaleSteps) {
+      const w = Math.round(effectiveWidth * scale);
+      const h = Math.round(effectiveHeight * scale);
 
       const result = await binarySearchQuality(
         img,
         w,
         h,
         targetBytes,
-        minQuality,
-        maxQuality
+        modeDefaults.minQuality,
+        modeDefaults.maxQuality
       );
 
       if (result) {
@@ -162,20 +230,20 @@ export async function compressToWebp(
         bestQuality = result.quality;
         outputWidth = w;
         outputHeight = h;
-        dimensionsChanged = true;
         break;
       }
     }
   }
 
+  // Fallback: lowest quality at current dimensions
   if (!bestBlob) {
     bestBlob = await encodeAtQuality(
       img,
       outputWidth,
       outputHeight,
-      minQuality
+      modeDefaults.minQuality
     );
-    bestQuality = minQuality;
+    bestQuality = modeDefaults.minQuality;
   }
 
   const compressedSize = bestBlob.size;
@@ -184,6 +252,10 @@ export async function compressToWebp(
   const savingsPercent = Math.round(
     ((originalSize - compressedSize) / originalSize) * 100
   );
+  const dimensionsChanged =
+    preResizedDimensionsChanged ||
+    outputWidth !== effectiveWidth ||
+    outputHeight !== effectiveHeight;
 
   const resultFile = blobToFile(bestBlob, "compressed.webp");
 

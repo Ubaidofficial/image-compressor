@@ -239,7 +239,7 @@ export default function Home() {
               key={benefit.title}
               className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-5 flex gap-3"
             >
-              <div className="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0 text-sm font-bold">
+              <div className="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0 text-sm font-bold" aria-hidden="true">
                 {benefit.icon}
               </div>
               <div>
@@ -264,7 +264,7 @@ export default function Home() {
             { step: "4", label: "Download your optimized file" },
           ].map((item) => (
             <div key={item.step} className="text-center">
-              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 flex items-center justify-center mx-auto mb-2 text-sm font-bold">
+              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 flex items-center justify-center mx-auto mb-2 text-sm font-bold" aria-hidden="true">
                 {item.step}
               </div>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">

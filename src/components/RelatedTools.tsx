@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { relatedToolPaths } from "@/lib/seoPages";
+import { popularToolPaths, moreToolPaths } from "@/lib/seoPages";
 
 type RelatedToolsProps = {
   excludePath?: string;
-  title?: string;
 };
 
 const pathLabels: Record<string, string> = {
@@ -18,26 +17,46 @@ const pathLabels: Record<string, string> = {
   "/webp-compress-image-to-100kb": "WebP to 100KB",
 };
 
-export default function RelatedTools({
-  excludePath,
-  title = "Related Tools",
-}: RelatedToolsProps) {
-  const filtered = relatedToolPaths.filter((p) => p !== excludePath);
+function ToolLink({ path }: { path: string }) {
+  return (
+    <Link
+      href={path}
+      className="inline-block px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-700 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+    >
+      {pathLabels[path] ?? path}
+    </Link>
+  );
+}
+
+export default function RelatedTools({ excludePath }: RelatedToolsProps) {
+  const popular = popularToolPaths.filter((p) => p !== excludePath);
+  const more = moreToolPaths.filter((p) => p !== excludePath);
 
   return (
-    <section className="mt-16">
-      <h2 className="text-2xl font-bold mb-6 text-center">{title}</h2>
-      <div className="flex flex-wrap gap-2 justify-center max-w-2xl mx-auto">
-        {filtered.map((path) => (
-          <Link
-            key={path}
-            href={path}
-            className="inline-block px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-700 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-          >
-            {pathLabels[path] ?? path}
-          </Link>
-        ))}
+    <section className="mt-16 space-y-8">
+      <div>
+        <h3 className="text-lg font-semibold mb-4 text-center">
+          Popular Tools
+        </h3>
+        <div className="flex flex-wrap gap-2 justify-center max-w-2xl mx-auto">
+          {popular.map((path) => (
+            <ToolLink key={path} path={path} />
+          ))}
+        </div>
       </div>
+
+      {more.length > 0 && (
+        <div>
+          <h3 className="text-base font-medium text-zinc-500 dark:text-zinc-400 mb-3 text-center">
+            More Tools
+          </h3>
+          <div className="flex flex-wrap gap-2 justify-center max-w-2xl mx-auto">
+            {more.map((path) => (
+              <ToolLink key={path} path={path} />
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

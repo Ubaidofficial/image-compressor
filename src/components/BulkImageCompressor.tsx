@@ -1,10 +1,20 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { compressToWebp, type CompressToWebpResult } from "@/lib/compressToWebp";
+import {
+  compressToWebp,
+  type CompressToWebpResult,
+  type CompressionMode,
+  COMPRESSION_MODE_CONFIG,
+} from "@/lib/compressToWebp";
 import { formatBytes } from "@/lib/formatBytes";
-import { slugifyFilename } from "@/lib/slugify";
 import { isValidImageFile, isLargeFile, MAX_OUTPUT_KB } from "@/lib/constants";
+import {
+  generateBulkFilename,
+  deduplicateFilenames,
+  generateReportCsv,
+  type BulkFilenameMode,
+} from "@/lib/outputFilename";
 
 type FileEntry = {
   id: number;
@@ -22,6 +32,12 @@ type FileResult = {
 
 const TARGETS = [50, 100] as const;
 const MAX_FILES = 20;
+const MAX_WIDTH_OPTIONS = [
+  { label: "1920px", value: 1920 },
+  { label: "1600px", value: 1600 },
+  { label: "1200px", value: 1200 },
+  { label: "800px", value: 800 },
+] as const;
 
 async function loadJSZip(): Promise<typeof import("jszip")> {
   return (await import("jszip")).default;
@@ -36,6 +52,15 @@ export default function BulkImageCompressor() {
   const [warning, setWarning] = useState<string | null>(null);
   const [objectUrls, setObjectUrls] = useState<Map<number, string>>(new Map());
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const [compressionMode, setCompressionMode] =
+    useState<CompressionMode>("balanced");
+  const [filenameMode, setFilenameMode] =
+    useState<BulkFilenameMode>("seo-friendly");
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [resizeEnabled, setResizeEnabled] = useState(false);
+  const [maxWidth, setMaxWidth] = useState<number>(1200);
+  const [customWidth, setCustomWidth] = useState("");
 
   const cleanup = useCallback(() => {
     objectUrls.forEach((url) => URL.revokeObjectURL(url));
@@ -59,7 +84,11 @@ export default function BulkImageCompressor() {
         const combined = [...prev];
         for (const f of valid) {
           if (combined.length >= MAX_FILES) break;
-          if (!combined.some((e) => e.file.name === f.name && e.file.size === f.size)) {
+          if (
+            !combined.some(
+              (e) => e.file.name === f.name && e.file.size === f.size
+            )
+          ) {
             combined.push({ id: Date.now() + Math.random(), file: f });
           }
         }
@@ -78,6 +107,16 @@ export default function BulkImageCompressor() {
     setResults([]);
     setWarning(null);
   };
+
+  function resolveMaxWidth(): number | undefined {
+    if (!resizeEnabled) return undefined;
+    if (customWidth) {
+      const n = parseInt(customWidth, 10);
+      if (isNaN(n) || n < 100) return 1200;
+      return Math.min(n, 4000);
+    }
+    return maxWidth;
+  }
 
   const startProcessing = async () => {
     if (files.length === 0 || processing) return;
@@ -111,9 +150,9 @@ export default function BulkImageCompressor() {
         const res = await compressToWebp({
           file: entry.file,
           targetKB,
-          preserveDimensionsFirst: true,
-          minQuality: 0.1,
-          maxQuality: 0.95,
+          compressionMode,
+          resizeBeforeCompress: resizeEnabled,
+          maxWidth: resolveMaxWidth(),
         });
 
         const url = URL.createObjectURL(res.blob);
@@ -124,7 +163,7 @@ export default function BulkImageCompressor() {
             ...updated[idx],
             result: res,
             status: "failed",
-            error: `Could not compress under ${targetKB}KB.`,
+            error: `Could not fit under ${targetKB}KB. Try Smallest File mode or enable resize.`,
           };
         } else {
           updated[idx] = {
@@ -147,7 +186,6 @@ export default function BulkImageCompressor() {
 
     const workers = Array.from({ length: concurrency }, () => processNext());
     await Promise.all(workers);
-
     setProcessing(false);
   };
 
@@ -155,7 +193,7 @@ export default function BulkImageCompressor() {
     if (!r.result) return;
     const url = objectUrls.get(r.id);
     if (!url) return;
-    const filename = slugifyFilename(r.filename, targetKB);
+    const filename = generateBulkFilename(r.filename, targetKB, filenameMode);
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
@@ -171,20 +209,41 @@ export default function BulkImageCompressor() {
     const JSZip = await loadJSZip();
     const zip = new JSZip();
 
-    const fetched: { name: string; blob: Blob }[] = [];
-    for (const r of successful) {
-      const name = slugifyFilename(r.filename, targetKB);
-      fetched.push({ name, blob: r.result!.blob });
+    const names = successful.map((r) =>
+      generateBulkFilename(r.filename, targetKB, filenameMode)
+    );
+    const uniqueNames = deduplicateFilenames(names);
+
+    for (let i = 0; i < successful.length; i++) {
+      zip.file(uniqueNames[i], successful[i].result!.blob);
     }
 
-    for (const { name, blob } of fetched) {
-      zip.file(name, blob);
-    }
+    // Build CSV report
+    const csvRows = results.map((r) => ({
+      originalFilename: r.filename,
+      outputFilename: r.result
+        ? generateBulkFilename(r.filename, targetKB, filenameMode)
+        : "",
+      originalSizeKb: r.result
+        ? (r.result.originalSize / 1024).toFixed(1)
+        : "",
+      compressedSizeKb: r.result
+        ? (r.result.compressedSize / 1024).toFixed(1)
+        : "",
+      originalDimensions: r.result
+        ? `${r.result.originalWidth}x${r.result.originalHeight}`
+        : "",
+      outputDimensions: r.result
+        ? `${r.result.outputWidth}x${r.result.outputHeight}`
+        : "",
+      status: r.status as "success" | "failed",
+    }));
+    zip.file("compression-report.csv", generateReportCsv(csvRows));
 
     const zipBlob = await zip.generateAsync({ type: "blob" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(zipBlob);
-    a.download = `webp-images-${targetKB}kb.zip`;
+    a.download = `100kbconverter-webp-images.zip`;
     a.click();
   };
 
@@ -211,30 +270,138 @@ export default function BulkImageCompressor() {
 
   const successCount = results.filter((r) => r.status === "success").length;
   const failedCount = results.filter((r) => r.status === "failed").length;
-  const allDone = results.length > 0 && results.every((r) => r.status !== "pending" && r.status !== "compressing");
+  const allDone =
+    results.length > 0 &&
+    results.every(
+      (r) => r.status !== "pending" && r.status !== "compressing"
+    );
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <div className="flex flex-col sm:flex-row gap-3 mb-6 justify-center">
-        <label className="flex items-center gap-2 text-sm">
-          <span className="text-zinc-500">Target:</span>
-          <select
-            value={targetKB}
-            onChange={(e) => setTargetKB(Number(e.target.value))}
-            className="border border-zinc-300 dark:border-zinc-600 rounded-lg px-3 py-1.5 bg-white dark:bg-zinc-800 text-sm"
-            disabled={processing}
-          >
-            {TARGETS.map((t) => (
-              <option key={t} value={t}>
-                {t}KB
-              </option>
-            ))}
-          </select>
-        </label>
+      {/* Controls */}
+      <div className="mb-4 space-y-3">
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <label className="flex items-center gap-2">
+            <span className="text-zinc-500">Target:</span>
+            <select
+              value={targetKB}
+              onChange={(e) => setTargetKB(Number(e.target.value))}
+              className="border border-zinc-300 dark:border-zinc-600 rounded-lg px-3 py-1.5 bg-white dark:bg-zinc-800 text-sm"
+              disabled={processing}
+            >
+              {TARGETS.map((t) => (
+                <option key={t} value={t}>
+                  {t}KB
+                </option>
+              ))}
+            </select>
+          </label>
 
-        <span className="text-xs text-zinc-400 self-center">
-          Max {MAX_FILES} images, {MAX_OUTPUT_KB}KB max output
-        </span>
+          <span className="text-xs text-zinc-400">
+            Max {MAX_FILES} images, {MAX_OUTPUT_KB}KB max output
+          </span>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+          <label className="flex items-center gap-2">
+            <span className="text-zinc-500">Mode:</span>
+            <select
+              value={compressionMode}
+              onChange={(e) =>
+                setCompressionMode(e.target.value as CompressionMode)
+              }
+              className="border border-zinc-300 dark:border-zinc-600 rounded-lg px-3 py-1.5 bg-white dark:bg-zinc-800 text-xs"
+              disabled={processing}
+            >
+              {(
+                Object.entries(COMPRESSION_MODE_CONFIG) as [
+                  CompressionMode,
+                  (typeof COMPRESSION_MODE_CONFIG)[CompressionMode]
+                ][]
+              ).map(([mode, config]) => (
+                <option key={mode} value={mode}>
+                  {config.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="flex items-center gap-2">
+            <span className="text-zinc-500">Filename:</span>
+            <select
+              value={filenameMode}
+              onChange={(e) =>
+                setFilenameMode(e.target.value as BulkFilenameMode)
+              }
+              className="border border-zinc-300 dark:border-zinc-600 rounded-lg px-3 py-1.5 bg-white dark:bg-zinc-800 text-xs"
+              disabled={processing}
+            >
+              <option value="seo-friendly">SEO friendly</option>
+              <option value="keep-original">Keep original name</option>
+              <option value="append-100kb">Add &quot;-{targetKB}kb&quot;</option>
+            </select>
+          </label>
+        </div>
+
+        <button
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+        >
+          {showAdvanced ? "▾" : "▸"} Advanced options
+        </button>
+
+        {showAdvanced && (
+          <div className="p-3 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm space-y-3">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={resizeEnabled}
+                onChange={(e) => setResizeEnabled(e.target.checked)}
+                className="rounded"
+              />
+              <span className="text-zinc-700 dark:text-zinc-300">
+                Resize before compressing
+              </span>
+            </label>
+
+            {resizeEnabled && (
+              <div>
+                <p className="text-xs text-zinc-400 mb-2">Max width</p>
+                <div className="flex flex-wrap gap-2">
+                  {MAX_WIDTH_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => {
+                        setMaxWidth(opt.value);
+                        setCustomWidth("");
+                      }}
+                      className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                        maxWidth === opt.value && !customWidth
+                          ? "bg-blue-600 text-white"
+                          : "border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                  <input
+                    type="number"
+                    placeholder="Custom"
+                    value={customWidth}
+                    onChange={(e) => setCustomWidth(e.target.value)}
+                    className="w-20 px-2 py-1 border border-zinc-300 dark:border-zinc-600 rounded-lg text-xs bg-white dark:bg-zinc-800"
+                    min={100}
+                    max={4000}
+                  />
+                </div>
+                <p className="text-xs text-zinc-400 mt-2">
+                  Resize is optional. It can help large images fit under 100KB
+                  with better visual results.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div
@@ -266,6 +433,23 @@ export default function BulkImageCompressor() {
           aria-label="Choose image files — JPG, PNG, or WebP"
           multiple
         />
+        <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#9ca3af"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+        </div>
         <p className="text-lg font-medium mb-1">Drop images here</p>
         <p className="text-sm text-zinc-500">
           or click to browse — JPG, PNG, WebP
@@ -312,7 +496,14 @@ export default function BulkImageCompressor() {
             <div className="text-center py-4">
               <div className="inline-block w-6 h-6 border-2 border-zinc-300 border-t-blue-600 rounded-full animate-spin" />
               <p className="mt-2 text-sm text-zinc-500">
-                Compressing {results.filter((r) => r.status === "compressing" || r.status === "success").length} of {results.length}...
+                Compressing{" "}
+                {
+                  results.filter(
+                    (r) =>
+                      r.status === "compressing" || r.status === "success"
+                  ).length
+                }{" "}
+                of {results.length}...
               </p>
             </div>
           )}
@@ -363,11 +554,13 @@ export default function BulkImageCompressor() {
                 onClick={downloadAllAsZip}
                 className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700 transition-colors"
               >
-                Download All as ZIP ({successCount} file{successCount > 1 ? "s" : ""})
+                Download All as ZIP ({successCount} file
+                {successCount > 1 ? "s" : ""})
               </button>
               {failedCount > 0 && (
                 <p className="text-xs text-zinc-400">
-                  {failedCount} image{failedCount > 1 ? "s" : ""} failed — not included in ZIP.
+                  {failedCount} image{failedCount > 1 ? "s" : ""} failed — not
+                  included in ZIP. CSV report includes all files.
                 </p>
               )}
             </div>
@@ -375,7 +568,8 @@ export default function BulkImageCompressor() {
 
           {allDone && successCount === 0 && results.length > 0 && (
             <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm">
-              No images could be compressed under the target size. Try smaller images or a higher target.
+              No images could be compressed under the target size. Try Smallest
+              File mode, enable resize, or use smaller images.
             </div>
           )}
         </div>

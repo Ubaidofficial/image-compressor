@@ -17,7 +17,7 @@ const jpgFaqs: FaqItem[] = [
   {
     question: "Is WebP smaller than JPG?",
     answer:
-      "Usually, yes. WebP compression typically produces files 25–35% smaller than equivalent-quality JPG images, which is why it is better for SEO and page speed.",
+      "Usually, yes. WebP compression typically produces files 25–35% smaller than equivalent-quality JPG images, which helps pages use less bandwidth.",
   },
   {
     question: "Will the output be under 100KB?",
@@ -62,6 +62,8 @@ export default function JpgToWebp() {
         "Download the WebP file.",
       ]}
       faqItems={jpgFaqs}
+      webpWhyH2="Why WebP can be smaller than JPG"
+      webpWhyText="WebP uses more advanced compression than JPG, often producing files 25–35% smaller while keeping similar visual quality. That means faster loading and less bandwidth for your website. All conversions output WebP format."
       breadcrumbs={[
         { name: "Home", path: "/" },
         { name: "Converters", path: "/image-to-webp" },
