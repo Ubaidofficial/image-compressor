@@ -218,7 +218,6 @@ export default function BulkImageCompressor() {
       zip.file(uniqueNames[i], successful[i].result!.blob);
     }
 
-    // Build CSV report
     const csvRows = results.map((r) => ({
       originalFilename: r.filename,
       outputFilename: r.result
@@ -278,132 +277,154 @@ export default function BulkImageCompressor() {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      {/* Controls */}
-      <div className="mb-4 space-y-3">
-        <div className="flex flex-wrap items-center gap-3 text-sm">
-          <label className="flex items-center gap-2">
-            <span className="text-zinc-500">Target:</span>
-            <select
-              value={targetKB}
-              onChange={(e) => setTargetKB(Number(e.target.value))}
-              className="border border-zinc-300 dark:border-zinc-600 rounded-lg px-3 py-1.5 bg-white dark:bg-zinc-800 text-sm"
-              disabled={processing}
-            >
-              {TARGETS.map((t) => (
-                <option key={t} value={t}>
-                  {t}KB
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <span className="text-xs text-zinc-400">
-            Max {MAX_FILES} images, {MAX_OUTPUT_KB}KB max output
-          </span>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-          <label className="flex items-center gap-2">
-            <span className="text-zinc-500">Mode:</span>
-            <select
-              value={compressionMode}
-              onChange={(e) =>
-                setCompressionMode(e.target.value as CompressionMode)
-              }
-              className="border border-zinc-300 dark:border-zinc-600 rounded-lg px-3 py-1.5 bg-white dark:bg-zinc-800 text-xs"
-              disabled={processing}
-            >
-              {(
-                Object.entries(COMPRESSION_MODE_CONFIG) as [
-                  CompressionMode,
-                  (typeof COMPRESSION_MODE_CONFIG)[CompressionMode]
-                ][]
-              ).map(([mode, config]) => (
-                <option key={mode} value={mode}>
-                  {config.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex items-center gap-2">
-            <span className="text-zinc-500">Filename:</span>
-            <select
-              value={filenameMode}
-              onChange={(e) =>
-                setFilenameMode(e.target.value as BulkFilenameMode)
-              }
-              className="border border-zinc-300 dark:border-zinc-600 rounded-lg px-3 py-1.5 bg-white dark:bg-zinc-800 text-xs"
-              disabled={processing}
-            >
-              <option value="seo-friendly">SEO friendly</option>
-              <option value="keep-original">Keep original name</option>
-              <option value="append-100kb">Add &quot;-{targetKB}kb&quot;</option>
-            </select>
-          </label>
-        </div>
-
-        <button
-          onClick={() => setShowAdvanced(!showAdvanced)}
-          className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-        >
-          {showAdvanced ? "▾" : "▸"} Advanced options
-        </button>
-
-        {showAdvanced && (
-          <div className="p-3 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm space-y-3">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={resizeEnabled}
-                onChange={(e) => setResizeEnabled(e.target.checked)}
-                className="rounded"
-              />
-              <span className="text-zinc-700 dark:text-zinc-300">
-                Resize before compressing
-              </span>
-            </label>
-
-            {resizeEnabled && (
-              <div>
-                <p className="text-xs text-zinc-400 mb-2">Max width</p>
-                <div className="flex flex-wrap gap-2">
-                  {MAX_WIDTH_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => {
-                        setMaxWidth(opt.value);
-                        setCustomWidth("");
-                      }}
-                      className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
-                        maxWidth === opt.value && !customWidth
-                          ? "bg-blue-600 text-white"
-                          : "border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                  <input
-                    type="number"
-                    placeholder="Custom"
-                    value={customWidth}
-                    onChange={(e) => setCustomWidth(e.target.value)}
-                    className="w-20 px-2 py-1 border border-zinc-300 dark:border-zinc-600 rounded-lg text-xs bg-white dark:bg-zinc-800"
-                    min={100}
-                    max={4000}
-                  />
-                </div>
-                <p className="text-xs text-zinc-400 mt-2">
-                  Resize is optional. It can help large images fit under 100KB
-                  with better visual results.
-                </p>
-              </div>
-            )}
+      {/* Settings panel */}
+      <div className="mb-5 p-5 bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-200 dark:border-zinc-700 rounded-xl space-y-4">
+        {/* Target size */}
+        <div>
+          <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-2">
+            Target size per image
+          </p>
+          <div className="flex gap-2">
+            {TARGETS.map((t) => (
+              <button
+                key={t}
+                onClick={() => setTargetKB(t)}
+                disabled={processing}
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                  targetKB === t
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                }`}
+              >
+                {t}KB
+              </button>
+            ))}
+            <span className="self-center text-sm text-zinc-400 ml-2">
+              Max {MAX_FILES} images, {MAX_OUTPUT_KB}KB max output
+            </span>
           </div>
-        )}
+        </div>
+
+        {/* Compression mode */}
+        <div>
+          <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-2">
+            Compression mode
+          </p>
+          <div className="flex gap-1.5 flex-wrap">
+            {(
+              Object.entries(COMPRESSION_MODE_CONFIG) as [
+                CompressionMode,
+                (typeof COMPRESSION_MODE_CONFIG)[CompressionMode]
+              ][]
+            ).map(([mode, config]) => (
+              <button
+                key={mode}
+                onClick={() => setCompressionMode(mode)}
+                disabled={processing}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  compressionMode === mode
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                }`}
+              >
+                {config.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Filename format */}
+        <div>
+          <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-2">
+            Filename format
+          </p>
+          <div className="flex gap-1.5 flex-wrap">
+            {(
+              [
+                { value: "seo-friendly" as BulkFilenameMode, label: "SEO friendly" },
+                { value: "keep-original" as BulkFilenameMode, label: "Keep original" },
+                { value: "append-100kb" as BulkFilenameMode, label: `Add "-${targetKB}kb"` },
+              ]
+            ).map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setFilenameMode(opt.value)}
+                disabled={processing}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  filenameMode === opt.value
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Advanced */}
+        <div>
+          <button
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors flex items-center gap-1"
+          >
+            {showAdvanced ? "▾" : "▸"} Advanced options
+          </button>
+
+          {showAdvanced && (
+            <div className="mt-3 p-4 border border-zinc-200 dark:border-zinc-700 rounded-xl space-y-4">
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={resizeEnabled}
+                  onChange={(e) => setResizeEnabled(e.target.checked)}
+                  className="rounded w-4 h-4"
+                />
+                <span className="text-sm text-zinc-700 dark:text-zinc-300 font-medium">
+                  Resize before compressing
+                </span>
+              </label>
+
+              {resizeEnabled && (
+                <div>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2.5 font-medium">
+                    Max width
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {MAX_WIDTH_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => {
+                          setMaxWidth(opt.value);
+                          setCustomWidth("");
+                        }}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          maxWidth === opt.value && !customWidth
+                            ? "bg-blue-600 text-white shadow-sm"
+                            : "bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                    <input
+                      type="number"
+                      placeholder="Custom px"
+                      value={customWidth}
+                      onChange={(e) => setCustomWidth(e.target.value)}
+                      className="w-28 px-3 py-2 border border-zinc-200 dark:border-zinc-600 rounded-lg text-sm bg-white dark:bg-zinc-800 placeholder:text-zinc-400"
+                      min={100}
+                      max={4000}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
+      {/* Dropzone */}
       <div
         onDrop={onDrop}
         onDragOver={onDragOver}
@@ -418,10 +439,12 @@ export default function BulkImageCompressor() {
         role="button"
         tabIndex={0}
         aria-label="Upload images — JPG, PNG, or WebP"
-        className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed rounded-2xl p-8 sm:p-10 text-center cursor-pointer transition-all ${
           dragOver
-            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-            : "border-zinc-300 dark:border-zinc-600 hover:border-zinc-400"
+            ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30 scale-[1.02]"
+            : files.length > 0
+            ? "border-blue-300 dark:border-blue-600 bg-blue-50/30 dark:bg-blue-950/10"
+            : "border-zinc-200 dark:border-zinc-600 hover:border-zinc-300 dark:hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800/30"
         }`}
       >
         <input
@@ -433,11 +456,11 @@ export default function BulkImageCompressor() {
           aria-label="Choose image files — JPG, PNG, or WebP"
           multiple
         />
-        <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
+            width="28"
+            height="28"
             viewBox="0 0 24 24"
             fill="none"
             stroke="#9ca3af"
@@ -450,18 +473,19 @@ export default function BulkImageCompressor() {
             <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
         </div>
-        <p className="text-lg font-medium mb-1">Drop images here</p>
+        <p className="text-xl font-semibold mb-2">Drop images here</p>
         <p className="text-sm text-zinc-500">
           or click to browse — JPG, PNG, WebP
         </p>
       </div>
 
-      <p className="text-xs text-zinc-400 text-center mt-3">
+      <p className="text-sm text-zinc-400 text-center mt-4 flex items-center justify-center gap-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         Your images are processed locally in your browser and never uploaded.
       </p>
 
       {warning && !processing && results.length === 0 && (
-        <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-300 text-sm text-center">
+        <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl text-amber-700 dark:text-amber-300 text-sm text-center">
           {warning}
         </div>
       )}
@@ -469,14 +493,14 @@ export default function BulkImageCompressor() {
       {files.length > 0 && (
         <div className="mt-6 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-zinc-500">
-              {files.length} image{files.length > 1 ? "s" : ""}
+            <span className="text-base font-medium text-zinc-600 dark:text-zinc-400">
+              {files.length} image{files.length > 1 ? "s" : ""} selected
             </span>
             <div className="flex gap-2">
               {!processing && files.length > 0 && (
                 <button
                   onClick={clearAll}
-                  className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
+                  className="text-sm text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors font-medium"
                 >
                   Clear all
                 </button>
@@ -484,7 +508,7 @@ export default function BulkImageCompressor() {
               {!processing && results.length === 0 && (
                 <button
                   onClick={startProcessing}
-                  className="px-4 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-full hover:bg-blue-700 transition-colors"
+                  className="px-6 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200 dark:shadow-blue-900/30"
                 >
                   Compress All
                 </button>
@@ -493,9 +517,9 @@ export default function BulkImageCompressor() {
           </div>
 
           {processing && (
-            <div className="text-center py-4">
-              <div className="inline-block w-6 h-6 border-2 border-zinc-300 border-t-blue-600 rounded-full animate-spin" />
-              <p className="mt-2 text-sm text-zinc-500">
+            <div className="text-center py-8">
+              <div className="inline-block w-8 h-8 border-3 border-zinc-200 dark:border-zinc-600 border-t-blue-600 rounded-full animate-spin" />
+              <p className="mt-3 text-sm text-zinc-500 font-medium">
                 Compressing{" "}
                 {
                   results.filter(
@@ -512,24 +536,26 @@ export default function BulkImageCompressor() {
             {results.map((r) => (
               <div
                 key={r.id}
-                className={`border rounded-lg p-3 flex items-center justify-between gap-3 ${
+                className={`border rounded-xl p-4 flex items-center justify-between gap-3 ${
                   r.status === "success"
-                    ? "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10"
+                    ? "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/10"
                     : r.status === "failed"
-                    ? "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10"
+                    ? "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/10"
                     : "border-zinc-200 dark:border-zinc-700"
                 }`}
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{r.filename}</p>
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
                     {r.status === "pending" && "Waiting..."}
                     {r.status === "compressing" && "Compressing..."}
                     {r.status === "success" && r.result && (
                       <>
                         {formatBytes(r.result.originalSize)} →{" "}
-                        {formatBytes(r.result.compressedSize)} —{" "}
-                        {r.result.savingsPercent}% saved
+                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                          {formatBytes(r.result.compressedSize)}
+                        </span>{" "}
+                        — {r.result.savingsPercent}% saved
                         {r.result.dimensionsChanged && " (resized)"}
                       </>
                     )}
@@ -539,7 +565,7 @@ export default function BulkImageCompressor() {
                 {r.status === "success" && (
                   <button
                     onClick={() => downloadOne(r)}
-                    className="shrink-0 text-xs px-3 py-1 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
+                    className="shrink-0 text-sm px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Download
                   </button>
@@ -549,16 +575,17 @@ export default function BulkImageCompressor() {
           </div>
 
           {allDone && successCount > 0 && (
-            <div className="text-center pt-4 space-y-2">
+            <div className="text-center pt-6 space-y-3">
               <button
                 onClick={downloadAllAsZip}
-                className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700 transition-colors"
+                className="px-7 py-3.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200 dark:shadow-blue-900/30 inline-flex items-center gap-2"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Download All as ZIP ({successCount} file
                 {successCount > 1 ? "s" : ""})
               </button>
               {failedCount > 0 && (
-                <p className="text-xs text-zinc-400">
+                <p className="text-sm text-zinc-400">
                   {failedCount} image{failedCount > 1 ? "s" : ""} failed — not
                   included in ZIP. CSV report includes all files.
                 </p>
@@ -567,7 +594,7 @@ export default function BulkImageCompressor() {
           )}
 
           {allDone && successCount === 0 && results.length > 0 && (
-            <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm">
+            <div className="text-center p-5 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm">
               No images could be compressed under the target size. Try Smallest
               File mode, enable resize, or use smaller images.
             </div>

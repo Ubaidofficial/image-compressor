@@ -39,23 +39,23 @@ export default function FAQ({ items }: FAQProps) {
   const faqs = items ?? defaultFaqs;
 
   return (
-    <section className="mt-16">
-      <h2 className="text-2xl font-bold mb-6 text-center">
+    <section className="mt-20 max-w-4xl mx-auto">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-center">
         Frequently Asked Questions
       </h2>
-      <div className="space-y-4 max-w-2xl mx-auto">
+      <div className="space-y-3 mt-10">
         {faqs.map((faq, i) => (
           <details
             key={i}
-            className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 group"
+            className="border border-zinc-200 dark:border-zinc-700 rounded-xl p-5 group bg-white dark:bg-zinc-900"
           >
-            <summary className="font-medium cursor-pointer list-none flex items-center justify-between">
+            <summary className="font-semibold text-base cursor-pointer list-none flex items-center justify-between">
               {faq.question}
-              <span className="text-zinc-400 group-open:rotate-180 transition-transform ml-2 shrink-0">
+              <span className="text-zinc-300 dark:text-zinc-600 group-open:rotate-180 transition-transform ml-3 shrink-0 text-lg">
                 ▼
               </span>
             </summary>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            <p className="mt-3 text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
               {faq.answer}
             </p>
           </details>

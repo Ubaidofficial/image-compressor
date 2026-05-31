@@ -30,13 +30,6 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 @layer base {
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -45,10 +38,30 @@
       transition-duration: 0.01ms !important;
     }
   }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Dark theme overrides for a premium SaaS look */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #09090b;
+    --foreground: #fafafa;
+  }
+}
+
+/* Section background variation for dark mode */
+.dark .section-alt {
+  background: linear-gradient(180deg, #18181b 0%, #09090b 50%);
+}
+
+/* Subtle gradient card accent for dark mode */
+.dark .card-accent {
+  background: linear-gradient(135deg, #1e1b4b10 0%, #0c0a2010 100%);
 }

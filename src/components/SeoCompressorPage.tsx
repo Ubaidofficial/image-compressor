@@ -89,7 +89,7 @@ export default function SeoCompressorPage({
     "WebP typically produces smaller file sizes than JPG and PNG while maintaining good visual quality. Smaller images load faster, improve Core Web Vitals, and help with SEO rankings. All downloads from this tool are WebP format, so your images are ready for the web.";
 
   return (
-    <div className="flex-1 w-full max-w-3xl mx-auto px-4 py-12">
+    <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-12">
       <JsonLd
         data={[
           createWebPageSchema({
@@ -116,34 +116,37 @@ export default function SeoCompressorPage({
 
       <Breadcrumbs items={breadcrumbs} />
 
-      <h1 className="text-3xl sm:text-4xl font-bold text-center mb-3">{h1}</h1>
-      <p className="text-center text-zinc-500 dark:text-zinc-400 mb-8 max-w-lg mx-auto">
+      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-4 tracking-tight">{h1}</h1>
+      <p className="text-center text-zinc-500 dark:text-zinc-400 mb-8 max-w-xl mx-auto text-base sm:text-lg">
         {intro}
       </p>
 
-      <ImageCompressor targetKB={targetKB} pageIntent={intent} />
+      {/* Tool in prominent card */}
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-sm dark:shadow-none max-w-4xl mx-auto mb-16">
+        <ImageCompressor targetKB={targetKB} pageIntent={intent} />
+      </div>
 
-      <section className="mt-16 max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold mb-4">
+      {children}
+
+      <section className="mt-20 max-w-4xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4">
           {renderHowToTitle}
         </h2>
-        <ol className="list-decimal list-inside space-y-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <ol className="list-decimal list-inside space-y-3 text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {renderHowToSteps.map((step, i) => (
             <li key={i}>{step}</li>
           ))}
         </ol>
       </section>
 
-      <section className="mt-12 max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold mb-4">
+      <section className="mt-16 max-w-4xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4">
           {renderWebpWhyH2}
         </h2>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {renderWebpWhyText}
         </p>
       </section>
-
-      {children}
 
       <FAQ items={faqs} />
       <RelatedTools excludePath={pagePath} />

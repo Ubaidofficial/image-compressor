@@ -231,9 +231,9 @@ export default function ImageCompressor({
   const dimensionsChanged = result?.dimensionsChanged;
 
   return (
-    <div className="w-full max-w-xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto">
       {!webpSupported && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm text-center">
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm text-center">
           Your browser does not support WebP export from canvas. Please use a
           modern browser like Chrome, Edge, Firefox, or Safari.
         </div>
@@ -241,54 +241,58 @@ export default function ImageCompressor({
 
       {!result && webpSupported && (
         <>
-          {/* Controls */}
-          <div className="mb-4 space-y-3">
-            <div className="flex items-center gap-3 text-sm">
-              <span className="text-zinc-500">Mode:</span>
-              {(
-                Object.entries(COMPRESSION_MODE_CONFIG) as [
-                  CompressionMode,
-                  (typeof COMPRESSION_MODE_CONFIG)[CompressionMode]
-                ][]
-              ).map(([mode, config]) => (
-                <button
-                  key={mode}
-                  onClick={() => setCompressionMode(mode)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    compressionMode === mode
-                      ? "bg-blue-600 text-white"
-                      : "border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                  }`}
-                >
-                  {config.label}
-                </button>
-              ))}
+          {/* Controls — settings panel */}
+          <div className="mb-5 p-4 sm:p-5 bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-200 dark:border-zinc-700 rounded-xl space-y-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400 w-full sm:w-auto mb-1 sm:mb-0">
+                Compression mode
+              </span>
+              <div className="flex gap-1.5 flex-wrap">
+                {(
+                  Object.entries(COMPRESSION_MODE_CONFIG) as [
+                    CompressionMode,
+                    (typeof COMPRESSION_MODE_CONFIG)[CompressionMode]
+                  ][]
+                ).map(([mode, config]) => (
+                  <button
+                    key={mode}
+                    onClick={() => setCompressionMode(mode)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      compressionMode === mode
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                    }`}
+                  >
+                    {config.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <button
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+              className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors flex items-center gap-1"
             >
               {showAdvanced ? "▾" : "▸"} Advanced options
             </button>
 
             {showAdvanced && (
-              <div className="p-3 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm space-y-3">
-                <label className="flex items-center gap-2 cursor-pointer">
+              <div className="p-4 border border-zinc-200 dark:border-zinc-700 rounded-xl space-y-4">
+                <label className="flex items-center gap-2.5 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={resizeEnabled}
                     onChange={(e) => setResizeEnabled(e.target.checked)}
-                    className="rounded"
+                    className="rounded w-4 h-4"
                   />
-                  <span className="text-zinc-700 dark:text-zinc-300">
+                  <span className="text-sm text-zinc-700 dark:text-zinc-300 font-medium">
                     Resize before compressing
                   </span>
                 </label>
 
                 {resizeEnabled && (
                   <div>
-                    <p className="text-xs text-zinc-400 mb-2">
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2.5 font-medium">
                       Max width
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -299,10 +303,10 @@ export default function ImageCompressor({
                             setMaxWidth(opt.value);
                             setCustomWidth("");
                           }}
-                          className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                             maxWidth === opt.value && !customWidth
-                              ? "bg-blue-600 text-white"
-                              : "border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                              ? "bg-blue-600 text-white shadow-sm"
+                              : "bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"
                           }`}
                         >
                           {opt.label}
@@ -310,17 +314,16 @@ export default function ImageCompressor({
                       ))}
                       <input
                         type="number"
-                        placeholder="Custom"
+                        placeholder="Custom px"
                         value={customWidth}
                         onChange={(e) => setCustomWidth(e.target.value)}
-                        className="w-20 px-2 py-1 border border-zinc-300 dark:border-zinc-600 rounded-lg text-xs bg-white dark:bg-zinc-800"
+                        className="w-28 px-3 py-2 border border-zinc-200 dark:border-zinc-600 rounded-lg text-sm bg-white dark:bg-zinc-800 placeholder:text-zinc-400"
                         min={100}
                         max={4000}
                       />
                     </div>
-                    <p className="text-xs text-zinc-400 mt-2">
-                      Resize is optional. It can help large images fit under
-                      100KB with better visual results.
+                    <p className="text-xs text-zinc-400 mt-2.5">
+                      Helps large images fit under {targetKB}KB with better visual results.
                     </p>
                   </div>
                 )}
@@ -328,6 +331,7 @@ export default function ImageCompressor({
             )}
           </div>
 
+          {/* Dropzone — bigger and more prominent */}
           <div
             onDrop={onDrop}
             onDragOver={onDragOver}
@@ -342,10 +346,12 @@ export default function ImageCompressor({
             role="button"
             tabIndex={0}
             aria-label={`Upload image — ${acceptedLabel}`}
-            className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors ${
+            className={`border-2 border-dashed rounded-2xl p-10 sm:p-12 text-center cursor-pointer transition-all ${
               dragOver
-                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                : "border-zinc-300 dark:border-zinc-600 hover:border-zinc-400 dark:hover:border-zinc-500"
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30 scale-[1.02]"
+                : file
+                ? "border-blue-300 dark:border-blue-600 bg-blue-50/30 dark:bg-blue-950/10"
+                : "border-zinc-200 dark:border-zinc-600 hover:border-zinc-300 dark:hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800/30"
             }`}
           >
             <input
@@ -358,11 +364,11 @@ export default function ImageCompressor({
             />
             {file ? (
               <div>
-                <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
+                    width="28"
+                    height="28"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="#2563eb"
@@ -375,18 +381,18 @@ export default function ImageCompressor({
                     <polyline points="21 15 16 10 5 21" />
                   </svg>
                 </div>
-                <p className="font-medium">{file.name}</p>
+                <p className="text-lg font-semibold">{file.name}</p>
                 <p className="text-sm text-zinc-500 mt-1">
                   {formatBytes(file.size)} — Click to change
                 </p>
               </div>
             ) : (
               <div>
-                <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="22"
-                    height="22"
+                    width="28"
+                    height="28"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="#9ca3af"
@@ -399,7 +405,7 @@ export default function ImageCompressor({
                     <line x1="12" y1="3" x2="12" y2="15" />
                   </svg>
                 </div>
-                <p className="text-lg font-medium mb-1">
+                <p className="text-xl font-semibold mb-2">
                   Drop your image here
                 </p>
                 <p className="text-sm text-zinc-500">
@@ -409,12 +415,13 @@ export default function ImageCompressor({
             )}
           </div>
 
-          <p className="text-xs text-zinc-400 text-center mt-3">
+          <p className="text-sm text-zinc-400 text-center mt-4 flex items-center justify-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             Your image is processed locally in your browser and never uploaded.
           </p>
 
           {warning && !error && !compressing && (
-            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-300 text-sm text-center">
+            <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl text-amber-700 dark:text-amber-300 text-sm text-center">
               {warning}
             </div>
           )}
@@ -422,47 +429,47 @@ export default function ImageCompressor({
       )}
 
       {compressing && (
-        <div className="mt-6 text-center">
-          <div className="inline-block w-6 h-6 border-2 border-zinc-300 border-t-blue-600 rounded-full animate-spin" />
-          <p className="mt-2 text-sm text-zinc-500">Compressing...</p>
+        <div className="mt-6 text-center py-8">
+          <div className="inline-block w-8 h-8 border-3 border-zinc-200 dark:border-zinc-600 border-t-blue-600 rounded-full animate-spin" />
+          <p className="mt-3 text-sm text-zinc-500 font-medium">Compressing...</p>
         </div>
       )}
 
       {error && !compressing && (
-        <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm whitespace-pre-line">
+        <div className="mt-6 p-5 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm whitespace-pre-line leading-relaxed">
           {error}
         </div>
       )}
 
       {result && !compressing && (
-        <div className="mt-6 space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+        <div className="mt-6 space-y-5">
+          <div className="grid grid-cols-2 gap-4">
             {originalUrl && (
-              <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
-                <div className="text-xs text-zinc-500 px-3 py-1.5 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
+              <div className="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
+                <div className="text-sm text-zinc-500 px-4 py-2 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 font-medium">
                   Original — {formatBytes(result.originalSize)}
                 </div>
-                <div className="p-2 flex items-center justify-center bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAbwAAAG8B8aLcQwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAQSURBVCJY05f5TwMDAysrCwDSRAfd5XMSBgAAAABJRU5ErkJggg==')]">
+                <div className="p-3 flex items-center justify-center bg-repeat bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAbwAAAG8B8aLcQwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAQSURBVCJY05f5TwMDAysrCwDSRAfd5XMSBgAAAABJRU5ErkJggg==')]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={originalUrl}
                     alt="Original"
-                    className="max-h-48 object-contain"
+                    className="max-h-56 object-contain"
                   />
                 </div>
               </div>
             )}
             {objectUrl && (
-              <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
-                <div className="text-xs text-green-600 dark:text-green-400 px-3 py-1.5 border-b border-zinc-200 dark:border-zinc-700 bg-green-50 dark:bg-green-900/20">
+              <div className="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
+                <div className="text-sm text-emerald-600 dark:text-emerald-400 px-4 py-2 border-b border-zinc-200 dark:border-zinc-700 bg-emerald-50 dark:bg-emerald-950/20 font-medium">
                   WebP — {formatBytes(result.compressedSize)}
                 </div>
-                <div className="p-2 flex items-center justify-center bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAbwAAAG8B8aLcQwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAQSURBVCJY05f5TwMDAysrCwDSRAfd5XMSBgAAAABJRU5ErkJggg==')]">
+                <div className="p-3 flex items-center justify-center bg-repeat bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAbwAAAG8B8aLcQwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAQSURBVCJY05f5TwMDAysrCwDSRAfd5XMSBgAAAABJRU5ErkJggg==')]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={objectUrl}
                     alt="Compressed WebP"
-                    className="max-h-48 object-contain"
+                    className="max-h-56 object-contain"
                   />
                 </div>
               </div>
@@ -470,109 +477,83 @@ export default function ImageCompressor({
           </div>
 
           <div className="flex flex-wrap gap-2 justify-center">
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">
               WebP output
             </span>
             {dimensionsChanged ? (
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300">
                 Resized to fit target
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300">
                 Dimensions preserved
               </span>
             )}
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium bg-purple-100 text-purple-700 dark:bg-purple-950/30 dark:text-purple-300">
               {result.savingsPercent}% smaller
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
-              <span className="block text-zinc-500 text-xs">
-                Original Size
-              </span>
-              <span className="font-semibold">
-                {formatBytes(result.originalSize)}
-              </span>
-            </div>
-            <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
-              <span className="block text-zinc-500 text-xs">
-                Compressed Size
-              </span>
-              <span className="font-semibold">
-                {formatBytes(result.compressedSize)}
-              </span>
-            </div>
-            <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
-              <span className="block text-zinc-500 text-xs">
-                Original Dimensions
-              </span>
-              <span className="font-semibold">
-                {result.originalWidth} × {result.originalHeight}
-              </span>
-            </div>
-            <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
-              <span className="block text-zinc-500 text-xs">
-                Output Dimensions
-              </span>
-              <span className="font-semibold">
-                {result.outputWidth} × {result.outputHeight}
-              </span>
-            </div>
-            <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
-              <span className="block text-zinc-500 text-xs">Quality Used</span>
-              <span className="font-semibold">
-                {Math.round(result.qualityUsed * 100)}%
-              </span>
-            </div>
-            <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
-              <span className="block text-zinc-500 text-xs">Savings</span>
-              <span className="font-semibold">{result.savingsPercent}%</span>
-            </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {[
+              { label: "Original Size", value: formatBytes(result.originalSize) },
+              { label: "Compressed Size", value: formatBytes(result.compressedSize) },
+              { label: "Original Dimensions", value: `${result.originalWidth} × ${result.originalHeight}` },
+              { label: "Output Dimensions", value: `${result.outputWidth} × ${result.outputHeight}` },
+              { label: "Quality Used", value: `${Math.round(result.qualityUsed * 100)}%` },
+              { label: "Savings", value: `${result.savingsPercent}%` },
+            ].map((stat) => (
+              <div key={stat.label} className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-3.5">
+                <span className="block text-zinc-500 dark:text-zinc-400 text-sm">
+                  {stat.label}
+                </span>
+                <span className="font-semibold text-base mt-0.5 block">
+                  {stat.value}
+                </span>
+              </div>
+            ))}
           </div>
 
           {dimensionsChanged && (
             <p className="text-sm text-amber-600 dark:text-amber-400 text-center">
-              We resized the image slightly to keep it under the target file
-              size.
+              The image was resized slightly to keep it under the target file size.
             </p>
           )}
 
           {!dimensionsChanged && result.reachedTarget && (
-            <p className="text-sm text-green-600 dark:text-green-400 text-center">
-              We preserve original dimensions when possible.
+            <p className="text-sm text-emerald-600 dark:text-emerald-400 text-center">
+              Original dimensions were preserved.
             </p>
           )}
 
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             {showDownload && (
               <button
                 onClick={handleDownload}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center gap-2 px-7 py-3.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200 dark:shadow-blue-900/30"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Download WebP — {formatBytes(result.compressedSize)}
               </button>
             )}
             {showDownload && (
               <button
                 onClick={handleCopyFilename}
-                className="inline-flex items-center gap-1 px-4 py-2 text-sm border border-zinc-300 dark:border-zinc-600 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                className="inline-flex items-center gap-1.5 px-5 py-3 text-sm border border-zinc-200 dark:border-zinc-600 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors font-medium"
               >
                 {copiedFilename ? "Copied!" : "Copy filename"}
               </button>
             )}
             <button
               onClick={reset}
-              className="inline-flex items-center gap-1 px-4 py-2 text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+              className="inline-flex items-center gap-1.5 px-5 py-3 text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors font-medium"
             >
               Compress another image
             </button>
           </div>
 
-          <p className="text-xs text-zinc-400 text-center mt-2">
-            All downloads are optimized WebP images. Your image is processed in
-            your browser and never uploaded.
+          <p className="text-sm text-zinc-400 text-center pt-1">
+            All downloads are optimized WebP images. Your image is processed in your browser and never uploaded.
           </p>
         </div>
       )}

@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.2.3] - 2026-05-31
+
+### Improved
+- Increased page layout widths to max-w-7xl for hero and card grids, max-w-4xl for reading content.
+- Made compressor and bulk converter cards more prominent with card backgrounds, larger dropzones, and stronger borders.
+- Improved homepage hero with larger H1, bigger CTAs, arrow icons, and tighter trust chips.
+- Redesigned bulk settings into a labelled settings panel with clearer target/mode/filename sections.
+- Improved card design with larger padding, bigger icons, rounded-xl/2xl, and consistent hover states.
+- Improved typography: increased body text, larger H2s, better line-height, stronger dark mode contrast.
+- Improved dark theme with zinc-950 body background, zinc-900 card surfaces, and softer border colors.
+- Added subtle dropzone highlight states (blue glow border when file is selected).
+- Moved "More Image Tools" to a secondary section with a divider separator.
+- Improved FAQ accordions with larger text, better padding, and zinc-900 card background in dark mode.
+- Made comparison table more polished with rounded borders and hover rows.
+- Added lock icon to privacy note below upload dropzones.
+
+### Technical
+- Preserved staged SEO rollout with exactly 5 sitemap URLs.
+- Preserved noindex, follow for non-day-one pages.
+- Preserved WebP-only downloads and the 100KB maximum output rule.
+- Added sticky header with backdrop blur for better navigation experience.
+
 ## [0.2.2] - 2026-05-31
 
 ### Improved
