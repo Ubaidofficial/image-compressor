@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   title: "WebP Image Compressor — Compress to 100KB or Less",
   description:
     "Convert JPG, PNG, and WebP images into SEO-friendly WebP files under 100KB directly in your browser. Private, fast, and free.",
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
 };
 
 export default function Home() {
@@ -39,22 +41,22 @@ export default function Home() {
             Compress Image to 100KB
           </Link>
           <Link
-            href="/webp-compress-image-to-100kb"
+            href="/bulk-image-to-webp"
             className="px-5 py-3 rounded-full border border-zinc-300 dark:border-zinc-600 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
-            WebP Compress to 100KB
+            Bulk Image to WebP
           </Link>
           <Link
-            href="/jpg-to-webp-100kb"
+            href="/jpg-to-webp"
             className="px-5 py-3 rounded-full border border-zinc-300 dark:border-zinc-600 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
-            JPG to WebP 100KB
+            JPG to WebP
           </Link>
           <Link
-            href="/png-to-webp-100kb"
+            href="/png-to-webp"
             className="px-5 py-3 rounded-full border border-zinc-300 dark:border-zinc-600 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
-            PNG to WebP 100KB
+            PNG to WebP
           </Link>
         </div>
       </div>

@@ -1,3 +1,5 @@
+import { clampTargetKB, MAX_OUTPUT_KB } from "./constants";
+
 export type CompressToWebpOptions = {
   file: File;
   targetKB: number;
@@ -25,10 +27,6 @@ export type CompressToWebpResult = {
 };
 
 const SCALE_STEPS = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5];
-
-function clampTargetKB(kb: number, maxKB: number): number {
-  return Math.min(kb, maxKB);
-}
 
 function blobToFile(blob: Blob, filename: string): File {
   return new File([blob], filename, { type: "image/webp" });
@@ -105,14 +103,14 @@ export async function compressToWebp(
   const {
     file,
     targetKB: rawTargetKB,
-    maxKB = 100,
     preserveDimensionsFirst = true,
     minQuality = 0.1,
     maxQuality = 0.95,
   } = options;
 
-  const targetKB = clampTargetKB(rawTargetKB, maxKB);
+  const targetKB = clampTargetKB(rawTargetKB);
   const targetBytes = targetKB * 1024;
+  const maxBytes = MAX_OUTPUT_KB * 1024;
 
   const originalSize = file.size;
 
@@ -181,7 +179,8 @@ export async function compressToWebp(
   }
 
   const compressedSize = bestBlob.size;
-  const reachedTarget = compressedSize <= targetBytes;
+  const reachedTarget =
+    compressedSize <= targetBytes && compressedSize <= maxBytes;
   const savingsPercent = Math.round(
     ((originalSize - compressedSize) / originalSize) * 100
   );

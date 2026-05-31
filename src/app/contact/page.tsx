@@ -1,0 +1,32 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Contact the WebP Image Compressor team for questions, feedback, or support.",
+  alternates: { canonical: "/contact" },
+  robots: { index: true, follow: true },
+};
+
+export default function ContactPage() {
+  return (
+    <div className="flex-1 w-full max-w-2xl mx-auto px-4 py-12">
+      <h1 className="text-3xl font-bold mb-8">Contact</h1>
+
+      <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
+        For questions, feedback, or support, contact us at:
+      </p>
+
+      <a
+        href="mailto:support@example.com"
+        className="text-lg font-medium text-blue-600 hover:underline"
+      >
+        support@example.com
+      </a>
+
+      <p className="text-sm text-zinc-400 mt-8">
+        We aim to respond within 1–2 business days.
+      </p>
+    </div>
+  );
+}

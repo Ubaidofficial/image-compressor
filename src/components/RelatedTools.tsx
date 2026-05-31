@@ -6,6 +6,19 @@ type RelatedToolsProps = {
   title?: string;
 };
 
+const pathLabels: Record<string, string> = {
+  "/image-compressor": "Image Compressor",
+  "/webp-image-compressor": "WebP Compressor",
+  "/bulk-image-to-webp": "Bulk Image to WebP",
+  "/jpg-to-webp": "JPG to WebP",
+  "/png-to-webp": "PNG to WebP",
+  "/image-to-webp": "Image to WebP",
+  "/compress-image-to-50kb": "Compress to 50KB",
+  "/compress-image-to-100kb": "Compress to 100KB",
+  "/webp-compress-image-to-100kb": "WebP to 100KB",
+  "/privacy": "Privacy",
+};
+
 export default function RelatedTools({
   excludePath,
   title = "Related Tools",
@@ -22,10 +35,7 @@ export default function RelatedTools({
             href={path}
             className="inline-block px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-700 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
-            {path
-              .replace(/-/g, " ")
-              .replace(/\//g, "")
-              .replace(/\b\w/g, (c) => c.toUpperCase())}
+            {pathLabels[path] ?? path}
           </Link>
         ))}
       </div>

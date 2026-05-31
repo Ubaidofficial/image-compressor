@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { compressToWebp, type CompressToWebpResult } from "@/lib/compressToWebp";
 import { formatBytes } from "@/lib/formatBytes";
 import { slugifyFilename } from "@/lib/slugify";
+import { isValidImageFile, isLargeFile } from "@/lib/constants";
 
 type ImageCompressorProps = {
   targetKB: number;
@@ -35,6 +36,17 @@ function fileToAcceptAttr(intent?: string): string {
   }
 }
 
+async function supportsWebPExport(): Promise<boolean> {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1;
+  canvas.height = 1;
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => {
+      resolve(Boolean(blob && blob.type === "image/webp"));
+    }, "image/webp", 0.8);
+  });
+}
+
 export default function ImageCompressor({
   targetKB,
   acceptedFormats,
@@ -45,18 +57,38 @@ export default function ImageCompressor({
   const [compressing, setCompressing] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
+  const [originalUrl, setOriginalUrl] = useState<string | null>(null);
+  const [webpSupported, setWebpSupported] = useState(true);
+  const [copiedFilename, setCopiedFilename] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const accept = acceptedFormats?.join(",") ?? fileToAcceptAttr(pageIntent);
   const acceptedLabel = fileToAcceptedLabel(pageIntent);
+
+  useEffect(() => {
+    supportsWebPExport().then((ok) => setWebpSupported(ok));
+  }, []);
 
   const cleanup = useCallback(() => {
     if (objectUrl) {
       URL.revokeObjectURL(objectUrl);
       setObjectUrl(null);
     }
-  }, [objectUrl]);
+    if (originalUrl) {
+      URL.revokeObjectURL(originalUrl);
+      setOriginalUrl(null);
+    }
+  }, [objectUrl, originalUrl]);
+
+  const reset = useCallback(() => {
+    cleanup();
+    setFile(null);
+    setResult(null);
+    setError(null);
+    setWarning(null);
+  }, [cleanup]);
 
   const handleFile = useCallback(
     async (f: File) => {
@@ -64,13 +96,27 @@ export default function ImageCompressor({
       setFile(f);
       setError(null);
       setResult(null);
+      setWarning(null);
+      setCopiedFilename(false);
+
+      const origUrl = URL.createObjectURL(f);
+      setOriginalUrl(origUrl);
+
+      if (!isValidImageFile(f)) {
+        setError("Unsupported file type. Please upload a JPG, JPEG, PNG, or WebP image.");
+        return;
+      }
+
+      if (isLargeFile(f)) {
+        setWarning("Large images may take longer to compress in your browser.");
+      }
+
       setCompressing(true);
 
       try {
         const res = await compressToWebp({
           file: f,
           targetKB,
-          maxKB: 100,
           preserveDimensionsFirst: true,
           minQuality: 0.1,
           maxQuality: 0.95,
@@ -82,7 +128,7 @@ export default function ImageCompressor({
 
         if (!res.reachedTarget) {
           setError(
-            `Could not compress below ${targetKB}KB. Final size: ${formatBytes(res.compressedSize)}.`
+            "We could not compress this image under the target size. Try a smaller image."
           );
         }
       } catch (err) {
@@ -127,47 +173,78 @@ export default function ImageCompressor({
     link.click();
   };
 
+  const handleCopyFilename = async () => {
+    if (!result || !file) return;
+    const filename = slugifyFilename(file.name, targetKB);
+    try {
+      await navigator.clipboard.writeText(filename);
+      setCopiedFilename(true);
+      setTimeout(() => setCopiedFilename(false), 2000);
+    } catch {
+      // clipboard API not available
+    }
+  };
+
   const showDownload = result?.reachedTarget && objectUrl;
   const dimensionsChanged = result?.dimensionsChanged;
 
   return (
     <div className="w-full max-w-xl mx-auto">
-      <div
-        onDrop={onDrop}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onClick={() => inputRef.current?.click()}
-        className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors ${
-          dragOver
-            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-            : "border-zinc-300 dark:border-zinc-600 hover:border-zinc-400 dark:hover:border-zinc-500"
-        }`}
-      >
-        <input
-          ref={inputRef}
-          type="file"
-          accept={accept}
-          onChange={onFileChange}
-          className="hidden"
-        />
-        {file ? (
-          <div>
-            <p className="font-medium">{file.name}</p>
-            <p className="text-sm text-zinc-500 mt-1">
-              {formatBytes(file.size)} — Click to change
-            </p>
+      {!webpSupported && (
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm text-center">
+          Your browser does not support WebP export from canvas. Please use a
+          modern browser like Chrome, Edge, Firefox, or Safari.
+        </div>
+      )}
+
+      {!result && webpSupported && (
+        <>
+          <div
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onDragLeave={onDragLeave}
+            onClick={() => inputRef.current?.click()}
+            className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors ${
+              dragOver
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                : "border-zinc-300 dark:border-zinc-600 hover:border-zinc-400 dark:hover:border-zinc-500"
+            }`}
+          >
+            <input
+              ref={inputRef}
+              type="file"
+              accept={accept}
+              onChange={onFileChange}
+              className="hidden"
+            />
+            {file ? (
+              <div>
+                <p className="font-medium">{file.name}</p>
+                <p className="text-sm text-zinc-500 mt-1">
+                  {formatBytes(file.size)} — Click to change
+                </p>
+              </div>
+            ) : (
+              <div>
+                <p className="text-lg font-medium mb-1">Drop your image here</p>
+                <p className="text-sm text-zinc-500">
+                  or click to browse — {acceptedLabel}
+                </p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div>
-            <p className="text-lg font-medium mb-1">
-              Drop your image here
-            </p>
-            <p className="text-sm text-zinc-500">
-              or click to browse — {acceptedLabel}
-            </p>
-          </div>
-        )}
-      </div>
+
+          <p className="text-xs text-zinc-400 text-center mt-3">
+            Your image is processed locally in your browser and never uploaded.
+          </p>
+
+          {warning && !error && !compressing && (
+            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-300 text-sm text-center">
+              {warning}
+            </div>
+          )}
+        </>
+      )}
 
       {compressing && (
         <div className="mt-6 text-center">
@@ -177,13 +254,59 @@ export default function ImageCompressor({
       )}
 
       {error && !compressing && (
-        <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm">
+        <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm text-center">
           {error}
         </div>
       )}
 
       {result && !compressing && (
         <div className="mt-6 space-y-4">
+          {/* Before/After preview */}
+          <div className="grid grid-cols-2 gap-3">
+            {originalUrl && (
+              <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
+                <div className="text-xs text-zinc-500 px-3 py-1.5 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
+                  Original — {formatBytes(result.originalSize)}
+                </div>
+                <div className="p-2 flex items-center justify-center bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAbwAAAG8B8aLcQwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAQSURBVCJY05f5TwMDAysrCwDSRAfd5XMSBgAAAABJRU5ErkJggg==')]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={originalUrl} alt="Original" className="max-h-48 object-contain" />
+                </div>
+              </div>
+            )}
+            {objectUrl && (
+              <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
+                <div className="text-xs text-green-600 dark:text-green-400 px-3 py-1.5 border-b border-zinc-200 dark:border-zinc-700 bg-green-50 dark:bg-green-900/20">
+                  WebP — {formatBytes(result.compressedSize)}
+                </div>
+                <div className="p-2 flex items-center justify-center bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAbwAAAG8B8aLcQwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAQSURBVCJY05f5TwMDAysrCwDSRAfd5XMSBgAAAABJRU5ErkJggg==')]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={objectUrl} alt="Compressed WebP" className="max-h-48 object-contain" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Badges */}
+          <div className="flex flex-wrap gap-2 justify-center">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+              WebP output
+            </span>
+            {dimensionsChanged ? (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                Resized to fit target
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                Dimensions preserved
+              </span>
+            )}
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+              {result.savingsPercent}% smaller
+            </span>
+          </div>
+
+          {/* Stats grid */}
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
               <span className="block text-zinc-500 text-xs">Original Size</span>
@@ -227,19 +350,36 @@ export default function ImageCompressor({
             </p>
           )}
 
-          {showDownload && (
-            <div className="text-center">
+          {/* Actions row */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {showDownload && (
               <button
                 onClick={handleDownload}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700 transition-colors"
               >
                 Download WebP — {formatBytes(result.compressedSize)}
               </button>
-            </div>
-          )}
+            )}
+
+            {showDownload && (
+              <button
+                onClick={handleCopyFilename}
+                className="inline-flex items-center gap-1 px-4 py-2 text-sm border border-zinc-300 dark:border-zinc-600 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                {copiedFilename ? "Copied!" : "Copy filename"}
+              </button>
+            )}
+
+            <button
+              onClick={reset}
+              className="inline-flex items-center gap-1 px-4 py-2 text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+            >
+              Compress another image
+            </button>
+          </div>
 
           <p className="text-xs text-zinc-400 text-center mt-2">
-            Your image is processed in your browser and never uploaded.
+            All downloads are optimized WebP images. Your image is processed in your browser and never uploaded.
           </p>
         </div>
       )}

@@ -9,6 +9,7 @@ type SeoCompressorPageProps = {
   h1: string;
   intro: string;
   intent?: "general" | "webp" | "jpg-to-webp" | "png-to-webp";
+  pagePath: string;
 };
 
 export default function SeoCompressorPage({
@@ -16,6 +17,7 @@ export default function SeoCompressorPage({
   h1,
   intro,
   intent,
+  pagePath,
 }: SeoCompressorPageProps) {
   return (
     <div className="flex-1 w-full max-w-3xl mx-auto px-4 py-12">
@@ -54,7 +56,7 @@ export default function SeoCompressorPage({
       </section>
 
       <FAQ />
-      <RelatedTools />
+      <RelatedTools excludePath={pagePath} />
     </div>
   );
 }
