@@ -12,9 +12,17 @@
 - Breadcrumb navigation must have `aria-label="Breadcrumb"`. Confidence: 0.75
 - Status messages and live regions should use `aria-live` for screen reader announcements. Confidence: 0.70
 - Upload dropzones must be keyboard accessible with proper file input labels. Confidence: 0.70
+- Inline SVG elements should use `focusable="false"` to prevent unwanted focus behavior in legacy browsers. Confidence: 0.70
+
+# Animation
+- Use Tailwind `motion-safe:` prefix for animations and `motion-reduce:` to respect user reduced-motion preferences. Keep animations subtle (hover states, transitions, slight scale on cards). Confidence: 0.70
 
 # Components
 - SVG illustration components should be responsive, use `currentColor` or Tailwind-friendly classes, avoid random IDs that change between server/client, include accessible `<title>` or `aria-hidden="true"`, and keep the markup lightweight. Confidence: 0.70
+- Do not use external images for graphics and icons. Use inline SVG components or existing SVG assets instead. Confidence: 0.70
+
+# UX
+- Keep the compression/upload tool visible above the fold on all tool pages. Place deeper content (FAQs, use cases, explanations) below the tool. Confidence: 0.75
 
 # SEO
 See [seo/taste.md](seo/taste.md)

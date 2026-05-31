@@ -10,6 +10,7 @@ import {
   createFaqSchema,
 } from "@/lib/schema";
 import type { FaqItem } from "./FAQ";
+import type { ReactNode } from "react";
 
 type SeoCompressorPageProps = {
   targetKB: number;
@@ -27,6 +28,7 @@ type SeoCompressorPageProps = {
   howToSteps?: string[];
   webpWhyH2?: string;
   webpWhyText?: string;
+  children?: ReactNode;
 };
 
 const defaultFaqs: FaqItem[] = [
@@ -71,6 +73,7 @@ export default function SeoCompressorPage({
   howToSteps,
   webpWhyH2,
   webpWhyText,
+  children,
 }: SeoCompressorPageProps) {
   const faqs = faqItems ?? defaultFaqs;
 
@@ -139,6 +142,8 @@ export default function SeoCompressorPage({
           {renderWebpWhyText}
         </p>
       </section>
+
+      {children}
 
       <FAQ items={faqs} />
       <RelatedTools excludePath={pagePath} />

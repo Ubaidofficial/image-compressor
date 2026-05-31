@@ -11,6 +11,12 @@ import {
   createFaqSchema,
 } from "@/lib/schema";
 import type { FaqItem } from "@/components/FAQ";
+import {
+  ContentCardGrid,
+  UseCaseGrid,
+  ComparisonTable,
+  ContentSection,
+} from "@/components/content/ContentHelpers";
 import HeroCompressionIllustration from "@/components/illustrations/HeroCompressionIllustration";
 import BulkWebPIllustration from "@/components/illustrations/BulkWebPIllustration";
 import PrivacyBrowserIllustration from "@/components/illustrations/PrivacyBrowserIllustration";
@@ -24,32 +30,37 @@ const homeFaqs: FaqItem[] = [
   {
     question: "What is 100KB Converter?",
     answer:
-      "100KB Converter is a free set of browser-based image compression tools. You can compress JPG, PNG, and WebP images, convert them to WebP format, and download files that are 100KB or less — without uploading anything.",
+      "100KB Converter is a suite of browser-based tools for compressing and converting images. You can upload JPG, PNG, and WebP images, compress them under 100KB, and download them as WebP files — all without uploading anything to a server.",
   },
   {
     question: "Are my images uploaded?",
     answer:
-      "No. All compression and conversion happens in your browser using the Canvas API. Your images are never uploaded, stored, or viewed by anyone else.",
+      "No. All compression and conversion runs inside your browser using the Canvas API. Your images stay on your device and are never uploaded, stored, or accessible by anyone else.",
   },
   {
     question: "Why are downloads saved as WebP?",
     answer:
-      "WebP produces smaller file sizes than JPG and PNG while maintaining good visual quality. That makes your images load faster and perform better for SEO.",
+      "WebP typically produces files 25–35% smaller than JPG and PNG at similar visual quality. This reduces bandwidth, helps pages load faster, and makes images more efficient for websites.",
   },
   {
     question: "Can every image be compressed under 100KB?",
     answer:
-      "Most images can be compressed under 100KB, but very large or complex images may not fit. The tool tries to preserve original dimensions first, and then reduces dimensions if needed to meet the size target.",
+      "Most images can reach 100KB or less, but very large or highly detailed images may need dimension reduction. The tool tries to preserve original dimensions first, then reduces size if needed to meet the target.",
   },
   {
-    question: "Can I convert multiple images at once?",
+    question: "Can I process multiple images at once?",
     answer:
-      "Yes. Use the bulk image to WebP converter to upload up to 20 images, compress them in a batch, and download them together as a ZIP file.",
+      "Yes. The bulk image to WebP converter handles up to 20 images in a single batch, compresses each one to your chosen target size, and lets you download everything as a ZIP file with a CSV compression report.",
   },
   {
-    question: "Which tools are available?",
+    question: "Which image formats are supported?",
     answer:
-      "You can compress single images, convert JPG or PNG to WebP, compress images to specific sizes like 100KB or 50KB, and convert multiple images in bulk — all from the tools linked on this page.",
+      "You can upload JPG, JPEG, PNG, and WebP images. All downloads are WebP format. SVG, GIF, PDF, and other formats are not accepted.",
+  },
+  {
+    question: "Does this work on mobile?",
+    answer:
+      "Yes. The tool works in any modern mobile browser including Chrome, Safari, and Firefox. All processing happens on your device, so it works offline-capable browsers too.",
   },
 ];
 
@@ -148,43 +159,47 @@ export default function Home() {
       />
 
       {/* Hero */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-16">
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-16 motion-safe:animate-fade-in-up">
         <div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
             Compress and Convert Images Under 100KB
           </h1>
           <p className="text-base sm:text-lg text-zinc-500 dark:text-zinc-400 mb-6 max-w-lg">
-            Use free browser-based tools to compress JPG, PNG, and WebP images
-            into lightweight WebP files under 100KB. Your images stay private
-            and are never uploaded.
+            Use browser-based tools to compress JPG, PNG, and WebP images into
+            lightweight WebP files under 100KB. Your images stay private
+            because compression runs on your device — no uploads ever.
           </p>
 
           <div className="flex flex-wrap gap-3 mb-6">
             <Link
               href="/image-compressor"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 motion-safe:transition-colors"
             >
               Compress Image
             </Link>
             <Link
               href="/bulk-image-to-webp"
-              className="inline-flex items-center gap-2 px-6 py-3 border border-zinc-300 dark:border-zinc-600 font-medium rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 border border-zinc-300 dark:border-zinc-600 font-medium rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 motion-safe:transition-colors"
             >
               Bulk Convert to WebP
             </Link>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {["No uploads", "WebP output", "Under 100KB", "Bulk ZIP"].map(
-              (chip) => (
-                <span
-                  key={chip}
-                  className="inline-flex items-center px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 text-xs font-medium"
-                >
-                  {chip}
-                </span>
-              )
-            )}
+          <div className="flex flex-wrap gap-2 mb-2">
+            {[
+              "No uploads",
+              "WebP output",
+              "Under 100KB",
+              "Bulk ZIP",
+              "Client-side processing",
+            ].map((chip) => (
+              <span
+                key={chip}
+                className="inline-flex items-center px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 text-xs font-medium"
+              >
+                {chip}
+              </span>
+            ))}
           </div>
         </div>
         <div className="hidden lg:block">
@@ -192,69 +207,88 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Tool */}
+      {/* Tool — above the fold */}
       <section className="mb-16">
         <ImageCompressor targetKB={100} pageIntent="general" />
       </section>
 
-      {/* Benefits */}
-      <section className="mb-16">
-        <h2 className="text-2xl font-bold mb-8 text-center">
-          Why Use 100KB Converter?
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            {
-              title: "Images Under 100KB",
-              desc: "Every downloadable file is guaranteed to be 100KB or less — verified in your browser.",
-              icon: "100",
-            },
-            {
-              title: "WebP Output",
-              desc: "All downloads are WebP format: smaller than JPG and PNG, better for website speed.",
-              icon: "W",
-            },
-            {
-              title: "Bulk Conversion",
-              desc: "Convert up to 20 images at once. Download individual files or save everything as a ZIP.",
-              icon: "B",
-            },
-            {
-              title: "No Uploads",
-              desc: "Everything runs in your browser. Your images stay on your device and are never sent to a server.",
-              icon: "N",
-            },
-            {
-              title: "SEO-Friendly Filenames",
-              desc: "Files download with clean, descriptive names like my-image-compressed-to-100kb.webp.",
-              icon: "S",
-            },
-            {
-              title: "Works in Your Browser",
-              desc: "No software to install. Works in Chrome, Edge, Firefox, and Safari.",
-              icon: "W",
-            },
-          ].map((benefit) => (
-            <div
-              key={benefit.title}
-              className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-5 flex gap-3"
-            >
-              <div className="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0 text-sm font-bold" aria-hidden="true">
-                {benefit.icon}
-              </div>
-              <div>
-                <h3 className="font-semibold text-sm mb-1">{benefit.title}</h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                  {benefit.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Why 100KB Converter */}
+      <ContentCardGrid
+        heading="Why 100KB Converter?"
+        items={[
+          {
+            title: "Under-size downloads",
+            desc: "Every downloadable file is verified to be 100KB or less in your browser. You will never get a file that exceeds the limit.",
+            icon: "✓",
+          },
+          {
+            title: "WebP-first output",
+            desc: "All downloads are WebP format, which produces smaller files than JPG and PNG. Better for website speed and bandwidth.",
+            icon: "W",
+          },
+          {
+            title: "Bulk image workflow",
+            desc: "Process up to 20 images at once, download individual results, or save everything as a ZIP file with a CSV compression report.",
+            icon: "B",
+          },
+          {
+            title: "Browser-based privacy",
+            desc: "Everything runs in your browser. Images are never uploaded, stored, viewed, or sent to any server. Close the tab, and all data is gone.",
+            icon: "🔒",
+          },
+          {
+            title: "SEO-friendly filenames",
+            desc: "Files download with clean, descriptive names like my-image-compressed-to-100kb.webp, ready for use on websites.",
+            icon: "S",
+          },
+          {
+            title: "Simple controls with advanced options",
+            desc: "Start with a single click, or use compression modes, resize presets, and custom widths for more control over output quality and dimensions.",
+            icon: "⚙",
+          },
+        ]}
+        columns={3}
+      />
+
+      {/* Use Cases */}
+      <UseCaseGrid
+        heading="Common Uses for Images Under 100KB"
+        items={[
+          {
+            title: "Website images",
+            desc: "Smaller images load faster and improve page speed. Under 100KB is a good target for hero images and content photos on most websites.",
+            icon: "🌐",
+          },
+          {
+            title: "Product photos",
+            desc: "E-commerce platforms often need compressed product images for thumbnail galleries and category pages. Smaller files help pages load faster for shoppers.",
+            icon: "🛍",
+          },
+          {
+            title: "Profile photos",
+            desc: "Many online platforms, forums, and social networks limit profile picture uploads to around 100KB. Compress before uploading to avoid size rejections.",
+            icon: "👤",
+          },
+          {
+            title: "Blog images",
+            desc: "Keeping blog post images under 100KB helps maintain fast page load times. Lighter pages may perform better in search results.",
+            icon: "📝",
+          },
+          {
+            title: "Email attachments",
+            desc: "Email services often have attachment size limits. Compressing images under 100KB helps keep emails lightweight and deliverable.",
+            icon: "📧",
+          },
+          {
+            title: "Application uploads",
+            desc: "Job portals, government forms, and online applications frequently enforce 100KB or similar upload limits for document photos and ID images.",
+            icon: "📋",
+          },
+        ]}
+      />
 
       {/* How it works */}
-      <section className="mb-16 max-w-2xl mx-auto text-center">
+      <section className="mt-16 max-w-2xl mx-auto text-center motion-safe:animate-fade-in">
         <h2 className="text-2xl font-bold mb-8">How It Works</h2>
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           {[
@@ -264,7 +298,10 @@ export default function Home() {
             { step: "4", label: "Download your optimized file" },
           ].map((item) => (
             <div key={item.step} className="text-center">
-              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 flex items-center justify-center mx-auto mb-2 text-sm font-bold" aria-hidden="true">
+              <div
+                className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 flex items-center justify-center mx-auto mb-2 text-sm font-bold"
+                aria-hidden="true"
+              >
                 {item.step}
               </div>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -276,22 +313,64 @@ export default function Home() {
       </section>
 
       {/* Privacy */}
-      <section className="mb-16 bg-zinc-50 dark:bg-zinc-800/30 rounded-2xl p-8 flex flex-col sm:flex-row items-center gap-6">
+      <section className="mt-16 bg-zinc-50 dark:bg-zinc-800/30 rounded-2xl p-8 flex flex-col sm:flex-row items-center gap-6">
         <div className="shrink-0 w-32">
           <PrivacyBrowserIllustration />
         </div>
         <div>
-          <h2 className="text-xl font-bold mb-2">Privacy-First Compression</h2>
+          <h2 className="text-xl font-bold mb-2">
+            Privacy-First Compression
+          </h2>
           <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
             Your images stay on your device. Compression runs entirely in your
-            browser, so files are not uploaded, stored, viewed, or sent to a
-            server. Once you close the page, all image data is gone.
+            browser using the Canvas API and WebP encoder, so files are not
+            uploaded, stored, viewed, or sent to a server. Once you close the
+            page, all image data is gone. This makes the tool safe for personal
+            photos, sensitive documents, and any image you would not want
+            uploaded to a third-party service.
           </p>
         </div>
       </section>
 
+      {/* Comparison table */}
+      <ComparisonTable
+        heading="Which Tool Should You Use?"
+        rows={[
+          {
+            task: "Compress one image",
+            tool: "Image Compressor",
+            href: "/image-compressor",
+          },
+          {
+            task: "Convert many images",
+            tool: "Bulk Image to WebP",
+            href: "/bulk-image-to-webp",
+          },
+          {
+            task: "Strict 100KB limit",
+            tool: "Compress Image to 100KB",
+            href: "/compress-image-to-100kb",
+          },
+          {
+            task: "Convert JPG to WebP",
+            tool: "JPG to WebP",
+            href: "/jpg-to-webp",
+          },
+          {
+            task: "Convert PNG to WebP",
+            tool: "PNG to WebP",
+            href: "/png-to-webp",
+          },
+          {
+            task: "Compress to 50KB",
+            tool: "Compress to 50KB",
+            href: "/compress-image-to-50kb",
+          },
+        ]}
+      />
+
       {/* Bulk highlight */}
-      <section className="mb-16 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-2xl p-8 flex flex-col sm:flex-row items-center gap-6 border border-blue-100 dark:border-blue-900/30">
+      <section className="mt-16 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-2xl p-8 flex flex-col sm:flex-row items-center gap-6 border border-blue-100 dark:border-blue-900/30 motion-safe:animate-fade-in">
         <div className="shrink-0 w-28">
           <BulkWebPIllustration />
         </div>
@@ -300,35 +379,61 @@ export default function Home() {
             Need to Process Multiple Images?
           </h2>
           <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-            Use the Bulk Image to WebP Converter to convert up to 20 images at
-            once. Download individual files or save all successful conversions
-            in a single ZIP file.
+            The bulk image to WebP converter processes up to 20 images in one
+            batch. Each image is compressed under your chosen target size, and
+            you can download individual WebP files or save all successful
+            conversions as a single ZIP. A CSV compression report is included
+            so you can track original sizes, compressed sizes, and dimensions
+            for every file.
           </p>
           <Link
             href="/bulk-image-to-webp"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 motion-safe:transition-colors"
           >
             Open Bulk Converter
           </Link>
         </div>
       </section>
 
+      {/* About compression modes */}
+      <ContentSection heading="Compression Modes for Better Control">
+        <p>
+          The single-image tool offers three compression modes to suit
+          different needs. <strong>Balanced</strong> (the default) provides a
+          sensible trade-off between file size and visual quality for most
+          images. <strong>Best Quality</strong> prioritizes visual clarity,
+          keeping dimensions and higher quality settings when the target size
+          allows. <strong>Smallest File</strong> uses stronger compression and
+          reduces dimensions earlier, which is useful when you need the
+          smallest possible WebP file.
+        </p>
+        <p>
+          You can also enable the optional resize control to set a max width
+          before compression — helpful when you have a large source image from
+          a camera or design tool and want the output to fit a specific layout
+          width. Presets include 1920px, 1600px, 1200px, and 800px, with a
+          custom width option available too.
+        </p>
+      </ContentSection>
+
       {/* Popular Tools */}
-      <section className="mb-16">
-        <h2 className="text-2xl font-bold mb-8 text-center">Popular Tools</h2>
+      <section className="mt-16">
+        <h2 className="text-2xl font-bold mb-8 text-center">
+          All Image Tools
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {toolsList.map((tool) => (
             <Link
               key={tool.href}
               href={tool.href}
-              className={`group rounded-xl border p-5 transition-colors hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 ${
+              className={`group rounded-xl border p-5 motion-safe:transition-all motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-md ${
                 tool.primary
                   ? "border-blue-200 dark:border-blue-800 bg-blue-50/30 dark:bg-blue-950/10"
-                  : "border-zinc-200 dark:border-zinc-700"
+                  : "border-zinc-200 dark:border-zinc-700 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/5 dark:hover:bg-blue-950/10"
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-sm group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
+                <h3 className="font-semibold text-sm group-hover:text-blue-700 dark:group-hover:text-blue-300 motion-safe:transition-colors">
                   {tool.title}
                 </h3>
                 <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400">
@@ -344,7 +449,7 @@ export default function Home() {
       </section>
 
       {/* More Tools */}
-      <section className="mb-16 text-center">
+      <section className="mt-16 text-center">
         <h2 className="text-xl font-bold mb-4">More Image Tools</h2>
         <div className="flex flex-wrap gap-2 justify-center">
           {[
@@ -357,7 +462,7 @@ export default function Home() {
             <Link
               key={link.href}
               href={link.href}
-              className="inline-block px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+              className="inline-block px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 motion-safe:transition-colors"
             >
               {link.label}
             </Link>

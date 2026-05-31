@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.2.2] - 2026-05-31
+
+### Improved
+- Expanded day-one pages with more helpful structured content and clearer explanations.
+- Added page-specific use-case grids, process steps, and feature breakdowns.
+- Improved semantic keyword coverage without keyword stuffing or filler content.
+- Added 5 new illustration SVG components for page-specific visual storytelling.
+- Improved existing hero, bulk, and privacy illustrations with more polished design.
+- Improved homepage content hierarchy with Why 100KB Converter, Use Cases, and tool comparison table.
+- Added OnThisPage jump navigation for longer tool pages to improve scannability.
+- Added ContentCardGrid, UseCaseGrid, KeywordInfoBlock, and OnThisPage reusable components.
+- Added subtle fade-in animations and hover transitions with reduced-motion respect.
+- Improved internal linking between all day-one tool pages with descriptive anchor text.
+
+### Technical
+- Preserved staged SEO rollout with exactly 5 sitemap URLs.
+- Preserved `noindex, follow` for non-day-one pages.
+- Preserved WebP-only downloads and the 100KB maximum output rule.
+- Added CSS animation keyframes with prefers-reduced-motion safeguard.
+- Added `id` prop support to FeatureGrid and ProcessSteps components for anchor linking.
+
 ## [0.2.1] - 2026-05-31
 
 ### Improved
