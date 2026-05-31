@@ -75,10 +75,24 @@ export default function RootLayout({
         <JsonLd data={createOrganizationSchema()} />
         <JsonLd data={createWebsiteSchema()} />
         <header className="border-b border-zinc-200 dark:border-zinc-800">
-          <div className="max-w-3xl mx-auto px-4 h-14 flex items-center">
-            <Link href="/" className="font-bold text-lg tracking-tight">
+          <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+            <Link href="/" className="font-bold text-lg tracking-tight shrink-0">
               100KB Converter
             </Link>
+            <nav className="hidden sm:flex items-center gap-3 text-sm">
+              <Link href="/image-compressor" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                Image Compressor
+              </Link>
+              <Link href="/bulk-image-to-webp" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                Bulk WebP
+              </Link>
+              <Link href="/jpg-to-webp" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                JPG to WebP
+              </Link>
+              <Link href="/compress-image-to-100kb" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                Compress to 100KB
+              </Link>
+            </nav>
           </div>
         </header>
         <main className="flex-1">{children}</main>
@@ -105,6 +119,18 @@ export default function RootLayout({
                 className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
               >
                 Bulk Converter
+              </Link>
+              <Link
+                href="/jpg-to-webp"
+                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+              >
+                JPG to WebP
+              </Link>
+              <Link
+                href="/compress-image-to-100kb"
+                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+              >
+                Compress to 100KB
               </Link>
               <Link
                 href="/privacy"

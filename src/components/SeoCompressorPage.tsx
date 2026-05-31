@@ -23,6 +23,8 @@ type SeoCompressorPageProps = {
   appFeatureList?: string[];
   faqItems?: FaqItem[];
   breadcrumbs: { name: string; path: string }[];
+  howToTitle?: string;
+  howToSteps?: string[];
 };
 
 const defaultFaqs: FaqItem[] = [
@@ -63,8 +65,18 @@ export default function SeoCompressorPage({
   appFeatureList,
   faqItems,
   breadcrumbs,
+  howToTitle,
+  howToSteps,
 }: SeoCompressorPageProps) {
   const faqs = faqItems ?? defaultFaqs;
+
+  const renderHowToTitle = howToTitle ?? `How to Compress an Image to ${targetKB}KB`;
+  const renderHowToSteps = howToSteps ?? [
+    `Drag and drop your image or click to browse.`,
+    `The tool compresses it to WebP at ${targetKB}KB or less using quality optimization and smart resizing if needed.`,
+    `Review the original and compressed sizes and dimensions.`,
+    `Download the WebP file — it's guaranteed under ${targetKB}KB.`,
+  ];
 
   return (
     <div className="flex-1 w-full max-w-3xl mx-auto px-4 py-12">
@@ -103,16 +115,12 @@ export default function SeoCompressorPage({
 
       <section className="mt-16 max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold mb-4">
-          How to Compress an Image to {targetKB}KB
+          {renderHowToTitle}
         </h2>
         <ol className="list-decimal list-inside space-y-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          <li>Drag and drop your image or click to browse.</li>
-          <li>
-            The tool compresses it to WebP at {targetKB}KB or less using
-            quality optimization and smart resizing if needed.
-          </li>
-          <li>Review the original and compressed sizes and dimensions.</li>
-          <li>Download the WebP file — it&apos;s guaranteed under {targetKB}KB.</li>
+          {renderHowToSteps.map((step, i) => (
+            <li key={i}>{step}</li>
+          ))}
         </ol>
       </section>
 

@@ -130,5 +130,4 @@ export const relatedToolPaths = [
   "/compress-image-to-50kb",
   "/compress-image-to-100kb",
   "/webp-compress-image-to-100kb",
-  "/privacy",
 ];

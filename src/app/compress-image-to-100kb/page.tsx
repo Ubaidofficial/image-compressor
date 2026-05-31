@@ -21,7 +21,7 @@ export default function CompressImageTo100Kb() {
       keyword="compress image to 100kb"
       title={pageTitle}
       h1="Compress Image to 100KB"
-      intro="Upload your JPG, PNG, or WebP image and compress it to 100KB or less. The output is always a WebP file optimized for fast loading and SEO."
+      intro="Need an image under a 100KB upload limit? Upload your JPG, PNG, or WebP image and download an optimized WebP file that is 100KB or less. The final file may be slightly below 100KB so it never exceeds the limit."
       intent="general"
       pagePath={pagePath}
       description={pageDescription}

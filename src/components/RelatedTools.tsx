@@ -16,7 +16,6 @@ const pathLabels: Record<string, string> = {
   "/compress-image-to-50kb": "Compress to 50KB",
   "/compress-image-to-100kb": "Compress to 100KB",
   "/webp-compress-image-to-100kb": "WebP to 100KB",
-  "/privacy": "Privacy",
 };
 
 export default function RelatedTools({
