@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.4] - 2026-05-31
+
+### Improved
+- Removed duplicate bottom template sections on tool pages with custom children content.
+- Made single-image compressor cards wider on desktop (max-w-3xl, tool cards max-w-5xl).
+- Increased header nav text size and spacing for better readability.
+
+### Technical
+- Template sections now rendered conditionally — only shown when no page-specific children are passed.
+- Preserved staged SEO rollout with exactly 5 sitemap URLs.
+- Preserved noindex, follow for non-day-one pages.
+- Preserved WebP-only downloads and the 100KB maximum output rule.
+
 ## [0.2.3] - 2026-05-31
 
 ### Improved

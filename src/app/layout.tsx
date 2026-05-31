@@ -89,17 +89,17 @@ export default function RootLayout({
               </svg>
               <span className="font-bold text-base tracking-tight">100KB Converter</span>
             </Link>
-            <nav className="hidden sm:flex items-center gap-4 text-sm">
-              <Link href="/image-compressor" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+            <nav className="hidden sm:flex items-center gap-5 text-[15px] font-medium">
+              <Link href="/image-compressor" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
                 Image Compressor
               </Link>
-              <Link href="/bulk-image-to-webp" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+              <Link href="/bulk-image-to-webp" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
                 Bulk WebP
               </Link>
-              <Link href="/jpg-to-webp" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+              <Link href="/jpg-to-webp" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
                 JPG to WebP
               </Link>
-              <Link href="/compress-image-to-100kb" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+              <Link href="/compress-image-to-100kb" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
                 Compress to 100KB
               </Link>
             </nav>

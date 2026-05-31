@@ -122,31 +122,35 @@ export default function SeoCompressorPage({
       </p>
 
       {/* Tool in prominent card */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-sm dark:shadow-none max-w-4xl mx-auto mb-16">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-10 shadow-sm dark:shadow-none max-w-5xl mx-auto mb-16">
         <ImageCompressor targetKB={targetKB} pageIntent={intent} />
       </div>
 
       {children}
 
-      <section className="mt-20 max-w-4xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-          {renderHowToTitle}
-        </h2>
-        <ol className="list-decimal list-inside space-y-3 text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          {renderHowToSteps.map((step, i) => (
-            <li key={i}>{step}</li>
-          ))}
-        </ol>
-      </section>
+      {!children && (
+        <section className="mt-20 max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+            {renderHowToTitle}
+          </h2>
+          <ol className="list-decimal list-inside space-y-3 text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            {renderHowToSteps.map((step, i) => (
+              <li key={i}>{step}</li>
+            ))}
+          </ol>
+        </section>
+      )}
 
-      <section className="mt-16 max-w-4xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-          {renderWebpWhyH2}
-        </h2>
-        <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          {renderWebpWhyText}
-        </p>
-      </section>
+      {!children && (
+        <section className="mt-16 max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+            {renderWebpWhyH2}
+          </h2>
+          <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            {renderWebpWhyText}
+          </p>
+        </section>
+      )}
 
       <FAQ items={faqs} />
       <RelatedTools excludePath={pagePath} />
