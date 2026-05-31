@@ -5,10 +5,13 @@
 # Architecture
 - Centralize shared constants in `src/lib/constants.ts`. Confidence: 0.70
 
-# SEO
-- Every page must include canonical URLs and metadata. Confidence: 0.70
-- Include `sitemap.ts` and `robots.ts` covering all public routes. Confidence: 0.70
+# Accessibility
+- Breadcrumb navigation must have `aria-label="Breadcrumb"`. Confidence: 0.75
+- Status messages and live regions should use `aria-live` for screen reader announcements. Confidence: 0.70
+- Upload dropzones must be keyboard accessible with proper file input labels. Confidence: 0.70
 
+# SEO
+See [seo/taste.md](seo/taste.md)
 # Taste (Continuously Learned by [CommandCode][cmd])
 
 [cmd]: https://commandcode.ai/

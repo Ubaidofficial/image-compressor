@@ -1,17 +1,45 @@
 import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/createPageMetadata";
 import Link from "next/link";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { JsonLd } from "@/components/JsonLd";
+import { createWebPageSchema, createBreadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description:
-    "Your images are processed locally in your browser. We do not upload, store, view, or track your images.",
-  alternates: { canonical: "/privacy" },
-  robots: { index: true, follow: true },
-};
+const pagePath = "/privacy";
+const pageTitle = "Privacy Policy";
+const pageDescription =
+  "Your images are processed locally in your browser. We do not upload, store, view, or track your images.";
+
+export const metadata: Metadata = createPageMetadata({
+  title: pageTitle,
+  description: pageDescription,
+  path: pagePath,
+  index: false,
+});
 
 export default function PrivacyPage() {
   return (
     <div className="flex-1 w-full max-w-2xl mx-auto px-4 py-12">
+      <JsonLd
+        data={[
+          createWebPageSchema({
+            path: pagePath,
+            title: pageTitle,
+            description: pageDescription,
+          }),
+          createBreadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Privacy", path: pagePath },
+          ]),
+        ]}
+      />
+      <Breadcrumbs
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Privacy", path: pagePath },
+        ]}
+      />
+
       <h1 className="text-3xl font-bold mb-8">Privacy Policy</h1>
 
       <section className="mb-8">

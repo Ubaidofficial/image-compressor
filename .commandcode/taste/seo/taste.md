@@ -1,0 +1,14 @@
+# SEO
+- Sitemap tool pages get higher priority (0.8–1.0) and `weekly` changefreq; static/legal pages get 0.3 and `monthly`. Use helper functions (`getPriority`, `getChangeFrequency`) in `sitemap.ts`. Confidence: 0.80
+- Brand name is "100KB Converter" with positioning "Compress and convert images under 100KB." Confidence: 0.75
+- Primary production domain is https://100kbconverter.com. Never use railway.app, example.com, or localhost URLs in metadata, schema, sitemap, or canonicals. Confidence: 0.85
+- Every page must include canonical URLs and metadata. Confidence: 0.70
+- Include `sitemap.ts` and `robots.ts` covering all public routes. Confidence: 0.70
+- Never add fake reviews, aggregate ratings, or hidden FAQ schemas to JSON-LD. Confidence: 0.85
+- FAQ schema must only be added when the same questions and answers are visibly rendered on the page. Confidence: 0.85
+- Noindex pages should use canonical URLs pointing to the closest indexable equivalent page. Confidence: 0.80
+- Never disallow noindex pages in robots.txt — they must remain crawlable so search engines can see the noindex tag. Confidence: 0.80
+- Use a reusable `createPageMetadata()` helper factory for consistent per-page metadata with Open Graph, Twitter cards, and robots directives. Confidence: 0.70
+- Use `metadataBase: new URL(SITE_URL)` in root layout and construct canonical URLs with `new URL(path, SITE_URL)`. Confidence: 0.70
+- Every JSON-LD schema item should have a stable `@id` value using absolute URLs. Confidence: 0.75
+- Every downloadable image must be WebP, must not exceed the page's target KB, never exceed 100KB, and must be processed client-side only. Confidence: 0.80

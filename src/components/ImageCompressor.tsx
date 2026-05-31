@@ -204,6 +204,15 @@ export default function ImageCompressor({
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onClick={() => inputRef.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                inputRef.current?.click();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label={`Upload image — ${acceptedLabel}`}
             className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors ${
               dragOver
                 ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
@@ -215,7 +224,8 @@ export default function ImageCompressor({
               type="file"
               accept={accept}
               onChange={onFileChange}
-              className="hidden"
+              className="sr-only"
+              aria-label={`Choose image file — ${acceptedLabel}`}
             />
             {file ? (
               <div>

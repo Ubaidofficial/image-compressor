@@ -1,17 +1,45 @@
 import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/createPageMetadata";
 import Link from "next/link";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { JsonLd } from "@/components/JsonLd";
+import { createWebPageSchema, createBreadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
-  title: "Terms of Use",
-  description:
-    "Terms of use for the free browser-based WebP image compressor. No uploads. Use responsibly.",
-  alternates: { canonical: "/terms" },
-  robots: { index: true, follow: true },
-};
+const pagePath = "/terms";
+const pageTitle = "Terms of Use";
+const pageDescription =
+  "Terms of use for the free browser-based WebP image compressor. No uploads. Use responsibly.";
+
+export const metadata: Metadata = createPageMetadata({
+  title: pageTitle,
+  description: pageDescription,
+  path: pagePath,
+  index: false,
+});
 
 export default function TermsPage() {
   return (
     <div className="flex-1 w-full max-w-2xl mx-auto px-4 py-12">
+      <JsonLd
+        data={[
+          createWebPageSchema({
+            path: pagePath,
+            title: pageTitle,
+            description: pageDescription,
+          }),
+          createBreadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Terms", path: pagePath },
+          ]),
+        ]}
+      />
+      <Breadcrumbs
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Terms", path: pagePath },
+        ]}
+      />
+
       <h1 className="text-3xl font-bold mb-8">Terms of Use</h1>
 
       <section className="mb-8">

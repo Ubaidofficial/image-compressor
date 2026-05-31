@@ -242,6 +242,15 @@ export default function BulkImageCompressor() {
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onClick={() => inputRef.current?.click()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Upload images — JPG, PNG, or WebP"
         className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
           dragOver
             ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
@@ -253,7 +262,8 @@ export default function BulkImageCompressor() {
           type="file"
           accept=".jpg,.jpeg,.png,.webp"
           onChange={onFileChange}
-          className="hidden"
+          className="sr-only"
+          aria-label="Choose image files — JPG, PNG, or WebP"
           multiple
         />
         <p className="text-lg font-medium mb-1">Drop images here</p>

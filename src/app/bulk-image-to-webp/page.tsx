@@ -1,10 +1,22 @@
 import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/createPageMetadata";
 import BulkImageCompressor from "@/components/BulkImageCompressor";
 import FAQ from "@/components/FAQ";
 import RelatedTools from "@/components/RelatedTools";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { JsonLd } from "@/components/JsonLd";
+import {
+  createWebPageSchema,
+  createSoftwareApplicationSchema,
+  createBreadcrumbSchema,
+  createFaqSchema,
+} from "@/lib/schema";
 import type { FaqItem } from "@/components/FAQ";
 
 const pagePath = "/bulk-image-to-webp";
+const pageTitle = "Bulk Image to WebP Converter";
+const pageDescription =
+  "Convert multiple JPG, PNG, and WebP images to SEO-friendly WebP files under 100KB each. Bulk browser-based conversion with no uploads.";
 
 const bulkFaqs: FaqItem[] = [
   {
@@ -39,17 +51,50 @@ const bulkFaqs: FaqItem[] = [
   },
 ];
 
-export const metadata: Metadata = {
-  title: "Bulk Image to WebP Converter",
-  description:
-    "Convert multiple JPG, PNG, and WebP images to SEO-friendly WebP files under 100KB. Bulk browser-based conversion with no uploads.",
-  alternates: { canonical: pagePath },
-  robots: { index: true, follow: true },
-};
+export const metadata: Metadata = createPageMetadata({
+  title: pageTitle,
+  description: pageDescription,
+  path: pagePath,
+  index: true,
+});
 
 export default function BulkImageToWebp() {
   return (
     <div className="flex-1 w-full max-w-3xl mx-auto px-4 py-12">
+      <JsonLd
+        data={[
+          createWebPageSchema({
+            path: pagePath,
+            title: pageTitle,
+            description: pageDescription,
+          }),
+          createSoftwareApplicationSchema({
+            path: pagePath,
+            name: "Bulk Image to WebP Converter",
+            description: pageDescription,
+            featureList: [
+              "Bulk image compression",
+              "WebP image output",
+              "Compress images under 100KB",
+              "ZIP download",
+              "No image uploads",
+            ],
+          }),
+          createBreadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Bulk Image to WebP", path: pagePath },
+          ]),
+          createFaqSchema(bulkFaqs),
+        ]}
+      />
+
+      <Breadcrumbs
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Bulk Image to WebP", path: pagePath },
+        ]}
+      />
+
       <h1 className="text-3xl sm:text-4xl font-bold text-center mb-3">
         Bulk Image to WebP Converter
       </h1>

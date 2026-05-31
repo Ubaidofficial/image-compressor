@@ -3,13 +3,34 @@ export const ALLOWED_TARGETS_KB = [20, 30, 50, 75, 100] as const;
 export const MAX_UPLOAD_BYTES = 20 * 1024 * 1024; // 20MB
 export const MAX_UPLOAD_MB = 20;
 
-export const INDEXABLE_ROUTES = [
+// SEO rollout plan:
+// day-1: submit only the strongest 5 pages for a brand-new domain
+// batch-2: after a few days, add PNG/Image/WebP/50KB pages
+// full: after initial crawl/indexing, add remaining trust and focused PSEO pages
+// To expand indexing, change SEO_LAUNCH_STAGE from "day-1" to "batch-2" or "full".
+export type SeoLaunchStage = "day-1" | "batch-2" | "full";
+export const SEO_LAUNCH_STAGE: SeoLaunchStage = "day-1";
+
+export const DAY_1_INDEXABLE_ROUTES = [
   "/",
   "/image-compressor",
+  "/bulk-image-to-webp",
+  "/compress-image-to-100kb",
+  "/jpg-to-webp",
+] as const;
+
+export const NEXT_BATCH_INDEXABLE_ROUTES = [
+  "/png-to-webp",
+  "/image-to-webp",
   "/webp-image-compressor",
   "/compress-image-to-50kb",
-  "/compress-image-to-100kb",
+] as const;
+
+export const FINAL_BATCH_INDEXABLE_ROUTES = [
   "/webp-compress-image-to-100kb",
+  "/privacy",
+  "/terms",
+  "/contact",
 ] as const;
 export const ALLOWED_MIME_TYPES = [
   "image/jpeg",

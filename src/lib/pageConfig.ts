@@ -1,3 +1,5 @@
+import { isRouteIndexable } from "@/lib/seoLaunch";
+
 export type PageConfig = {
   slug: string;
   path: string;
@@ -20,12 +22,12 @@ export const pageConfigs: PageConfig[] = [
   {
     slug: "home",
     path: "/",
-    title: "WebP Image Compressor — Compress to 100KB or Less",
+    title: "100KB Converter — Compress to 100KB or Less",
     description:
       "Convert JPG, PNG, and WebP images into SEO-friendly WebP files under 100KB directly in your browser.",
     h1: "Compress Images to 100KB or Less",
     toolType: "single-compressor",
-    index: true,
+    index: isRouteIndexable("/"),
   },
   {
     slug: "image-compressor",
@@ -35,17 +37,17 @@ export const pageConfigs: PageConfig[] = [
       "Compress JPG, PNG, and WebP images to smaller sizes online. Private browser-based compression with no uploads.",
     h1: "Image Compressor",
     toolType: "single-compressor",
-    index: true,
+    index: isRouteIndexable("/image-compressor"),
   },
   {
     slug: "webp-image-compressor",
     path: "/webp-image-compressor",
-    title: "WebP Image Compressor — Compress WebP Online",
+    title: "100KB Converter — Compress WebP Online",
     description:
       "Compress WebP images online to smaller sizes. Private browser-based compression with no uploads.",
-    h1: "WebP Image Compressor",
+    h1: "WebP Compressor",
     toolType: "webp-compressor",
-    index: true,
+    index: isRouteIndexable("/webp-image-compressor"),
   },
   {
     slug: "compress-image-to-50kb",
@@ -56,7 +58,7 @@ export const pageConfigs: PageConfig[] = [
     h1: "Compress Image to 50KB",
     targetKB: 50,
     toolType: "single-compressor",
-    index: true,
+    index: isRouteIndexable("/compress-image-to-50kb"),
   },
   {
     slug: "compress-image-to-100kb",
@@ -67,7 +69,7 @@ export const pageConfigs: PageConfig[] = [
     h1: "Compress Image to 100KB",
     targetKB: 100,
     toolType: "single-compressor",
-    index: true,
+    index: isRouteIndexable("/compress-image-to-100kb"),
   },
   {
     slug: "webp-compress-image-to-100kb",
@@ -78,7 +80,7 @@ export const pageConfigs: PageConfig[] = [
     h1: "Compress WebP Image to 100KB",
     targetKB: 100,
     toolType: "webp-compressor",
-    index: true,
+    index: isRouteIndexable("/webp-compress-image-to-100kb"),
   },
   {
     slug: "compress-image-to-20kb",
@@ -155,7 +157,7 @@ export const pageConfigs: PageConfig[] = [
     h1: "Convert JPG to WebP",
     targetKB: 100,
     toolType: "jpg-to-webp",
-    index: true,
+    index: isRouteIndexable("/jpg-to-webp"),
   },
   {
     slug: "png-to-webp",
@@ -166,7 +168,7 @@ export const pageConfigs: PageConfig[] = [
     h1: "Convert PNG to WebP",
     targetKB: 100,
     toolType: "png-to-webp",
-    index: true,
+    index: isRouteIndexable("/png-to-webp"),
   },
   {
     slug: "image-to-webp",
@@ -177,7 +179,7 @@ export const pageConfigs: PageConfig[] = [
     h1: "Convert Image to WebP",
     targetKB: 100,
     toolType: "single-compressor",
-    index: true,
+    index: isRouteIndexable("/image-to-webp"),
   },
   {
     slug: "bulk-image-to-webp",
@@ -187,7 +189,7 @@ export const pageConfigs: PageConfig[] = [
       "Convert multiple JPG, PNG, and WebP images to SEO-friendly WebP files under 100KB. Bulk browser-based conversion with no uploads.",
     h1: "Bulk Image to WebP Converter",
     toolType: "bulk-webp",
-    index: true,
+    index: isRouteIndexable("/bulk-image-to-webp"),
   },
   {
     slug: "privacy",
@@ -197,7 +199,7 @@ export const pageConfigs: PageConfig[] = [
       "Your images are processed locally in your browser. We do not upload, store, view, or track your images.",
     h1: "Privacy Policy",
     toolType: "static",
-    index: true,
+    index: isRouteIndexable("/privacy"),
   },
   {
     slug: "terms",
@@ -207,17 +209,17 @@ export const pageConfigs: PageConfig[] = [
       "Terms of use for the free browser-based WebP image compressor.",
     h1: "Terms of Use",
     toolType: "static",
-    index: true,
+    index: isRouteIndexable("/terms"),
   },
   {
     slug: "contact",
     path: "/contact",
     title: "Contact",
     description:
-      "Contact the WebP Image Compressor team for questions, feedback, or support.",
+      "Contact the 100KB Converter team for questions, feedback, or support.",
     h1: "Contact",
     toolType: "static",
-    index: true,
+    index: isRouteIndexable("/contact"),
   },
 ];
 
