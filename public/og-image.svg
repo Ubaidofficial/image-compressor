@@ -1,6 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#1e293b"/>
-  <text x="600" y="240" text-anchor="middle" fill="#ffffff" font-size="56" font-family="system-ui, sans-serif" font-weight="bold">100KB Converter</text>
-  <text x="600" y="320" text-anchor="middle" fill="#94a3b8" font-size="32" font-family="system-ui, sans-serif">Compress images under 100KB</text>
-  <text x="600" y="380" text-anchor="middle" fill="#64748b" font-size="22" font-family="system-ui, sans-serif">No uploads. Browser-based.</text>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1e293b"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="480" y="160" width="80" height="80" rx="16" fill="#2563eb"/>
+  <text x="520" y="212" text-anchor="middle" fill="#fff" font-size="28" font-family="system-ui, sans-serif" font-weight="800">100</text>
+  <text x="600" y="260" text-anchor="middle" fill="#ffffff" font-size="52" font-family="system-ui, sans-serif" font-weight="bold">100KB Converter</text>
+  <text x="600" y="330" text-anchor="middle" fill="#94a3b8" font-size="30" font-family="system-ui, sans-serif">Compress and convert images under 100KB</text>
+  <text x="600" y="390" text-anchor="middle" fill="#64748b" font-size="22" font-family="system-ui, sans-serif">No uploads. Browser-based.</text>
+  <rect x="420" y="440" width="160" height="2" rx="1" fill="#334155"/>
+  <rect x="620" y="440" width="160" height="2" rx="1" fill="#334155"/>
 </svg>

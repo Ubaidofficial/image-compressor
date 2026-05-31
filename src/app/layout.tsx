@@ -22,6 +22,11 @@ export const metadata: Metadata = {
   authors: [{ name: SITE_NAME }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/apple-touch-icon.svg",
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -76,8 +81,12 @@ export default function RootLayout({
         <JsonLd data={createWebsiteSchema()} />
         <header className="border-b border-zinc-200 dark:border-zinc-800">
           <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-            <Link href="/" className="font-bold text-lg tracking-tight shrink-0">
-              100KB Converter
+            <Link href="/" className="flex items-center gap-2.5 shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true" className="shrink-0">
+                <rect width="32" height="32" rx="6" fill="#2563eb"/>
+                <text x="16" y="22" textAnchor="middle" fill="#fff" fontSize="14" fontFamily="system-ui, sans-serif" fontWeight="800">100</text>
+              </svg>
+              <span className="font-bold text-base tracking-tight">100KB Converter</span>
             </Link>
             <nav className="hidden sm:flex items-center gap-3 text-sm">
               <Link href="/image-compressor" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
@@ -96,61 +105,45 @@ export default function RootLayout({
           </div>
         </header>
         <main className="flex-1">{children}</main>
-        <footer className="border-t border-zinc-200 dark:border-zinc-800 py-6">
-          <div className="max-w-3xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-400">
-            <span>
+        <footer className="border-t border-zinc-200 dark:border-zinc-800 py-10">
+          <div className="max-w-3xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-4 gap-8 text-xs">
+            <div>
+              <h4 className="font-semibold text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-wider">Tools</h4>
+              <nav className="flex flex-col gap-2">
+                <Link href="/image-compressor" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">Image Compressor</Link>
+                <Link href="/bulk-image-to-webp" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">Bulk Image to WebP</Link>
+                <Link href="/jpg-to-webp" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">JPG to WebP</Link>
+                <Link href="/compress-image-to-100kb" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">Compress to 100KB</Link>
+              </nav>
+            </div>
+            <div>
+              <h4 className="font-semibold text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-wider">More Converters</h4>
+              <nav className="flex flex-col gap-2">
+                <Link href="/png-to-webp" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">PNG to WebP</Link>
+                <Link href="/image-to-webp" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">Image to WebP</Link>
+                <Link href="/webp-image-compressor" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">WebP Compressor</Link>
+                <Link href="/compress-image-to-50kb" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">Compress to 50KB</Link>
+              </nav>
+            </div>
+            <div>
+              <h4 className="font-semibold text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-wider">Company</h4>
+              <nav className="flex flex-col gap-2">
+                <Link href="/privacy" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">Privacy</Link>
+                <Link href="/terms" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">Terms</Link>
+                <Link href="/contact" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">Contact</Link>
+              </nav>
+            </div>
+            <div>
+              <h4 className="font-semibold text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-wider">About</h4>
+              <p className="text-zinc-400 leading-relaxed">
+                Free browser-based image compression. No uploads. WebP output. All images stay on your device.
+              </p>
+            </div>
+          </div>
+          <div className="max-w-3xl mx-auto px-4 mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+            <p className="text-xs text-zinc-400 text-center">
               All images are compressed in your browser and never uploaded.
-            </span>
-            <nav className="flex gap-4 flex-wrap">
-              <Link
-                href="/"
-                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                href="/image-compressor"
-                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-              >
-                Image Compressor
-              </Link>
-              <Link
-                href="/bulk-image-to-webp"
-                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-              >
-                Bulk Converter
-              </Link>
-              <Link
-                href="/jpg-to-webp"
-                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-              >
-                JPG to WebP
-              </Link>
-              <Link
-                href="/compress-image-to-100kb"
-                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-              >
-                Compress to 100KB
-              </Link>
-              <Link
-                href="/privacy"
-                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-              >
-                Privacy
-              </Link>
-              <Link
-                href="/terms"
-                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-              >
-                Terms
-              </Link>
-              <Link
-                href="/contact"
-                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-              >
-                Contact
-              </Link>
-            </nav>
+            </p>
           </div>
         </footer>
       </body>
