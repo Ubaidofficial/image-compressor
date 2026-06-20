@@ -93,8 +93,8 @@ export default function RootLayout({
               <Link href="/image-compressor" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
                 Image Compressor
               </Link>
-              <Link href="/bulk-image-to-webp" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                Bulk WebP
+              <Link href="/compress-image-to-50kb" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                Compress to 50KB
               </Link>
               <Link href="/jpg-to-webp" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
                 JPG to WebP
@@ -112,7 +112,7 @@ export default function RootLayout({
               <h4 className="font-semibold text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-wider text-xs">Tools</h4>
               <nav className="flex flex-col gap-2">
                 <Link href="/image-compressor" className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">Image Compressor</Link>
-                <Link href="/bulk-image-to-webp" className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">Bulk Image to WebP</Link>
+                <Link href="/compress-image-to-50kb" className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">Compress to 50KB</Link>
                 <Link href="/jpg-to-webp" className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">JPG to WebP</Link>
                 <Link href="/compress-image-to-100kb" className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">Compress to 100KB</Link>
               </nav>
@@ -122,7 +122,7 @@ export default function RootLayout({
               <nav className="flex flex-col gap-2">
                 <Link href="/png-to-webp" className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">PNG to WebP</Link>
                 <Link href="/image-to-webp" className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">Image to WebP</Link>
-                <Link href="/webp-image-compressor" className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">WebP Compressor</Link>
+                <Link href="/webp-compressor" className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">WebP Compressor</Link>
                 <Link href="/compress-image-to-50kb" className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">Compress to 50KB</Link>
               </nav>
             </div>

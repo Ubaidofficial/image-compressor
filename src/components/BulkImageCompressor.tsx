@@ -43,10 +43,18 @@ async function loadJSZip(): Promise<typeof import("jszip")> {
   return (await import("jszip")).default;
 }
 
-export default function BulkImageCompressor() {
+export default function BulkImageCompressor({
+  initialTargetKB = 100,
+}: {
+  initialTargetKB?: number;
+}) {
   const [files, setFiles] = useState<FileEntry[]>([]);
   const [results, setResults] = useState<FileResult[]>([]);
-  const [targetKB, setTargetKB] = useState<number>(100);
+  const [targetKB, setTargetKB] = useState<number>(
+    TARGETS.includes(initialTargetKB as (typeof TARGETS)[number])
+      ? initialTargetKB
+      : 100
+  );
   const [processing, setProcessing] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [warning, setWarning] = useState<string | null>(null);

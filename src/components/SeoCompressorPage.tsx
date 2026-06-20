@@ -82,7 +82,7 @@ export default function SeoCompressorPage({
     `Drag and drop your image or click to browse.`,
     `The tool compresses it to WebP at ${targetKB}KB or less using quality optimization and smart resizing if needed.`,
     `Review the original and compressed sizes and dimensions.`,
-    `Download the WebP file — it's guaranteed under ${targetKB}KB.`,
+    `Download the WebP file when the result is verified within the ${targetKB}KB target.`,
   ];
   const renderWebpWhyH2 = webpWhyH2 ?? "Why WebP Is Best for Small SEO-Friendly Images";
   const renderWebpWhyText = webpWhyText ??

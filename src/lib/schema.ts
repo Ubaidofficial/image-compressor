@@ -77,7 +77,7 @@ export function createSoftwareApplicationSchema({
     description,
     url,
     applicationCategory,
-    operatingSystem: "Any",
+    operatingSystem: "Web",
     browserRequirements:
       "Requires a modern browser with Canvas and WebP support",
     offers: {

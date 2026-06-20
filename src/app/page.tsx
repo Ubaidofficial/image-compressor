@@ -72,17 +72,23 @@ const toolsList = [
     badge: "Compressor",
   },
   {
-    href: "/bulk-image-to-webp",
-    title: "Bulk Image to WebP",
-    desc: "Convert up to 20 images at once and download them as a single ZIP file.",
-    badge: "Bulk",
-    primary: true,
-  },
-  {
     href: "/compress-image-to-100kb",
     title: "Compress Image to 100KB",
     desc: "Optimize images to fit under a strict 100KB size limit.",
     badge: "100KB",
+    primary: true,
+  },
+  {
+    href: "/compress-jpg-to-100kb",
+    title: "Compress JPG to 100KB",
+    desc: "Reduce JPG and JPEG images to 100KB or less with private browser processing.",
+    badge: "JPG",
+  },
+  {
+    href: "/compress-png-to-100kb",
+    title: "Compress PNG to 100KB",
+    desc: "Compress PNG images to 100KB or less and download optimized WebP output.",
+    badge: "PNG",
   },
   {
     href: "/jpg-to-webp",
@@ -103,7 +109,7 @@ const toolsList = [
     badge: "Converter",
   },
   {
-    href: "/webp-image-compressor",
+    href: "/webp-compressor",
     title: "WebP Compressor",
     desc: "Compress existing WebP images further while keeping the format.",
     badge: "WebP",
@@ -115,9 +121,9 @@ const toolsList = [
     badge: "50KB",
   },
   {
-    href: "/webp-compress-image-to-100kb",
-    title: "WebP to 100KB",
-    desc: "Compress WebP images to exactly 100KB or less.",
+    href: "/compress-webp-to-100kb",
+    title: "Compress WebP to 100KB",
+    desc: "Reduce WebP images to 100KB or less with local browser compression.",
     badge: "WebP",
   },
 ];
@@ -179,10 +185,10 @@ export default function Home() {
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </Link>
             <Link
-              href="/bulk-image-to-webp"
+              href="/compress-image-to-100kb"
               className="inline-flex items-center gap-2 px-7 py-3.5 border-2 border-zinc-200 dark:border-zinc-700 font-semibold rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 motion-safe:transition-colors text-base"
             >
-              Bulk Convert to WebP
+              Compress to 100KB
             </Link>
           </div>
 
@@ -191,7 +197,7 @@ export default function Home() {
               "No uploads",
               "WebP output",
               "Under 100KB",
-              "Bulk ZIP",
+              "No signup",
               "Client-side processing",
             ].map((chip) => (
               <span
@@ -384,9 +390,9 @@ export default function Home() {
             href: "/image-compressor",
           },
           {
-            task: "Convert many images",
-            tool: "Bulk Image to WebP",
-            href: "/bulk-image-to-webp",
+            task: "Compress a JPG image",
+            tool: "Compress JPG to 100KB",
+            href: "/compress-jpg-to-100kb",
           },
           {
             task: "Strict 100KB limit",
@@ -399,9 +405,9 @@ export default function Home() {
             href: "/jpg-to-webp",
           },
           {
-            task: "Convert PNG to WebP",
-            tool: "PNG to WebP",
-            href: "/png-to-webp",
+            task: "Compress a PNG image",
+            tool: "PNG Compressor",
+            href: "/png-compressor",
           },
           {
             task: "Compress to 50KB",
@@ -411,26 +417,26 @@ export default function Home() {
         ]}
       />
 
-      {/* Bulk highlight */}
+      {/* 100KB highlight */}
       <section className="mt-20 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/20 rounded-2xl p-8 sm:p-10 flex flex-col sm:flex-row items-center gap-8 border border-blue-100 dark:border-blue-900/30 motion-safe:animate-fade-in">
         <div className="shrink-0 w-32">
           <BulkWebPIllustration />
         </div>
         <div className="flex-1">
           <h2 className="text-xl sm:text-2xl font-bold mb-3">
-            Need to Process Multiple Images?
+            Need an Image Under 100KB?
           </h2>
           <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed mb-5 max-w-2xl">
-            The bulk image to WebP converter processes up to 20 images in one
-            batch. Each image is compressed under your chosen target size, and
-            you can download individual WebP files or save all successful
-            conversions as a single ZIP with a CSV compression report.
+            Start with the 100KB compressor when an upload form, profile image,
+            or website asset has a strict file-size limit. The tool runs in
+            your browser and only enables downloads when the output reaches the
+            selected target.
           </p>
           <Link
-            href="/bulk-image-to-webp"
+            href="/compress-image-to-100kb"
             className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white text-base font-semibold rounded-xl hover:bg-blue-700 motion-safe:transition-colors shadow-sm shadow-blue-200 dark:shadow-blue-900/30"
           >
-            Open Bulk Converter
+            Open 100KB Compressor
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </Link>
         </div>
@@ -462,11 +468,12 @@ export default function Home() {
         <h2 className="text-lg font-semibold text-zinc-500 dark:text-zinc-400 mb-6">More Image Tools</h2>
         <div className="flex flex-wrap gap-2.5 justify-center">
           {[
-            { href: "/png-to-webp", label: "PNG to WebP" },
-            { href: "/image-to-webp", label: "Image to WebP" },
-            { href: "/webp-image-compressor", label: "WebP Compressor" },
+            { href: "/jpg-compressor", label: "JPG Compressor" },
+            { href: "/png-compressor", label: "PNG Compressor" },
+            { href: "/webp-compressor", label: "WebP Compressor" },
+            { href: "/bulk-image-compressor", label: "Bulk Compressor" },
             { href: "/compress-image-to-50kb", label: "Compress to 50KB" },
-            { href: "/webp-compress-image-to-100kb", label: "WebP to 100KB" },
+            { href: "/compress-image-to-200kb", label: "Compress to 200KB" },
           ].map((link) => (
             <Link
               key={link.href}

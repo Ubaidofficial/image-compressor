@@ -1,40 +1,53 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
-import { getActiveIndexableRoutes } from "@/lib/seoLaunch";
+import {
+  getPublishedPseoPages,
+  isPhase1PseoSlug,
+  pseoPath,
+} from "@/data/pseoPages";
 
-const routePriorities: Record<string, number> = {
-  "/": 1.0,
-  "/bulk-image-to-webp": 0.9,
-  "/image-compressor": 0.9,
-  "/webp-image-compressor": 0.9,
-  "/jpg-to-webp": 0.85,
-  "/png-to-webp": 0.85,
-  "/image-to-webp": 0.85,
-  "/compress-image-to-100kb": 0.8,
-  "/compress-image-to-50kb": 0.8,
-  "/webp-compress-image-to-100kb": 0.8,
-  "/privacy": 0.3,
-  "/terms": 0.3,
-  "/contact": 0.3,
-};
+const LASTMOD = "2026-06-20";
+const HUB_PATHS = [
+  "/image-compressor",
+  "/jpg-compressor",
+  "/png-compressor",
+  "/webp-compressor",
+] as const;
 
-const monthlyPaths = new Set(["/privacy", "/terms", "/contact"]);
+const STATIC_TOOL_PATHS = [
+  { path: "/jpg-to-webp", lastmod: "2026-06-20", priority: 0.8 },
+] as const;
 
-function getPriority(path: string): number {
-  return routePriorities[path] ?? 0.5;
-}
-
-function getChangeFrequency(path: string): "weekly" | "monthly" {
-  return monthlyPaths.has(path) ? "monthly" : "weekly";
-}
+export const revalidate = 86400;
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const paths = getActiveIndexableRoutes();
+  const homepage = {
+    url: new URL("/", SITE_URL).toString(),
+    lastModified: LASTMOD,
+    changeFrequency: "weekly" as const,
+    priority: 1.0,
+  };
 
-  return paths.map((path) => ({
+  const hubs = HUB_PATHS.map((path) => ({
     url: new URL(path, SITE_URL).toString(),
-    lastModified: new Date(),
-    changeFrequency: getChangeFrequency(path),
-    priority: getPriority(path),
+    lastModified: LASTMOD,
+    changeFrequency: "weekly" as const,
+    priority: 0.9,
   }));
+
+  const pseo = getPublishedPseoPages().map((page) => ({
+    url: new URL(pseoPath(page.slug), SITE_URL).toString(),
+    lastModified: page.publishOn,
+    changeFrequency: "weekly" as const,
+    priority: isPhase1PseoSlug(page.slug) ? 0.8 : 0.7,
+  }));
+
+  const staticTools = STATIC_TOOL_PATHS.map(({ path, lastmod, priority }) => ({
+    url: new URL(path, SITE_URL).toString(),
+    lastModified: lastmod,
+    changeFrequency: "weekly" as const,
+    priority,
+  }));
+
+  return [homepage, ...hubs, ...staticTools, ...pseo];
 }

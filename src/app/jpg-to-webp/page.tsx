@@ -233,14 +233,14 @@ export default function JpgToWebp() {
           wider than 1200px.
         </p>
         <p className="text-xs text-zinc-500 mt-2">
-          For converting multiple JPG images to WebP at once, try the{" "}
+          For JPG files with a strict 100KB size target, use the{" "}
           <Link
-            href="/bulk-image-to-webp"
+            href="/compress-jpg-to-100kb"
             className="text-blue-600 hover:underline font-medium"
           >
-            bulk image to WebP converter
+            compress JPG to 100KB
           </Link>
-          , which handles up to 20 images per batch with ZIP download. For
+          page. For
           general single-image compression of any format, use the{" "}
           <Link
             href="/image-compressor"

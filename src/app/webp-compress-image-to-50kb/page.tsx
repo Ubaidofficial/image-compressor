@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     path: "/webp-image-compressor",
     index: false,
   }),
-  alternates: { canonical: new URL("/webp-image-compressor", process.env.NEXT_PUBLIC_SITE_URL || "https://100kbconverter.com").toString() },
+  alternates: { canonical: new URL("/webp-compressor", process.env.NEXT_PUBLIC_SITE_URL || "https://100kbconverter.com").toString() },
 };
 
 export default function WebpCompressImageTo50Kb() {

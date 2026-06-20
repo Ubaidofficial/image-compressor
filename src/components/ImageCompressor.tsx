@@ -14,31 +14,74 @@ import { isValidImageFile, isLargeFile } from "@/lib/constants";
 type ImageCompressorProps = {
   targetKB: number;
   acceptedFormats?: string[];
-  pageIntent?: "general" | "webp" | "jpg-to-webp" | "png-to-webp";
+  pageIntent?: "general" | "webp" | "jpg-to-webp" | "png-to-webp" | "jpg" | "jpeg" | "png";
+  inputFormat?: "image" | "jpg" | "jpeg" | "png" | "webp";
 };
 
-function fileToAcceptedLabel(intent?: string): string {
+function resolveInputFormat(
+  inputFormat?: ImageCompressorProps["inputFormat"],
+  intent?: string
+): NonNullable<ImageCompressorProps["inputFormat"]> {
+  if (inputFormat) return inputFormat;
   switch (intent) {
     case "jpg-to-webp":
-      return "JPG or JPEG";
+    case "jpg":
+    case "jpeg":
+      return "jpg";
     case "png-to-webp":
+    case "png":
+      return "png";
+    case "webp":
+      return "webp";
+    default:
+      return "image";
+  }
+}
+
+function fileToAcceptedLabel(format: NonNullable<ImageCompressorProps["inputFormat"]>): string {
+  switch (format) {
+    case "jpg":
+    case "jpeg":
+      return "JPG or JPEG";
+    case "png":
       return "PNG";
+    case "webp":
+      return "WebP";
     default:
       return "JPG, PNG, or WebP";
   }
 }
 
-function fileToAcceptAttr(intent?: string): string {
-  switch (intent) {
-    case "jpg-to-webp":
+function fileToAcceptAttr(format: NonNullable<ImageCompressorProps["inputFormat"]>): string {
+  switch (format) {
+    case "jpg":
+    case "jpeg":
       return ".jpg,.jpeg";
-    case "png-to-webp":
+    case "png":
       return ".png";
     case "webp":
       return ".webp";
     default:
       return ".jpg,.jpeg,.png,.webp";
   }
+}
+
+function isAcceptedForPage(
+  file: File,
+  format: NonNullable<ImageCompressorProps["inputFormat"]>
+): boolean {
+  const name = file.name.toLowerCase();
+  if (format === "image") return true;
+  if (format === "jpg" || format === "jpeg") {
+    return file.type === "image/jpeg" || name.endsWith(".jpg") || name.endsWith(".jpeg");
+  }
+  if (format === "png") {
+    return file.type === "image/png" || name.endsWith(".png");
+  }
+  if (format === "webp") {
+    return file.type === "image/webp" || name.endsWith(".webp");
+  }
+  return true;
 }
 
 async function supportsWebPExport(): Promise<boolean> {
@@ -59,19 +102,15 @@ const MAX_WIDTH_OPTIONS = [
   { label: "800px", value: 800 },
 ] as const;
 
-function buildFailureMessage(targetKB: number): string {
-  return `We could not compress this image under ${targetKB}KB with the current settings.
-
-Try:
-- Switch to Smallest File mode
-- Enable resize and choose 1200px max width
-- Use a simpler or smaller source image`;
+function buildFailureMessage(): string {
+  return `This image may not compress cleanly to the selected size without heavy quality loss. Try a smaller width, a stronger compression mode, or a higher target size.`;
 }
 
 export default function ImageCompressor({
   targetKB,
   acceptedFormats,
   pageIntent,
+  inputFormat,
 }: ImageCompressorProps) {
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<CompressToWebpResult | null>(null);
@@ -92,8 +131,9 @@ export default function ImageCompressor({
   const [maxWidth, setMaxWidth] = useState<number>(1200);
   const [customWidth, setCustomWidth] = useState("");
 
-  const accept = acceptedFormats?.join(",") ?? fileToAcceptAttr(pageIntent);
-  const acceptedLabel = fileToAcceptedLabel(pageIntent);
+  const resolvedInputFormat = resolveInputFormat(inputFormat, pageIntent);
+  const accept = acceptedFormats?.join(",") ?? fileToAcceptAttr(resolvedInputFormat);
+  const acceptedLabel = fileToAcceptedLabel(resolvedInputFormat);
 
   useEffect(() => {
     supportsWebPExport().then((ok) => setWebpSupported(ok));
@@ -147,9 +187,14 @@ export default function ImageCompressor({
         return;
       }
 
+      if (!isAcceptedForPage(f, resolvedInputFormat)) {
+        setError(`This page is for ${acceptedLabel} images. Please choose a ${acceptedLabel} file or use the general image compressor.`);
+        return;
+      }
+
       if (isLargeFile(f)) {
         setWarning(
-          "Large images with very high resolution or complex detail may need resizing to fit under 100KB."
+          `Large images with very high resolution or complex detail may need resizing to fit under ${targetKB}KB.`
         );
       }
 
@@ -169,7 +214,7 @@ export default function ImageCompressor({
         setResult(res);
 
         if (!res.reachedTarget) {
-          setError(buildFailureMessage(targetKB));
+          setError(buildFailureMessage());
         }
       } catch (err) {
         setError(
@@ -181,7 +226,7 @@ export default function ImageCompressor({
         setCompressing(false);
       }
     },
-    [targetKB, cleanup, compressionMode, resizeEnabled, resolveMaxWidth]
+    [targetKB, cleanup, compressionMode, resizeEnabled, resolveMaxWidth, resolvedInputFormat, acceptedLabel]
   );
 
   const onDrop = useCallback(

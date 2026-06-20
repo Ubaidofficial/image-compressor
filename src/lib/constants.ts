@@ -1,5 +1,20 @@
-export const MAX_OUTPUT_KB = 100;
-export const ALLOWED_TARGETS_KB = [20, 30, 50, 75, 100] as const;
+export const MAX_OUTPUT_KB = 1024;
+export const ALLOWED_TARGETS_KB = [
+  10,
+  20,
+  30,
+  40,
+  50,
+  60,
+  75,
+  80,
+  100,
+  150,
+  200,
+  300,
+  500,
+  1024,
+] as const;
 export const MAX_UPLOAD_BYTES = 20 * 1024 * 1024; // 20MB
 export const MAX_UPLOAD_MB = 20;
 

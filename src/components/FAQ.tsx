@@ -22,7 +22,7 @@ const defaultFaqs: FaqItem[] = [
   {
     question: "Will image dimensions change?",
     answer:
-      "The tool first tries to keep the original dimensions. If the image cannot fit under the target size, it may slightly reduce dimensions to guarantee the WebP file stays under the target KB.",
+      "The tool first tries to keep the original dimensions. If the image cannot fit under the target size, it may slightly reduce dimensions to help the WebP file meet the target.",
   },
   {
     question: "Why WebP?",
@@ -33,15 +33,16 @@ const defaultFaqs: FaqItem[] = [
 
 type FAQProps = {
   items?: FaqItem[];
+  heading?: string;
 };
 
-export default function FAQ({ items }: FAQProps) {
+export default function FAQ({ items, heading = "Frequently Asked Questions" }: FAQProps) {
   const faqs = items ?? defaultFaqs;
 
   return (
     <section className="mt-20 max-w-4xl mx-auto">
       <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-center">
-        Frequently Asked Questions
+        {heading}
       </h2>
       <div className="space-y-3 mt-10">
         {faqs.map((faq, i) => (

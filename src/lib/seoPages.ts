@@ -122,17 +122,16 @@ export const seoPages: SeoPageConfig[] = [
 
 export const popularToolPaths = [
   "/image-compressor",
-  "/bulk-image-to-webp",
   "/compress-image-to-100kb",
-  "/jpg-to-webp",
+  "/compress-jpg-to-100kb",
 ];
 
 export const moreToolPaths = [
   "/png-to-webp",
   "/image-to-webp",
-  "/webp-image-compressor",
+  "/webp-compressor",
   "/compress-image-to-50kb",
-  "/webp-compress-image-to-100kb",
+  "/compress-webp-to-100kb",
 ];
 
 export const relatedToolPaths = [

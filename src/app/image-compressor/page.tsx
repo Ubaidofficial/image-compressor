@@ -10,11 +10,24 @@ import {
   OnThisPage,
 } from "@/components/content/ContentHelpers";
 import Link from "next/link";
+import { getPublishedPseoPages, pseoPath } from "@/data/pseoPages";
 
 const pagePath = "/image-compressor";
 const pageTitle = "Image Compressor Under 100KB";
 const pageDescription =
   "Compress JPG, PNG, and WebP images under 100KB and download SEO-friendly WebP files. Free browser-based image compression with no uploads.";
+
+export const revalidate = 86400;
+
+function getImageCompressorChildPages() {
+  return getPublishedPseoPages().filter(
+    (page) =>
+      page.inputFormat === "image" ||
+      page.pageType === "size" ||
+      page.pageType === "utility" ||
+      page.pageType === "bulk"
+  );
+}
 
 export const metadata: Metadata = createPageMetadata({
   title: pageTitle,
@@ -24,6 +37,8 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 export default function ImageCompressorPage() {
+  const imageCompressorChildPages = getImageCompressorChildPages();
+
   return (
     <SeoCompressorPage
       targetKB={100}
@@ -175,6 +190,28 @@ export default function ImageCompressorPage() {
         ]}
       />
 
+      <section className="mt-20 max-w-5xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6">
+          Image Compressor Pages
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {imageCompressorChildPages.map((page) => (
+            <Link
+              key={page.slug}
+              href={pseoPath(page.slug)}
+              className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 hover:border-blue-300 dark:hover:border-blue-700 motion-safe:transition-colors"
+            >
+              <h3 className="font-semibold text-base mb-1">
+                {page.h1.replace(/ Online$/u, "")}
+              </h3>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                {page.metaDescription}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <ContentSection id="privacy" heading="Privacy and Client-Side Compression">
         <p>
           Everything runs locally in your browser using the Canvas API and WebP
@@ -184,14 +221,7 @@ export default function ImageCompressorPage() {
           sensitive images without worrying about privacy.
         </p>
         <p>
-          For batch workflows with multiple images, try the{" "}
-          <Link
-            href="/bulk-image-to-webp"
-            className="text-blue-600 hover:underline"
-          >
-            bulk image to WebP converter
-          </Link>
-          . To target a specific 100KB limit with detailed guidance, use the{" "}
+          To target a specific 100KB limit with detailed guidance, use the{" "}
           <Link
             href="/compress-image-to-100kb"
             className="text-blue-600 hover:underline"

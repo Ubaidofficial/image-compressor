@@ -8,13 +8,16 @@ type RelatedToolsProps = {
 const pathLabels: Record<string, string> = {
   "/image-compressor": "Image Compressor",
   "/webp-image-compressor": "WebP Compressor",
+  "/webp-compressor": "WebP Compressor",
   "/bulk-image-to-webp": "Bulk Image to WebP",
   "/jpg-to-webp": "JPG to WebP",
   "/png-to-webp": "PNG to WebP",
   "/image-to-webp": "Image to WebP",
   "/compress-image-to-50kb": "Compress to 50KB",
   "/compress-image-to-100kb": "Compress to 100KB",
+  "/compress-jpg-to-100kb": "Compress JPG to 100KB",
   "/webp-compress-image-to-100kb": "WebP to 100KB",
+  "/compress-webp-to-100kb": "Compress WebP to 100KB",
 };
 
 function ToolLink({ path }: { path: string }) {
