@@ -12,3 +12,11 @@
 - Use `metadataBase: new URL(SITE_URL)` in root layout and construct canonical URLs with `new URL(path, SITE_URL)`. Confidence: 0.70
 - Every JSON-LD schema item should have a stable `@id` value using absolute URLs. Confidence: 0.75
 - Every downloadable image must be WebP, must not exceed the page's target KB, never exceed 100KB, and must be processed client-side only. Confidence: 0.80
+- When publishing pSEO pages, stagger the rollout: publish a small initial batch (e.g., 5 pages), then schedule 2–3 pages every other day rather than indexing all pages at once. Confidence: 0.70
+- pSEO body content must vary on at least two axes (e.g. size target AND subject), never one. Pages generated from a single axis render identically wherever that axis matches, which is the thin-content pattern search engines decline to index. Confidence: 0.85
+- Order a staggered rollout by search volume descending, so the highest-value pages publish in the first batch rather than waiting out the schedule. Confidence: 0.75
+- Consolidate pure synonym pages (noindex + canonical to the head page) instead of writing artificial differentiation. If two slugs answer the same question, no amount of unique prose makes them distinct pages. Confidence: 0.80
+- OG images must be PNG or JPG, never SVG — Facebook, X, LinkedIn, and Slack all refuse to render SVG `og:image`. Confidence: 0.90
+- Before noindexing a page, check its keyword volume in Ahrefs. `/png-to-webp` sat noindex for two months while "png to webp" carried 223k global searches at KD 25. Confidence: 0.85
+- Pages whose content depends on today's date (publish gating, filtered link lists) must set `export const revalidate`, or a fully static page freezes at build time and the schedule never advances. Confidence: 0.85
+- Run `npm run check:seo` after `npm run build`. It fails when any two indexable pages exceed 0.65 six-gram Jaccard similarity. Confidence: 0.80

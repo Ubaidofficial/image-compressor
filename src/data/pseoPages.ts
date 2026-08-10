@@ -1,3 +1,26 @@
+import { getPageAngle } from "./pseoAngles";
+import type { ContentVariant } from "./pseoContent";
+
+/**
+ * Which subject a page is about, independent of its size target. Pages sharing
+ * a size and input format render identical body copy unless they differ here,
+ * so every page in a shared bucket needs a distinct variant.
+ */
+function contentVariantFor(slug: string): ContentVariant {
+  if (slug === "reduce-image-size-in-kb") return "units";
+  if (slug === "compress-image-without-uploading") return "privacy";
+  if (slug === "compress-image-without-losing-quality") return "quality";
+  if (slug === "convert-image-to-webp-under-100kb") return "convert";
+  if (slug === "bulk-image-compressor") return "bulk";
+  if (slug === "bulk-image-to-webp") return "bulkConvert";
+  if (slug === "compress-jpg-online") return "tool";
+  if (slug.startsWith("image-compressor-to-")) return "tool";
+  if (slug.startsWith("resize-image-to-")) return "resize";
+  if (slug.startsWith("reduce-image-size-to-")) return "reduce";
+  if (slug.startsWith("photo-compressor-to-")) return "photo";
+  return "general";
+}
+
 export type PSEOPage = {
   slug: string;
   publishOn: string;
@@ -14,6 +37,25 @@ export type PSEOPage = {
   useCaseText: string;
   qualityTip: string;
   relatedSlugs: string[];
+  /** Subject this page covers, used to select worked examples and audience. */
+  contentVariant: ContentVariant;
+  /**
+   * A section unique to this page alone. Body content is otherwise derived from
+   * (targetSizeKb, inputFormat), so any two pages sharing those would read
+   * identically without this. Required for every page in a shared size/format
+   * bucket; that is enforced by a test in scripts/check-pseo-uniqueness.mjs.
+   */
+  angle?: {
+    heading: string;
+    paragraphs: string[];
+  };
+  /**
+   * Set when this slug is a pure synonym of another page rather than a distinct
+   * query. The page stays live and usable but is noindexed and canonicalised to
+   * the target, so search signals concentrate on one URL instead of splitting
+   * across near-identical duplicates.
+   */
+  consolidateInto?: string;
   faqs: Array<{
     question: string;
     answer: string;
@@ -49,8 +91,13 @@ const initialPublishedPseoSlugs = [
 
 const initialPublishedSet = new Set<string>(initialPublishedPseoSlugs);
 
-type PageDraft = Omit<PSEOPage, "publishOn" | "relatedSlugs"> & {
+type PageDraft = Omit<
+  PSEOPage,
+  "publishOn" | "relatedSlugs" | "contentVariant"
+> & {
   relatedSlugs?: string[];
+  /** Defaults to contentVariantFor(slug) when omitted. */
+  contentVariant?: ContentVariant;
 };
 
 function formatTarget(kb: number): string {
@@ -265,6 +312,193 @@ function formatPage(
   };
 }
 
+/* ------------------------------------------------------------------ */
+/* Expansion set (added 2026-08-10)                                    */
+/*                                                                     */
+/* Three keyword families the original 50 pages left entirely          */
+/* uncovered, identified from Ahrefs volume/difficulty data:           */
+/*                                                                     */
+/*   "image compressor to Xkb"  ~120k combined global, KD 1-6          */
+/*   "resize image to Xkb"      ~199k combined global, KD 0-35         */
+/*   "reduce image size ..."     ~79k combined global, KD 1-14         */
+/*                                                                     */
+/* "resize" and "reduce size" are the same intent as "compress" in     */
+/* everyday usage — searchers mean kilobytes, not pixel dimensions.    */
+/* ------------------------------------------------------------------ */
+
+function toolPage(
+  kb: number,
+  slug: string,
+  keyword: string,
+  h1: string,
+  title: string,
+  metaDescription: string,
+  intro: string,
+  useCaseText: string
+): PageDraft {
+  return {
+    ...sizePage(kb, slug),
+    pageType: "utility",
+    primaryKeyword: keyword,
+    title,
+    h1,
+    metaDescription,
+    intro,
+    useCaseText,
+  };
+}
+
+const imageCompressorToPages: PageDraft[] = [20, 50, 100, 200, 500].map((kb) => {
+  const target = formatTarget(kb);
+  return toolPage(
+    kb,
+    `image-compressor-to-${target.toLowerCase()}`,
+    `image compressor to ${target.toLowerCase()}`,
+    `Image Compressor to ${target}`,
+    `Image Compressor to ${target} - Free Tool`,
+    `Free image compressor that reduces JPG, PNG, and WebP files to ${target} or less. Runs in your browser with no uploads and no signup.`,
+    `Compress any image to ${targetPhrase(kb)} with a tool that runs entirely in your browser. No account, no upload, and no waiting in a processing queue.`,
+    `This compressor is for anyone who needs a file at or below ${target} and wants the result to keep as much quality as that budget allows.`
+  );
+});
+
+const resizeImageToPages: PageDraft[] = [20, 50, 100, 200, 500].map((kb) => {
+  const target = formatTarget(kb);
+  return toolPage(
+    kb,
+    `resize-image-to-${target.toLowerCase()}`,
+    `resize image to ${target.toLowerCase()}`,
+    `Resize Image to ${target}`,
+    `Resize Image to ${target} Online Free`,
+    `Resize any image to ${target} or less online. Reduce JPG, PNG, and WebP file size in your browser with no uploads and no signup.`,
+    `Resize an image down to ${targetPhrase(kb)}. The tool adjusts compression first and dimensions second, so your picture stays as large as the size limit allows.`,
+    `Use this page when a form, upload field, or style guide specifies ${target} and you need the file to meet it without becoming unusable.`
+  );
+});
+
+const reduceSizePages: PageDraft[] = [
+  toolPage(
+    100,
+    "reduce-image-size-in-kb",
+    "reduce image size in kb",
+    "Reduce Image Size in KB",
+    "Reduce Image Size in KB Online Free",
+    "Reduce image size in KB online. Set a target in kilobytes and compress JPG, PNG, or WebP files in your browser with no uploads.",
+    "Reduce any image to a specific size in kilobytes. Choose your target, and the tool finds the settings that meet it while keeping the most quality it can.",
+    "This page is for the common case where a limit is expressed in KB rather than in pixels, and you need to hit that number precisely."
+  ),
+  toolPage(
+    100,
+    "reduce-image-size-to-100kb",
+    "reduce image size to 100kb",
+    "Reduce Image Size to 100KB",
+    "Reduce Image Size to 100KB Online Free",
+    "Reduce image size to 100KB or less online. Compress JPG, PNG, and WebP files privately in your browser with no signup.",
+    "Bring an image down to 100KB or less in a single step, starting from your highest-quality original rather than an already-compressed copy.",
+    "A 100KB ceiling turns up on upload forms, in performance budgets, and in content guidelines more than any other figure."
+  ),
+  toolPage(
+    50,
+    "reduce-image-size-to-50kb",
+    "reduce image size to 50kb",
+    "Reduce Image Size to 50KB",
+    "Reduce Image Size to 50KB Online Free",
+    "Reduce image size to 50KB or less online. Free browser-based compression for JPG, PNG, and WebP with no uploads.",
+    "Reduce an image to 50KB or less. Most of the reduction comes from dimensions rather than quality, which is why the result usually still looks clear.",
+    "50KB is the ceiling of the photo range that examination boards and recruitment portals ask for most often."
+  ),
+];
+
+const photoCompressorPages: PageDraft[] = [20, 200].map((kb) => {
+  const target = formatTarget(kb);
+  return {
+    ...toolPage(
+      kb,
+      `photo-compressor-to-${target.toLowerCase()}`,
+      `photo compressor to ${target.toLowerCase()}`,
+      `Photo Compressor to ${target}`,
+      `Photo Compressor to ${target} Online Free`,
+      `Compress photos to ${target} or less online. Reduce camera and phone photo file size in your browser with no uploads or signup.`,
+      `Compress a photograph to ${targetPhrase(kb)}. Camera and phone images carry far more detail than most size limits need, and this tool removes the excess.`,
+      `Photo compression is for camera and phone images specifically, which behave differently from graphics and screenshots under the same size limit.`
+    ),
+  };
+});
+
+const compressJpgOnlinePage: PageDraft = {
+  ...formatPage(100, "jpg", "compress-jpg-online", "Compress JPG Online"),
+  pageType: "utility",
+  primaryKeyword: "compress jpg online",
+  title: "Compress JPG Online - Free, No Upload",
+  h1: "Compress JPG Online",
+  metaDescription:
+    "Compress JPG files online for free. Runs in your browser with no uploads, no signup, and no wait — your images never leave your device.",
+  intro:
+    "Compress JPG and JPEG files without uploading them anywhere. The work happens in your browser, so a large file compresses just as fast on a slow connection.",
+  useCaseText:
+    "Use this page when you want smaller JPG files quickly and would rather not hand your images to a remote processing service.",
+};
+
+/**
+ * Ordered by search value, because the rollout schedule publishes in array
+ * order. The first four are the "image compressor to Xkb" set; everything
+ * after that descends by global search volume, so the biggest opportunities
+ * go live earliest rather than waiting out the stagger.
+ *
+ * Global volume / KD per slug (Ahrefs, 2026-08-10):
+ *   resize-image-to-20kb        74,000 / 1     reduce-image-size-in-kb   63,000 / 14
+ *   resize-image-to-100kb       57,000 / 0     resize-image-to-50kb      56,000 / 35
+ *   image-compressor-to-50kb    31,000 / 62    image-compressor-to-100kb 29,000 / 4
+ *   image-compressor-to-20kb    29,000 / 6     compress-jpg-online       29,000 / 0
+ *   image-compressor-to-200kb   26,000 / 2     photo-compressor-to-20kb  15,000 / -
+ *   photo-compressor-to-200kb   15,000 / -     reduce-image-size-to-100kb 11,000 / 1
+ *   resize-image-to-200kb       10,000 / -     reduce-image-size-to-50kb  4,800 / -
+ *   image-compressor-to-500kb    4,600 / 1     resize-image-to-500kb      2,000 / 0
+ */
+const expansionBySlug = new Map(
+  [
+    ...imageCompressorToPages,
+    ...resizeImageToPages,
+    ...reduceSizePages,
+    ...photoCompressorPages,
+    compressJpgOnlinePage,
+  ].map((page) => [page.slug, page])
+);
+
+const EXPANSION_ORDER = [
+  // Batch 1 — the requested "image compressor to Xkb" set.
+  "image-compressor-to-100kb",
+  "image-compressor-to-200kb",
+  "image-compressor-to-20kb",
+  "image-compressor-to-50kb",
+  // Batch 2 — highest volume remaining.
+  "resize-image-to-20kb",
+  "reduce-image-size-in-kb",
+  "resize-image-to-100kb",
+  // Batch 3
+  "resize-image-to-50kb",
+  "compress-jpg-online",
+  "photo-compressor-to-20kb",
+  // Batch 4
+  "photo-compressor-to-200kb",
+  "reduce-image-size-to-100kb",
+  "resize-image-to-200kb",
+  // Batch 5 — long tail.
+  "reduce-image-size-to-50kb",
+  "image-compressor-to-500kb",
+  "resize-image-to-500kb",
+] as const;
+
+const expansionPages: PageDraft[] = EXPANSION_ORDER.map((slug) => {
+  const page = expansionBySlug.get(slug);
+  if (!page) throw new Error(`EXPANSION_ORDER lists unknown slug: ${slug}`);
+  return page;
+});
+
+if (expansionPages.length !== expansionBySlug.size) {
+  throw new Error("EXPANSION_ORDER must list every expansion page exactly once");
+}
+
 const pages: PageDraft[] = [
   ...[10, 20, 30, 40, 50, 60, 80, 100, 150, 200, 300, 500].map((kb) =>
     sizePage(kb, `compress-image-to-${kb}kb`)
@@ -442,6 +676,7 @@ const pages: PageDraft[] = [
       },
     ],
   },
+  ...expansionPages,
 ];
 
 function addDays(date: Date, days: number): string {
@@ -466,6 +701,25 @@ const phase2Slugs = pages
 
 const PHASE2_PUBLISH_DATE = "2026-06-20";
 
+/**
+ * Phase 3 (the expansion set) is staggered rather than dropped at once.
+ * Phase 2 published 35 pages on a single day and none of them were indexed;
+ * a small initial batch followed by 3 pages every other day matches the
+ * rollout rule in .commandcode/taste/seo/taste.md.
+ */
+const PHASE3_START = new Date("2026-08-10T00:00:00.000Z");
+const PHASE3_INITIAL_BATCH = 4;
+
+const phase3Slugs = expansionPages.map((page) => page.slug);
+
+const phase3Schedule = phase3Slugs.map((slug, index) => ({
+  slug,
+  publishOn:
+    index < PHASE3_INITIAL_BATCH
+      ? "2026-08-10"
+      : addDays(PHASE3_START, (Math.floor((index - PHASE3_INITIAL_BATCH) / 3) + 1) * 2),
+}));
+
 export const pseoRolloutSchedule = [
   ...initialPublishedPseoSlugs.map((slug) => ({
     slug,
@@ -475,11 +729,33 @@ export const pseoRolloutSchedule = [
     slug,
     publishOn: addDays(scheduleStartDate, Math.floor(index / 3) * 2),
   })),
-  ...phase2Slugs.map((slug) => ({
-    slug,
-    publishOn: PHASE2_PUBLISH_DATE,
-  })),
+  ...phase2Slugs
+    .filter((slug) => !phase3Slugs.includes(slug))
+    .map((slug) => ({
+      slug,
+      publishOn: PHASE2_PUBLISH_DATE,
+    })),
+  ...phase3Schedule,
 ];
+
+/**
+ * Pure synonyms of a stronger page. Each carries under ~800 global searches
+ * while rendering near-identical content to a page targeting tens of
+ * thousands, so they are noindexed and canonicalised to the head page rather
+ * than left to split signals with it. The URLs stay live and functional.
+ */
+const CONSOLIDATION: Record<string, string> = {
+  "compress-image-under-100kb": "compress-image-to-100kb",
+  "compress-image-below-100kb": "compress-image-to-100kb",
+  "free-image-compressor-to-100kb": "image-compressor-to-100kb",
+  "online-image-compressor-to-100kb": "image-compressor-to-100kb",
+  "image-size-compressor-to-100kb": "image-compressor-to-100kb",
+  "compress-png-under-100kb": "compress-png-to-100kb",
+  "png-compressor-to-100kb": "compress-png-to-100kb",
+  "png-compressor-to-50kb": "compress-png-to-50kb",
+  "compress-webp-under-100kb": "compress-webp-to-100kb",
+  "webp-compressor-to-100kb": "compress-webp-to-100kb",
+};
 
 const publishDateBySlug = new Map(
   pseoRolloutSchedule.map((item) => [item.slug, item.publishOn])
@@ -512,12 +788,25 @@ function sameSizeSlugs(page: PageDraft): string[] {
 export const pseoPages: PSEOPage[] = pages.map((page) => ({
   ...page,
   publishOn: publishDateBySlug.get(page.slug) ?? "2026-06-04",
+  contentVariant: page.contentVariant ?? contentVariantFor(page.slug),
+  angle: page.angle ?? getPageAngle(page.slug),
+  consolidateInto: page.consolidateInto ?? CONSOLIDATION[page.slug],
   relatedSlugs: page.relatedSlugs ?? [
     ...sameSizeSlugs(page),
     ...nearbySizeSlugs(page),
     "image-compressor",
   ].filter((slug, index, arr) => arr.indexOf(slug) === index),
 }));
+
+/** Consolidated pages stay live but are excluded from the sitemap and noindexed. */
+export function isPseoPageIndexable(page: PSEOPage, asOf: Date = new Date()): boolean {
+  return !page.consolidateInto && isPseoPagePublished(page, asOf);
+}
+
+/** Canonical path for a page — its own URL, or the head page it consolidates into. */
+export function pseoCanonicalPath(page: PSEOPage): string {
+  return pseoPath(page.consolidateInto ?? page.slug);
+}
 
 export const pseoPageBySlug = new Map(pseoPages.map((page) => [page.slug, page]));
 
@@ -546,4 +835,9 @@ export function isPseoPagePublished(
 
 export function getPublishedPseoPages(asOf: Date = new Date()): PSEOPage[] {
   return pseoPages.filter((page) => isPseoPagePublished(page, asOf));
+}
+
+/** Published and not consolidated — the set that belongs in the sitemap. */
+export function getIndexablePseoPages(asOf: Date = new Date()): PSEOPage[] {
+  return pseoPages.filter((page) => isPseoPageIndexable(page, asOf));
 }
