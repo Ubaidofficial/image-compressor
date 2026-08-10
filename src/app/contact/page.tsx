@@ -13,7 +13,7 @@ export const metadata: Metadata = createPageMetadata({
   title: pageTitle,
   description: pageDescription,
   path: pagePath,
-  index: false,
+  index: true,
 });
 
 export default function ContactPage() {

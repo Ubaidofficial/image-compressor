@@ -91,10 +91,12 @@ export function ProcessSteps({
 }
 
 export function PageCallout({
+  id,
   heading,
   children,
   variant = "info",
 }: {
+  id?: string;
   heading?: string;
   children: ReactNode;
   variant?: "info" | "privacy" | "tip";
@@ -107,7 +109,7 @@ export function PageCallout({
   };
 
   return (
-    <section className="mt-16 max-w-4xl mx-auto">
+    <section id={id} className="mt-16 max-w-4xl mx-auto">
       <div
         className={`${variants[variant]} border rounded-2xl p-6 sm:p-8 text-base text-zinc-600 dark:text-zinc-400 leading-relaxed space-y-3`}
       >

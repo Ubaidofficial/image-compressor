@@ -11,11 +11,12 @@ import {
   createWebPageSchema,
 } from "@/lib/schema";
 import {
-  getPublishedPseoPages,
+  getIndexablePseoPages,
   pseoPages,
   pseoPath,
   type PSEOPage,
 } from "@/data/pseoPages";
+import { getFormatProfile, getResolvedProfile } from "@/data/pseoContent";
 
 type LinkItem = {
   href: string;
@@ -84,7 +85,9 @@ function getPageHref(slug: string): string {
 
 function sameSizeLinks(page: PSEOPage): LinkItem[] {
   if (!page.targetSizeKb) return [];
-  return getPublishedPseoPages()
+  // Consolidated pages are noindex; linking to them from every sibling would
+  // funnel internal link equity into dead ends.
+  return getIndexablePseoPages()
     .filter((item) => item.slug !== page.slug && item.targetSizeKb === page.targetSizeKb)
     .filter((item) => ["format-size", "webp", "utility"].includes(item.pageType))
     .slice(0, 4)
@@ -96,9 +99,9 @@ function sameSizeLinks(page: PSEOPage): LinkItem[] {
 }
 
 function relatedLinks(page: PSEOPage): LinkItem[] {
-  const publishedSlugs = new Set(getPublishedPseoPages().map((item) => item.slug));
+  const indexableSlugs = new Set(getIndexablePseoPages().map((item) => item.slug));
   return page.relatedSlugs
-    .filter((slug) => !pseoPages.some((item) => item.slug === slug) || publishedSlugs.has(slug))
+    .filter((slug) => !pseoPages.some((item) => item.slug === slug) || indexableSlugs.has(slug))
     .slice(0, 6)
     .map((slug) => ({
       href: getPageHref(slug),
@@ -124,6 +127,129 @@ function formatBadge(page: PSEOPage): string {
   return "JPG, PNG, WebP";
 }
 
+function formatNoun(page: PSEOPage): string {
+  if (page.inputFormat === "jpg") return "JPG";
+  if (page.inputFormat === "jpeg") return "JPEG";
+  if (page.inputFormat === "png") return "PNG";
+  if (page.inputFormat === "webp") return "WebP";
+  return "image";
+}
+
+/**
+ * Section headings are derived per page rather than hardcoded. Fifty pages
+ * sharing an identical set of H2s is the clearest possible duplicate-content
+ * signal, so every heading below varies with the target size, the input
+ * format, or both.
+ */
+type SectionHeadings = {
+  howTo: string;
+  reality: string;
+  fits: string;
+  audience: string;
+  format: string;
+  settings: string;
+  pitfalls: string;
+};
+
+/**
+ * Per-subject heading sets. Body copy already varies by subject, but leaving
+ * the H2s identical across a size bucket keeps a strong duplicate signal in
+ * the most heavily weighted text on the page.
+ */
+const VARIANT_HEADINGS: Partial<
+  Record<string, (target: string) => Partial<SectionHeadings>>
+> = {
+  tool: (t) => ({
+    howTo: `Using the Compressor to Reach ${t}`,
+    fits: "What Different Source Files Produce",
+    audience: "Who This Compressor Is For",
+    pitfalls: "Where Compression Tools Go Wrong",
+  }),
+  resize: (t) => ({
+    howTo: `How to Resize an Image to ${t}`,
+    reality: `What ${t} Means for Dimensions and Quality`,
+    fits: `Source Size Versus Result at ${t}`,
+    audience: "Who Searches for Image Resizing",
+    pitfalls: "Resizing Mistakes That Cost You Quality",
+  }),
+  reduce: (t) => ({
+    howTo: `How to Reduce an Image to ${t}`,
+    fits: `Starting Size Versus ${t} Result`,
+    audience: "Why People Reduce Image Size",
+    pitfalls: "What to Avoid When Reducing File Size",
+  }),
+  units: () => ({
+    howTo: "How to Hit a Specific Size in KB",
+    reality: "What a Kilobyte Budget Actually Means",
+    fits: "Reading File Sizes Correctly",
+    audience: "Who Runs Into KB Limits",
+    settings: "Choosing Settings for a KB Target",
+    pitfalls: "Where KB Measurements Mislead",
+  }),
+  photo: (t) => ({
+    howTo: `How to Compress a Photo to ${t}`,
+    reality: `What ${t} Buys for a Photograph`,
+    fits: "How Different Photos Behave",
+    audience: `Who Compresses Photos to ${t}`,
+    pitfalls: "Where Photo Compression Shows First",
+  }),
+  privacy: () => ({
+    howTo: "How to Compress Without Uploading",
+    fits: "Files People Keep Off Third-Party Servers",
+    audience: "Who Needs Local-Only Compression",
+    pitfalls: "Privacy Gaps Worth Knowing About",
+  }),
+  quality: () => ({
+    howTo: "How to Compress While Preserving Quality",
+    fits: "How Different Sources Hold Up",
+    audience: "Who Cannot Afford Visible Loss",
+    pitfalls: "Quality Mistakes to Avoid",
+  }),
+  convert: (t) => ({
+    howTo: `How to Convert and Compress to ${t}`,
+    fits: "What Each Format Gains from WebP",
+    audience: "Who Converts Images to WebP",
+    pitfalls: "Conversion Pitfalls",
+  }),
+  bulk: () => ({
+    howTo: "How to Compress Images in Bulk",
+    reality: "What Batch Compression Actually Does",
+    fits: "Typical Results Across a Batch",
+    audience: "Who Uses Bulk Compression",
+    settings: "Recommended Settings for Batches",
+    pitfalls: "What Goes Wrong in Batch Jobs",
+  }),
+  bulkConvert: () => ({
+    howTo: "How to Convert Images to WebP in Bulk",
+    reality: "What Bulk WebP Conversion Changes",
+    fits: "What Each Format Gains in a Batch",
+    audience: "Who Converts Libraries to WebP",
+    settings: "Recommended Settings for Batch Conversion",
+    pitfalls: "What Goes Wrong in Batch Conversion",
+  }),
+};
+
+function headings(page: PSEOPage): SectionHeadings {
+  const target = formatTarget(page.targetSizeKb);
+  const noun = formatNoun(page);
+
+  const base: SectionHeadings = {
+    howTo: howToHeading(page),
+    reality: `What a ${target} ${noun === "image" ? "Image" : noun} Budget Actually Buys`,
+    fits: `Typical Results at ${target}`,
+    audience: `Who Needs ${noun === "image" ? "Images" : `${noun} files`} at ${target}`,
+    format:
+      noun === "image"
+        ? "How Each Input Format Behaves"
+        : `Working with ${noun} Files`,
+    settings: `Recommended Settings for ${target}`,
+    pitfalls: `Common Problems at ${target} and How to Fix Them`,
+  };
+
+  const override = VARIANT_HEADINGS[page.contentVariant]?.(target) ?? {};
+  return { ...base, ...override };
+}
+
 export default function PseoLandingPage({ page }: { page: PSEOPage }) {
   const path = pagePath(page);
   const target = formatTarget(page.targetSizeKb);
@@ -131,6 +257,9 @@ export default function PseoLandingPage({ page }: { page: PSEOPage }) {
   const sameSize = sameSizeLinks(page);
   const nearby = relatedLinks(page);
   const hub = hubByFormat[page.inputFormat ?? "image"] ?? hubByFormat.image;
+  const size = getResolvedProfile(page.targetSizeKb, page.contentVariant, target);
+  const format = getFormatProfile(page.inputFormat);
+  const h = headings(page);
 
   const breadcrumbs = [
     { name: "Home", path: "/" },
@@ -200,7 +329,7 @@ export default function PseoLandingPage({ page }: { page: PSEOPage }) {
       </section>
 
       <section className="mt-20 max-w-4xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-4">{howToHeading(page)}</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4">{h.howTo}</h2>
         <ol className="list-decimal list-inside space-y-3 text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
           <li>Choose or drop your {formatBadge(page).toLowerCase()} image file.</li>
           <li>Use the prefilled {target} target and adjust compression mode if needed.</li>
@@ -210,27 +339,128 @@ export default function PseoLandingPage({ page }: { page: PSEOPage }) {
       </section>
 
       <section className="mt-16 max-w-4xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-4">Why Use This Image Compressor?</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4">{h.reality}</h2>
         <div className="space-y-4 text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          {size.reality.map((paragraph) => (
+            <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+          ))}
           <p>{page.useCaseText}</p>
-          <p>
-            The compressor runs locally in your browser, so your images do not need to be uploaded to a remote server. It is useful for forms, profile images, web pages, product photos, and other places where file size matters.
-          </p>
+        </div>
+      </section>
+
+      {page.angle && (
+        <section className="mt-16 max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+            {page.angle.heading}
+          </h2>
+          <div className="space-y-4 text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            {page.angle.paragraphs.map((paragraph) => (
+              <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="mt-16 max-w-4xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-5">{h.fits}</h2>
+        <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
+          <table className="w-full text-base border-collapse">
+            <thead>
+              <tr className="bg-zinc-50 dark:bg-zinc-800/50">
+                <th scope="col" className="text-left py-3.5 px-5 font-semibold text-zinc-700 dark:text-zinc-300">
+                  Source image
+                </th>
+                <th scope="col" className="text-left py-3.5 px-5 font-semibold text-zinc-700 dark:text-zinc-300">
+                  What to expect
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {size.fits.map((row) => (
+                <tr
+                  key={row.source}
+                  className="border-t border-zinc-200 dark:border-zinc-800"
+                >
+                  <td className="py-3.5 px-5 text-zinc-700 dark:text-zinc-300">
+                    {row.source}
+                  </td>
+                  <td className="py-3.5 px-5 text-zinc-500 dark:text-zinc-400">
+                    {row.result}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
 
       <section className="mt-16 max-w-4xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-4">Supported Image Formats</h2>
-        <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          {page.supportedFormatsText}
-        </p>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6">{h.audience}</h2>
+        <div className="space-y-5">
+          {size.audience.map((item) => (
+            <div
+              key={item.title}
+              className="border-l-2 border-blue-300 dark:border-blue-700 pl-5 py-1"
+            >
+              <h3 className="font-semibold text-base text-zinc-800 dark:text-zinc-200 mb-1.5">
+                {item.title}
+              </h3>
+              <p className="text-base text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                {item.desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="mt-16 max-w-4xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-4">Tips to Keep Quality While Reducing File Size</h2>
-        <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          {page.qualityTip}
-        </p>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4">{h.format}</h2>
+        <div className="space-y-4 text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          {format.note.map((paragraph) => (
+            <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+          ))}
+          <p>{page.supportedFormatsText}</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-8">
+          {format.quirks.map((quirk) => (
+            <div
+              key={quirk.title}
+              className="bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-100 dark:border-zinc-800 rounded-xl p-5"
+            >
+              <h3 className="font-semibold text-base mb-2">{quirk.title}</h3>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                {quirk.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-16 max-w-4xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4">{h.settings}</h2>
+        <div className="space-y-4 text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          <p>{size.settings}</p>
+          <p>{page.qualityTip}</p>
+        </div>
+      </section>
+
+      <section className="mt-16 max-w-4xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6">{h.pitfalls}</h2>
+        <div className="space-y-5">
+          {size.pitfalls.map((item) => (
+            <div
+              key={item.title}
+              className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl p-5"
+            >
+              <h3 className="font-semibold text-base text-zinc-900 dark:text-zinc-100 mb-1.5">
+                {item.title}
+              </h3>
+              <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                {item.desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="mt-16 max-w-5xl mx-auto">

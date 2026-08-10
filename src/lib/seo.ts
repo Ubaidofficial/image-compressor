@@ -1,7 +1,8 @@
 export const SITE_NAME = "100KB Converter";
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://100kbconverter.com";
-export const DEFAULT_OG_IMAGE = "/og-image.svg";
+// PNG, not SVG: Facebook, X, LinkedIn, and Slack all refuse to render SVG OG images.
+export const DEFAULT_OG_IMAGE = "/og-image.png";
 export const TWITTER_HANDLE = "";
 export const DEFAULT_TITLE = "100KB Converter - Compress Images Under 100KB";
 export const DEFAULT_DESCRIPTION =

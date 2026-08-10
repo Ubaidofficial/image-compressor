@@ -17,9 +17,46 @@ import {
   ComparisonTable,
   ContentSection,
 } from "@/components/content/ContentHelpers";
+import { getIndexablePseoPages } from "@/data/pseoPages";
 import HeroCompressionIllustration from "@/components/illustrations/HeroCompressionIllustration";
 import BulkWebPIllustration from "@/components/illustrations/BulkWebPIllustration";
 import PrivacyBrowserIllustration from "@/components/illustrations/PrivacyBrowserIllustration";
+
+/**
+ * Curated homepage links, filtered so a pSEO page that has not reached its
+ * publish date yet is skipped. Linking the homepage to a noindex URL wastes
+ * the strongest internal link on the site; entries appear automatically as
+ * their publish date passes.
+ */
+function buildMoreToolLinks() {
+  const indexable = new Set(getIndexablePseoPages().map((page) => `/${page.slug}`));
+  const staticTools = new Set([
+    "/jpg-compressor",
+    "/png-compressor",
+    "/webp-compressor",
+    "/png-to-webp",
+    "/image-compressor",
+  ]);
+  return [
+    { href: "/jpg-compressor", label: "JPG Compressor" },
+    { href: "/png-compressor", label: "PNG Compressor" },
+    { href: "/webp-compressor", label: "WebP Compressor" },
+    { href: "/png-to-webp", label: "PNG to WebP" },
+    { href: "/bulk-image-compressor", label: "Bulk Compressor" },
+    { href: "/reduce-image-size-in-kb", label: "Reduce Image Size in KB" },
+    { href: "/image-compressor-to-100kb", label: "Image Compressor to 100KB" },
+    { href: "/resize-image-to-20kb", label: "Resize Image to 20KB" },
+    { href: "/compress-image-to-50kb", label: "Compress to 50KB" },
+    { href: "/compress-image-to-200kb", label: "Compress to 200KB" },
+  ].filter((link) => staticTools.has(link.href) || indexable.has(link.href));
+}
+
+const moreToolLinks = buildMoreToolLinks();
+
+// The link list above depends on today's date against each page's publishOn.
+// Without revalidation the homepage would freeze at build time and never
+// surface pages as their publish dates pass.
+export const revalidate = 86400;
 
 const pagePath = "/";
 const pageTitle = "100KB Converter - Compress Images Under 100KB";
@@ -467,14 +504,7 @@ export default function Home() {
       <section className="mt-16 text-center border-t border-zinc-100 dark:border-zinc-800 pt-16">
         <h2 className="text-lg font-semibold text-zinc-500 dark:text-zinc-400 mb-6">More Image Tools</h2>
         <div className="flex flex-wrap gap-2.5 justify-center">
-          {[
-            { href: "/jpg-compressor", label: "JPG Compressor" },
-            { href: "/png-compressor", label: "PNG Compressor" },
-            { href: "/webp-compressor", label: "WebP Compressor" },
-            { href: "/bulk-image-compressor", label: "Bulk Compressor" },
-            { href: "/compress-image-to-50kb", label: "Compress to 50KB" },
-            { href: "/compress-image-to-200kb", label: "Compress to 200KB" },
-          ].map((link) => (
+          {moreToolLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}

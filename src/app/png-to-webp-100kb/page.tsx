@@ -7,15 +7,14 @@ const pageTitle = "Convert PNG to WebP Under 100KB";
 const pageDescription =
   "Convert PNG images to SEO-friendly WebP files under 100KB. Compress images privately in your browser.";
 
-export const metadata: Metadata = {
-  ...createPageMetadata({
-    title: pageTitle,
-    description: pageDescription,
-    path: "/png-to-webp",
-    index: false,
-  }),
-  alternates: { canonical: new URL("/png-to-webp", process.env.NEXT_PUBLIC_SITE_URL || "https://100kbconverter.com").toString() },
-};
+// Noindex duplicate of /png-to-webp. Canonical points there — that page is indexed,
+// so this is a canonical to an indexed equivalent, not to another noindex page.
+export const metadata: Metadata = createPageMetadata({
+  title: pageTitle,
+  description: pageDescription,
+  path: "/png-to-webp",
+  index: false,
+});
 
 export default function PngToWebp100Kb() {
   return (

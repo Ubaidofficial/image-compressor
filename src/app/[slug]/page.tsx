@@ -4,9 +4,9 @@ import PseoLandingPage from "@/components/PseoLandingPage";
 import { createPageMetadata } from "@/lib/createPageMetadata";
 import {
   getPseoPage,
-  isPseoPagePublished,
+  isPseoPageIndexable,
+  pseoCanonicalPath,
   pseoPages,
-  pseoPath,
 } from "@/data/pseoPages";
 
 type Props = {
@@ -29,11 +29,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {};
   }
 
+  // Consolidated pages canonicalise to their head page, so `path` is the
+  // canonical target rather than this page's own URL.
   return createPageMetadata({
     title: page.title,
     description: page.metaDescription,
-    path: pseoPath(page.slug),
-    index: isPseoPagePublished(page),
+    path: pseoCanonicalPath(page),
+    index: isPseoPageIndexable(page),
   });
 }
 

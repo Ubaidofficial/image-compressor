@@ -6,11 +6,11 @@
     </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <rect x="480" y="160" width="80" height="80" rx="16" fill="#2563eb"/>
-  <text x="520" y="212" text-anchor="middle" fill="#fff" font-size="28" font-family="system-ui, sans-serif" font-weight="800">100</text>
-  <text x="600" y="260" text-anchor="middle" fill="#ffffff" font-size="52" font-family="system-ui, sans-serif" font-weight="bold">100KB Converter</text>
-  <text x="600" y="330" text-anchor="middle" fill="#94a3b8" font-size="30" font-family="system-ui, sans-serif">Compress and convert images under 100KB</text>
-  <text x="600" y="390" text-anchor="middle" fill="#64748b" font-size="22" font-family="system-ui, sans-serif">No uploads. Browser-based.</text>
-  <rect x="420" y="440" width="160" height="2" rx="1" fill="#334155"/>
-  <rect x="620" y="440" width="160" height="2" rx="1" fill="#334155"/>
+  <rect x="560" y="120" width="80" height="80" rx="16" fill="#2563eb"/>
+  <text x="600" y="174" text-anchor="middle" fill="#ffffff" font-size="30" font-family="Helvetica, Arial, sans-serif" font-weight="bold">100</text>
+  <text x="600" y="302" text-anchor="middle" fill="#ffffff" font-size="60" font-family="Helvetica, Arial, sans-serif" font-weight="bold">100KB Converter</text>
+  <text x="600" y="372" text-anchor="middle" fill="#94a3b8" font-size="31" font-family="Helvetica, Arial, sans-serif">Compress and convert images under 100KB</text>
+  <text x="600" y="434" text-anchor="middle" fill="#64748b" font-size="23" font-family="Helvetica, Arial, sans-serif">No uploads. Browser-based. Always free.</text>
+  <rect x="400" y="492" width="160" height="2" rx="1" fill="#334155"/>
+  <rect x="640" y="492" width="160" height="2" rx="1" fill="#334155"/>
 </svg>

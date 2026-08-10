@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.4.0] - 2026-08-10
+
+### Added
+- Two-axis pSEO content engine: `pseoContent.ts` supplies size-tier copy (13 tiers) and subject-variant copy (11 variants); `pseoAngles.ts` supplies a bespoke section per slug. Previously all body copy derived from size alone, so any two pages sharing a size target rendered near-identical text.
+- 16 expansion pages covering three untargeted keyword families — `image-compressor-to-{20,50,100,200,500}kb`, `resize-image-to-{20,50,100,200,500}kb`, and `reduce-image-size-{in-kb,to-100kb,to-50kb}` — plus `compress-jpg-online` and `photo-compressor-to-{20,200}kb`.
+- `npm run check:seo` fails the build if any two indexable pages exceed 0.65 six-gram Jaccard similarity.
+- `seo/disavow.txt` covering 452 spam referring domains.
+- PNG Open Graph image at `public/og-image.png`.
+
+### Changed
+- `/png-to-webp` promoted from noindex to a full indexed page targeting "png to webp" (223k global searches, KD 25) — it had been suppressed since launch.
+- `/image-to-webp` promoted to an indexed converters hub; `/contact` promoted to indexed.
+- `og:image` switched from SVG to PNG — Facebook, X, LinkedIn, and Slack all refuse to render SVG.
+- Section headings now vary by subject variant instead of being identical across every page at a given size.
+- Homepage "More Image Tools" links are filtered to indexable pages and the page revalidates daily, so staggered publishing actually advances.
+- Phase 3 rollout staggers 4 pages on 2026-08-10 then 3 every other day, ordered by search volume descending.
+
+### Fixed
+- `/png-to-webp-100kb` canonicalised to a noindex page; its target is now indexed.
+- Internal links and same-size link blocks no longer point at noindex pages.
+- Removed five empty leftover route directories.
+
+### Technical
+- 10 pure-synonym slugs consolidated via `CONSOLIDATION` — noindex plus canonical to their head page. Each carried under ~800 global searches while duplicating a page targeting tens of thousands. The URLs stay live.
+- New helpers `isPseoPageIndexable()`, `pseoCanonicalPath()`, `getIndexablePseoPages()`; sitemap and `[slug]` metadata now use them.
+- Median indexable page length 550 → 1025 words; worst duplicate pair 0.971 → under 0.65.
+- Sitemap 56 → 53 entries.
+
 ## [0.2.4] - 2026-05-31
 
 ### Improved
