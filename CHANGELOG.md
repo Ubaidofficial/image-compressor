@@ -10,6 +10,8 @@
 - `src/data/uploadSpecs.ts`: single home for official specs, with quotes, source URLs and verification dates.
 - `src/lib/resizeToSpec.ts`: JPEG output at exact dimensions, white background, KB range valid under both 1000- and 1024-byte readings, optional ink trimming for signatures, and comment-block padding when a plain image falls below a minimum size.
 
+- JPG output option on the general compressor (`ImageCompressor`): an "Output format: JPG / WebP" choice. The homepage starts on JPG; other pages start on WebP as before; the converters (`/png-to-webp`, `/jpg-to-webp`, `/image-to-webp`) and `/webp-compressor` stay WebP-only with no choice. Transparent areas are filled with white for JPG, and the download is named `.jpg`.
+
 ### Changed
 - Consolidated format/verb variants into one indexable page per size target (10/20/50/100/200/500 KB, 1 MB). Pages already indexed in Google are kept. Sitemap 65 -> 22 URLs; consolidated URLs stay live as noindex + canonical.
 - Sitemap `<lastmod>` now uses each page's real content-change date instead of a hard-coded constant.

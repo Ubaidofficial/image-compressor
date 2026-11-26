@@ -1,4 +1,8 @@
-export function slugifyFilename(filename: string, targetKB: number): string {
+export function slugifyFilename(
+  filename: string,
+  targetKB: number,
+  extension: string = "webp"
+): string {
   const dotIndex = filename.lastIndexOf(".");
   const nameWithoutExt = dotIndex > 0 ? filename.substring(0, dotIndex) : filename;
 
@@ -10,5 +14,5 @@ export function slugifyFilename(filename: string, targetKB: number): string {
     .replace(/^-|-$/g, "");
 
   const safeSlug = slug || "image";
-  return `${safeSlug}-compressed-to-${targetKB}kb.webp`;
+  return `${safeSlug}-compressed-to-${targetKB}kb.${extension}`;
 }

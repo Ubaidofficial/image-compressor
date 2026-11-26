@@ -75,9 +75,9 @@ const homeFaqs: FaqItem[] = [
       "No. All compression and conversion runs inside your browser using the Canvas API. Your images stay on your device and are never uploaded, stored, or accessible by anyone else.",
   },
   {
-    question: "Why are downloads saved as WebP?",
+    question: "Should I download JPG or WebP?",
     answer:
-      "WebP typically produces files 25–35% smaller than JPG and PNG at similar visual quality. This reduces bandwidth, helps pages load faster, and makes images more efficient for websites.",
+      "Choose JPG for application and exam forms: most portals accept only JPG or JPEG. Choose WebP for websites: it is typically 25–35% smaller than JPG at similar visual quality, so pages load faster. The compressor on this page starts on JPG; switch the output format before choosing your image.",
   },
   {
     question: "Can every image be compressed under 100KB?",
@@ -92,7 +92,7 @@ const homeFaqs: FaqItem[] = [
   {
     question: "Which image formats are supported?",
     answer:
-      "You can upload JPG, JPEG, PNG, and WebP images. The general compressors save WebP; the exam and signature presets save JPG, which is what most application portals require. SVG, GIF, PDF, and other formats are not accepted.",
+      "You can upload JPG, JPEG, PNG, and WebP images. The compressor lets you choose JPG or WebP output; the converters save WebP, and the exam and signature presets save JPG, which is what most application portals require. SVG, GIF, PDF, and other formats are not accepted.",
   },
   {
     question: "Does this work on mobile?",
@@ -190,7 +190,7 @@ export default function Home() {
               "Reduce image size to a target in KB",
               "Photo and signature resize presets for SSC and UPSC applications",
               "Client-side image compression",
-              "WebP image output",
+              "JPG or WebP image output",
               "Compress images under 100KB",
               "Bulk image to WebP conversion",
               "JPG to WebP conversion",
@@ -262,7 +262,7 @@ export default function Home() {
           <h2 className="text-lg font-semibold text-zinc-500 dark:text-zinc-400 mb-6 text-center">
             Try it now — upload an image to compress
           </h2>
-          <ImageCompressor targetKB={100} pageIntent="general" />
+          <ImageCompressor targetKB={100} pageIntent="general" defaultOutputFormat="jpeg" />
         </div>
       </section>
 
@@ -274,8 +274,8 @@ export default function Home() {
         <p className="text-base text-zinc-500 dark:text-zinc-400 text-center mb-10 max-w-2xl mx-auto">
           Government exam portals want a JPG within an exact KB range and size. These presets
           follow the official instructions, link to the source, and check the file before you
-          download it. The general tool above saves WebP, which many portals do not accept,
-          so use a preset for applications.
+          download it. The general tool above also saves JPG, but only a preset sets the exact
+          dimensions a portal asks for.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {[
@@ -354,8 +354,8 @@ export default function Home() {
             icon: "✓",
           },
           {
-            title: "WebP-first output",
-            desc: "All downloads are WebP format — smaller than JPG and PNG, better for website speed and bandwidth.",
+            title: "JPG or WebP output",
+            desc: "Save JPG for upload forms that only accept it, or WebP for the smallest files on websites.",
             icon: "W",
           },
           {
@@ -428,7 +428,7 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
           {[
             { step: "1", label: "Upload your image" },
-            { step: "2", label: "Convert to WebP in your browser" },
+            { step: "2", label: "Choose JPG or WebP output" },
             { step: "3", label: "Compress under target size" },
             { step: "4", label: "Download your optimized file" },
           ].map((item) => (
@@ -458,7 +458,7 @@ export default function Home() {
           </h2>
           <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
             Your images stay on your device. Compression runs entirely in your
-            browser using the Canvas API and WebP encoder, so files are not
+            browser using the Canvas API, so files are not
             uploaded, stored, viewed, or sent to a server. Once you close the
             page, all image data is gone.
           </p>
@@ -537,7 +537,7 @@ export default function Home() {
           keeping dimensions and higher quality settings when the target size
           allows. <strong>Smallest File</strong> uses stronger compression and
           reduces dimensions earlier, which is useful when you need the
-          smallest possible WebP file.
+          smallest possible file.
         </p>
         <p>
           You can also enable the optional resize control to set a max width

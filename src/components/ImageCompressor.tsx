@@ -5,7 +5,9 @@ import {
   compressToWebp,
   type CompressToWebpResult,
   type CompressionMode,
+  type OutputFormat,
   COMPRESSION_MODE_CONFIG,
+  OUTPUT_FORMAT_CONFIG,
 } from "@/lib/compressToWebp";
 import { formatBytes } from "@/lib/formatBytes";
 import { slugifyFilename } from "@/lib/slugify";
@@ -16,7 +18,25 @@ type ImageCompressorProps = {
   acceptedFormats?: string[];
   pageIntent?: "general" | "webp" | "jpg-to-webp" | "png-to-webp" | "jpg" | "jpeg" | "png";
   inputFormat?: "image" | "jpg" | "jpeg" | "png" | "webp";
+  /**
+   * Initial output format. Pages whose purpose is WebP (converters, the WebP
+   * compressor) are always WebP and show no choice.
+   */
+  defaultOutputFormat?: OutputFormat;
 };
+
+/** Pages whose whole point is a WebP file: no JPG choice there. */
+function isWebpOnly(
+  inputFormat: ImageCompressorProps["inputFormat"],
+  intent: ImageCompressorProps["pageIntent"]
+): boolean {
+  return (
+    inputFormat === "webp" ||
+    intent === "webp" ||
+    intent === "jpg-to-webp" ||
+    intent === "png-to-webp"
+  );
+}
 
 function resolveInputFormat(
   inputFormat?: ImageCompressorProps["inputFormat"],
@@ -111,7 +131,12 @@ export default function ImageCompressor({
   acceptedFormats,
   pageIntent,
   inputFormat,
+  defaultOutputFormat = "webp",
 }: ImageCompressorProps) {
+  const webpOnly = isWebpOnly(inputFormat, pageIntent);
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>(
+    webpOnly ? "webp" : defaultOutputFormat
+  );
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<CompressToWebpResult | null>(null);
   const [compressing, setCompressing] = useState(false);
@@ -136,8 +161,12 @@ export default function ImageCompressor({
   const acceptedLabel = fileToAcceptedLabel(resolvedInputFormat);
 
   useEffect(() => {
-    supportsWebPExport().then((ok) => setWebpSupported(ok));
-  }, []);
+    supportsWebPExport().then((ok) => {
+      setWebpSupported(ok);
+      // Browsers without WebP export can still produce JPG.
+      if (!ok && !webpOnly) setOutputFormat("jpeg");
+    });
+  }, [webpOnly]);
 
   const cleanup = useCallback(() => {
     if (objectUrl) {
@@ -207,6 +236,7 @@ export default function ImageCompressor({
           compressionMode,
           resizeBeforeCompress: resizeEnabled,
           maxWidth: resolveMaxWidth(),
+          outputFormat,
         });
 
         const url = URL.createObjectURL(res.blob);
@@ -226,7 +256,7 @@ export default function ImageCompressor({
         setCompressing(false);
       }
     },
-    [targetKB, cleanup, compressionMode, resizeEnabled, resolveMaxWidth, resolvedInputFormat, acceptedLabel]
+    [targetKB, cleanup, compressionMode, resizeEnabled, resolveMaxWidth, resolvedInputFormat, acceptedLabel, outputFormat]
   );
 
   const onDrop = useCallback(
@@ -253,7 +283,7 @@ export default function ImageCompressor({
 
   const handleDownload = () => {
     if (!result || !file) return;
-    const filename = slugifyFilename(file.name, targetKB);
+    const filename = slugifyFilename(file.name, targetKB, OUTPUT_FORMAT_CONFIG[result.outputFormat].ext);
     const link = document.createElement("a");
     link.href = URL.createObjectURL(result.blob);
     link.download = filename;
@@ -262,7 +292,7 @@ export default function ImageCompressor({
 
   const handleCopyFilename = async () => {
     if (!result || !file) return;
-    const filename = slugifyFilename(file.name, targetKB);
+    const filename = slugifyFilename(file.name, targetKB, OUTPUT_FORMAT_CONFIG[result.outputFormat].ext);
     try {
       await navigator.clipboard.writeText(filename);
       setCopiedFilename(true);
@@ -277,17 +307,47 @@ export default function ImageCompressor({
 
   return (
     <div className="w-full max-w-3xl mx-auto">
-      {!webpSupported && (
+      {!webpSupported && outputFormat === "webp" && (
         <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm text-center">
           Your browser does not support WebP export from canvas. Please use a
-          modern browser like Chrome, Edge, Firefox, or Safari.
+          modern browser like Chrome, Edge, Firefox, or Safari{webpOnly ? "" : ", or choose JPG output below"}.
         </div>
       )}
 
-      {!result && webpSupported && (
+      {!result && (webpSupported || !webpOnly) && (
         <>
           {/* Controls — settings panel */}
           <div className="mb-5 p-4 sm:p-5 bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-200 dark:border-zinc-700 rounded-xl space-y-4">
+            {!webpOnly && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span id="output-format-label" className="text-sm font-medium text-zinc-600 dark:text-zinc-400 w-full sm:w-auto mb-1 sm:mb-0">
+                  Output format
+                </span>
+                <div role="radiogroup" aria-labelledby="output-format-label" className="flex gap-1.5 flex-wrap">
+                  {(["jpeg", "webp"] as const).map((format) => (
+                    <button
+                      key={format}
+                      type="button"
+                      role="radio"
+                      aria-checked={outputFormat === format}
+                      onClick={() => setOutputFormat(format)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        outputFormat === format
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                      }`}
+                    >
+                      {OUTPUT_FORMAT_CONFIG[format].label}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400 w-full">
+                  {outputFormat === "jpeg"
+                    ? "JPG is accepted by most application and exam forms."
+                    : "WebP is smaller at the same quality, but many upload forms do not accept it."}
+                </span>
+              </div>
+            )}
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400 w-full sm:w-auto mb-1 sm:mb-0">
                 Compression mode
@@ -507,13 +567,13 @@ export default function ImageCompressor({
             {objectUrl && (
               <div className="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
                 <div className="text-sm text-emerald-600 dark:text-emerald-400 px-4 py-2 border-b border-zinc-200 dark:border-zinc-700 bg-emerald-50 dark:bg-emerald-950/20 font-medium">
-                  WebP — {formatBytes(result.compressedSize)}
+                  {OUTPUT_FORMAT_CONFIG[result.outputFormat].label} — {formatBytes(result.compressedSize)}
                 </div>
                 <div className="p-3 flex items-center justify-center bg-repeat bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAbwAAAG8B8aLcQwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAQSURBVCJY05f5TwMDAysrCwDSRAfd5XMSBgAAAABJRU5ErkJggg==')]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={objectUrl}
-                    alt="Compressed WebP"
+                    alt={`Compressed ${OUTPUT_FORMAT_CONFIG[result.outputFormat].label}`}
                     className="max-h-56 object-contain"
                   />
                 </div>
@@ -523,7 +583,7 @@ export default function ImageCompressor({
 
           <div className="flex flex-wrap gap-2 justify-center">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">
-              WebP output
+              {OUTPUT_FORMAT_CONFIG[result.outputFormat].label} output
             </span>
             {dimensionsChanged ? (
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300">
@@ -578,7 +638,7 @@ export default function ImageCompressor({
                 className="inline-flex items-center gap-2 px-7 py-3.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200 dark:shadow-blue-900/30"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Download WebP — {formatBytes(result.compressedSize)}
+                Download {OUTPUT_FORMAT_CONFIG[result.outputFormat].label} — {formatBytes(result.compressedSize)}
               </button>
             )}
             {showDownload && (
@@ -598,7 +658,7 @@ export default function ImageCompressor({
           </div>
 
           <p className="text-sm text-zinc-400 text-center pt-1">
-            All downloads are optimized WebP images. Your image is processed in your browser and never uploaded.
+            Saved as {OUTPUT_FORMAT_CONFIG[result.outputFormat].label}. Your image is processed in your browser and never uploaded.
           </p>
         </div>
       )}
