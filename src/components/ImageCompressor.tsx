@@ -306,7 +306,9 @@ export default function ImageCompressor({
   const dimensionsChanged = result?.dimensionsChanged;
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    // data-boilerplate: identical tool UI on every page; excluded from the
+    // duplicate-content check in scripts/check-pseo-uniqueness.mjs.
+    <div className="w-full max-w-3xl mx-auto" data-boilerplate="shared">
       {!webpSupported && outputFormat === "webp" && (
         <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm text-center">
           Your browser does not support WebP export from canvas. Please use a

@@ -31,11 +31,64 @@ const files = globSync(`${BUILD_DIR}/*.html`);
 function parse(file) {
   const html = readFileSync(file, "utf8");
   const robots = /<meta name="robots" content="(.*?)"/.exec(html)?.[1] ?? "";
-  const stripped = html
+  const noCode = html
     .replace(/<script[\s\S]*?<\/script>/g, " ")
-    .replace(/<style[\s\S]*?<\/style>/g, " ")
-    .replace(/<[^>]*>/g, " ");
-  return { robots, words: stripped.split(/\s+/).filter(Boolean) };
+    .replace(/<style[\s\S]*?<\/style>/g, " ");
+  const stripped = noCode.replace(/<[^>]*>/g, " ");
+  // For the sentence check, drop the site header/footer and the one shared
+  // "how it works" box, which are the same on every page by design.
+  const body = stripMarked(noCode)
+    .replace(/<header[\s\S]*?<\/header>/g, " ")
+    .replace(/<footer[\s\S]*?<\/footer>/g, " ")
+    .replace(/<\/(p|li|h[1-6]|td|th|summary|div|dt|dd)>/g, ". ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&")
+    .replace(/&[a-z]+;|&#x?[0-9a-f]+;/gi, " ");
+  return { robots, words: stripped.split(/\s+/).filter(Boolean), sentences: sentencesOf(body) };
+}
+
+/**
+ * Remove every element carrying data-boilerplate="shared", including its
+ * nested children: the shared "How it works" box and the compressor widget,
+ * whose text is identical on every page by design.
+ */
+function stripMarked(html) {
+  let out = html;
+  for (;;) {
+    const open = /<([a-z][a-z0-9]*)\b[^>]*\bdata-boilerplate="shared"[^>]*>/i.exec(out);
+    if (!open) return out;
+    const tag = open[1].toLowerCase();
+    const tagRe = new RegExp(`<(/?)${tag}\\b[^>]*>`, "gi");
+    tagRe.lastIndex = open.index + open[0].length;
+    let depth = 1;
+    let end = out.length;
+    for (let m; (m = tagRe.exec(out)); ) {
+      if (m[0].endsWith("/>")) continue;
+      depth += m[1] ? -1 : 1;
+      if (depth === 0) { end = m.index + m[0].length; break; }
+    }
+    out = out.slice(0, open.index) + " " + out.slice(end);
+  }
+}
+
+/**
+ * Sentences of 6+ words, lower-cased, with numbers and units masked so
+ * "compress to 50KB" and "compress to 100KB" count as the same sentence.
+ */
+function sentencesOf(text) {
+  const out = new Set();
+  for (const raw of text.split(/(?<=[.!?])\s+|\s*\.\s+(?=\.)/)) {
+    const masked = raw
+      .toLowerCase()
+      .replace(/\d[\d,.]*\s*(kb|mb|px|%|x|×)?/g, "#")
+      .replace(/[^a-z#' ]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (masked.split(" ").filter((w) => w.length > 0).length >= 6) out.add(masked);
+  }
+  return [...out];
 }
 
 function shingles(words) {
@@ -53,7 +106,7 @@ for (const file of files) {
   const { robots, words } = parse(file);
   if (robots.includes("noindex")) continue;
   if (words.length < 200) continue;
-  pages.push({ slug, words, shingles: shingles(words) });
+  pages.push({ slug, words, shingles: shingles(words), sentences: parse(file).sentences });
 }
 
 const failures = [];
@@ -91,3 +144,63 @@ if (failures.length) {
 }
 
 console.log(`No page pair exceeds ${MAX_JACCARD} similarity.`);
+
+/* ------------------------------------------------------------------ */
+/* Sentence-level repetition (issue #3 follow-up)                      */
+/*                                                                     */
+/* Whole-page similarity misses the real template signal: the same     */
+/* sentences reused across many pages with only the number swapped.    */
+/* Fail when more than MAX_SHARED_SHARE of a page's sentences also     */
+/* appear on MIN_OTHER_PAGES or more other indexable pages.            */
+/* ------------------------------------------------------------------ */
+
+const MAX_SHARED_SHARE = 0.25;
+const MIN_OTHER_PAGES = 3;
+
+const pagesBySentence = new Map();
+for (const page of pages) {
+  for (const sentence of page.sentences) {
+    pagesBySentence.set(sentence, (pagesBySentence.get(sentence) ?? 0) + 1);
+  }
+}
+
+const shares = pages
+  .map((page) => {
+    const shared = page.sentences.filter(
+      (sentence) => pagesBySentence.get(sentence) - 1 >= MIN_OTHER_PAGES
+    );
+    return {
+      slug: page.slug,
+      total: page.sentences.length,
+      shared: shared.length,
+      share: page.sentences.length ? shared.length / page.sentences.length : 0,
+      examples: shared,
+    };
+  })
+  .sort((a, b) => b.share - a.share);
+
+console.log(
+  `\nSentences shared with ${MIN_OTHER_PAGES}+ other indexable pages (limit ${MAX_SHARED_SHARE * 100}%):`
+);
+for (const row of shares) {
+  console.log(
+    `  ${(row.share * 100).toFixed(0).padStart(3)}%  ${String(row.shared).padStart(3)}/${String(row.total).padEnd(3)}  ${row.slug}`
+  );
+}
+
+const repeated = shares.filter((row) => row.share > MAX_SHARED_SHARE);
+if (repeated.length) {
+  console.error(`\n${repeated.length} page(s) exceed ${MAX_SHARED_SHARE * 100}% shared sentences.`);
+  const top = [...pagesBySentence.entries()]
+    .filter(([, count]) => count - 1 >= MIN_OTHER_PAGES)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15);
+  console.error("Most repeated sentences (numbers masked):");
+  for (const [sentence, count] of top) console.error(`  ${count} pages: ${sentence.slice(0, 140)}`);
+  console.error(
+    "\nWrite page-specific copy, or move genuinely shared text into the\n" +
+      "shared HowItWorks box (rendered with data-boilerplate=\"shared\")."
+  );
+  process.exit(1);
+}
+console.log(`No page has more than ${MAX_SHARED_SHARE * 100}% shared sentences.`);

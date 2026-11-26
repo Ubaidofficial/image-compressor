@@ -420,7 +420,7 @@ export default function Home() {
       />
 
       {/* How it works */}
-      <section className="mt-20 max-w-4xl mx-auto text-center motion-safe:animate-fade-in">
+      <section id="how-it-works" className="mt-20 max-w-4xl mx-auto text-center motion-safe:animate-fade-in scroll-mt-20">
         <h2 className="text-2xl sm:text-3xl font-bold mb-3">How It Works</h2>
         <p className="text-base text-zinc-500 dark:text-zinc-400 mb-10">
           Four simple steps — all in your browser
