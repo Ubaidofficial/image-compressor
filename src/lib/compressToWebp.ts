@@ -2,6 +2,14 @@ import { clampTargetKB, MAX_OUTPUT_KB } from "./constants";
 
 export type CompressionMode = "best-quality" | "balanced" | "smallest-file";
 
+/** Encoded output. JPG is what most application/exam portals accept. */
+export type OutputFormat = "webp" | "jpeg";
+
+export const OUTPUT_FORMAT_CONFIG: Record<OutputFormat, { label: string; mime: string; ext: string }> = {
+  jpeg: { label: "JPG", mime: "image/jpeg", ext: "jpg" },
+  webp: { label: "WebP", mime: "image/webp", ext: "webp" },
+};
+
 export const COMPRESSION_MODE_CONFIG = {
   "best-quality": {
     label: "Best Quality",
@@ -31,6 +39,8 @@ export type CompressToWebpOptions = {
   compressionMode?: CompressionMode;
   resizeBeforeCompress?: boolean;
   maxWidth?: number;
+  /** Defaults to WebP, the original behaviour. */
+  outputFormat?: OutputFormat;
 };
 
 export type CompressToWebpResult = {
@@ -47,6 +57,7 @@ export type CompressToWebpResult = {
   reachedTarget: boolean;
   dimensionsChanged: boolean;
   savingsPercent: number;
+  outputFormat: OutputFormat;
 };
 
 const SCALE_STEPS_BALANCED = [
@@ -85,13 +96,14 @@ function getModeDefaults(mode: CompressionMode) {
   }
 }
 
-function blobToFile(blob: Blob, filename: string): File {
-  return new File([blob], filename, { type: "image/webp" });
+function blobToFile(blob: Blob, filename: string, format: OutputFormat): File {
+  return new File([blob], filename, { type: OUTPUT_FORMAT_CONFIG[format].mime });
 }
 
-async function canvasToWebpBlob(
+async function canvasToBlob(
   canvas: HTMLCanvasElement,
-  quality: number
+  quality: number,
+  format: OutputFormat
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
@@ -99,7 +111,7 @@ async function canvasToWebpBlob(
         if (b) resolve(b);
         else reject(new Error("Canvas toBlob returned null"));
       },
-      "image/webp",
+      OUTPUT_FORMAT_CONFIG[format].mime,
       quality
     );
   });
@@ -109,15 +121,21 @@ async function encodeAtQuality(
   source: ImageBitmap | HTMLImageElement,
   width: number,
   height: number,
-  quality: number
+  quality: number,
+  format: OutputFormat
 ): Promise<Blob> {
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Could not get 2d context");
+  if (format === "jpeg") {
+    // JPG has no transparency; without a fill, transparent PNG areas turn black.
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+  }
   ctx.drawImage(source, 0, 0, width, height);
-  return canvasToWebpBlob(canvas, quality);
+  return canvasToBlob(canvas, quality, format);
 }
 
 async function binarySearchQuality(
@@ -126,7 +144,8 @@ async function binarySearchQuality(
   height: number,
   targetBytes: number,
   minQ: number,
-  maxQ: number
+  maxQ: number,
+  format: OutputFormat
 ): Promise<{ blob: Blob; quality: number } | null> {
   let lo = minQ;
   let hi = maxQ;
@@ -134,7 +153,7 @@ async function binarySearchQuality(
 
   for (let i = 0; i < 12; i++) {
     const mid = (lo + hi) / 2;
-    const blob = await encodeAtQuality(source, width, height, mid);
+    const blob = await encodeAtQuality(source, width, height, mid, format);
 
     if (blob.size <= targetBytes) {
       if (!best || mid > best.quality) {
@@ -163,6 +182,7 @@ export async function compressToWebp(
     compressionMode = "balanced",
     resizeBeforeCompress = false,
     maxWidth,
+    outputFormat = "webp",
   } = options;
 
   const modeDefaults = getModeDefaults(compressionMode);
@@ -202,7 +222,8 @@ export async function compressToWebp(
       effectiveHeight,
       targetBytes,
       modeDefaults.minQuality,
-      modeDefaults.maxQuality
+      modeDefaults.maxQuality,
+      outputFormat
     );
     if (result) {
       bestBlob = result.blob;
@@ -222,7 +243,8 @@ export async function compressToWebp(
         h,
         targetBytes,
         modeDefaults.minQuality,
-        modeDefaults.maxQuality
+        modeDefaults.maxQuality,
+        outputFormat
       );
 
       if (result) {
@@ -241,7 +263,8 @@ export async function compressToWebp(
       img,
       outputWidth,
       outputHeight,
-      modeDefaults.minQuality
+      modeDefaults.minQuality,
+      outputFormat
     );
     bestQuality = modeDefaults.minQuality;
   }
@@ -257,7 +280,11 @@ export async function compressToWebp(
     outputWidth !== effectiveWidth ||
     outputHeight !== effectiveHeight;
 
-  const resultFile = blobToFile(bestBlob, "compressed.webp");
+  const resultFile = blobToFile(
+    bestBlob,
+    `compressed.${OUTPUT_FORMAT_CONFIG[outputFormat].ext}`,
+    outputFormat
+  );
 
   return {
     blob: bestBlob,
@@ -273,5 +300,6 @@ export async function compressToWebp(
     reachedTarget,
     dimensionsChanged,
     savingsPercent,
+    outputFormat,
   };
 }

@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.5.0] - 2026-11-26
+
+### Added
+- Exam and form preset pages with one-click resizers that output a JPG meeting the official spec, a spec table with "Source: ..., verified <date>", portal-specific rejection reasons and FAQ (issue #3):
+  - `/ssc-photo-signature-resize`: SSC signature, JPG 10-20 KB, 6.0 x 2.0 cm at 300 DPI (709 x 236 px, DPI written to the file). No SSC photo preset: the 2026 SSC notices capture the photo live, with no file spec.
+  - `/upsc-photo-signature-resize`: UPSC photo (JPG, 20-200 KB, saved as photo.jpg) and three-signature image (JPG, 20-100 KB, 350-500 px both axes, saved as signature.jpg).
+  - `/signature-resize`: generic 10-20 KB and 20-50 KB signature presets, labelled as not tied to any exam.
+- `src/data/uploadSpecs.ts`: single home for official specs, with quotes, source URLs and verification dates.
+- `src/lib/resizeToSpec.ts`: JPEG output at exact dimensions, white background, KB range valid under both 1000- and 1024-byte readings, optional ink trimming for signatures, and comment-block padding when a plain image falls below a minimum size.
+
+- JPG output option on the general compressor (`ImageCompressor`): an "Output format: JPG / WebP" choice. The homepage starts on JPG; other pages start on WebP as before; the converters (`/png-to-webp`, `/jpg-to-webp`, `/image-to-webp`) and `/webp-compressor` stay WebP-only with no choice. Transparent areas are filled with white for JPG, and the download is named `.jpg`.
+
+### Changed
+- Consolidated format/verb variants into one indexable page per size target (10/20/50/100/200/500 KB, 1 MB). Pages already indexed in Google are kept. Sitemap 65 -> 22 URLs; consolidated URLs stay live as noindex + canonical.
+- Sitemap `<lastmod>` now uses each page's real content-change date instead of a hard-coded constant.
+- Homepage retargeted to "reduce image size in KB / photo resize in KB" for exam and form uploads, linking the new preset pages; it states that the general tool outputs WebP and points form uploads to the JPG presets.
+- `/contact` removed from the sitemap (still indexable and linked from every page).
+
 ## [0.4.0] - 2026-08-10
 
 ### Added

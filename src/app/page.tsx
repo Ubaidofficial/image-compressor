@@ -45,7 +45,7 @@ function buildMoreToolLinks() {
     { href: "/bulk-image-compressor", label: "Bulk Compressor" },
     { href: "/reduce-image-size-in-kb", label: "Reduce Image Size in KB" },
     { href: "/image-compressor-to-100kb", label: "Image Compressor to 100KB" },
-    { href: "/resize-image-to-20kb", label: "Resize Image to 20KB" },
+    { href: "/image-compressor-to-20kb", label: "Compress to 20KB" },
     { href: "/compress-image-to-50kb", label: "Compress to 50KB" },
     { href: "/compress-image-to-200kb", label: "Compress to 200KB" },
   ].filter((link) => staticTools.has(link.href) || indexable.has(link.href));
@@ -59,15 +59,15 @@ const moreToolLinks = buildMoreToolLinks();
 export const revalidate = 86400;
 
 const pagePath = "/";
-const pageTitle = "100KB Converter - Compress Images Under 100KB";
+const pageTitle = "Reduce Image Size in KB and Photo Resize in KB | 100KB Converter";
 const pageDescription =
-  "Compress and convert images under 100KB. Convert JPG, PNG, and WebP to SEO-friendly WebP files. Free browser-based compression with no uploads.";
+  "Reduce image size in KB for exam and job application forms: resize a photo or signature to 20KB, 50KB or 100KB, with SSC and UPSC presets. Free, in your browser, no uploads.";
 
 const homeFaqs: FaqItem[] = [
   {
     question: "What is 100KB Converter?",
     answer:
-      "100KB Converter is a suite of browser-based tools for compressing and converting images. You can upload JPG, PNG, and WebP images, compress them under 100KB, and download them as WebP files — all without uploading anything to a server.",
+      "100KB Converter is a suite of browser-based tools for compressing and converting images. You can upload JPG, PNG, and WebP images, reduce them to the KB size a form or website needs, and resize photos and signatures for exam applications — all without uploading anything to a server.",
   },
   {
     question: "Are my images uploaded?",
@@ -75,9 +75,9 @@ const homeFaqs: FaqItem[] = [
       "No. All compression and conversion runs inside your browser using the Canvas API. Your images stay on your device and are never uploaded, stored, or accessible by anyone else.",
   },
   {
-    question: "Why are downloads saved as WebP?",
+    question: "Should I download JPG or WebP?",
     answer:
-      "WebP typically produces files 25–35% smaller than JPG and PNG at similar visual quality. This reduces bandwidth, helps pages load faster, and makes images more efficient for websites.",
+      "Choose JPG for application and exam forms: most portals accept only JPG or JPEG. Choose WebP for websites: it is typically 25–35% smaller than JPG at similar visual quality, so pages load faster. The compressor on this page starts on JPG; switch the output format before choosing your image.",
   },
   {
     question: "Can every image be compressed under 100KB?",
@@ -92,7 +92,7 @@ const homeFaqs: FaqItem[] = [
   {
     question: "Which image formats are supported?",
     answer:
-      "You can upload JPG, JPEG, PNG, and WebP images. All downloads are WebP format. SVG, GIF, PDF, and other formats are not accepted.",
+      "You can upload JPG, JPEG, PNG, and WebP images. The compressor lets you choose JPG or WebP output; the converters save WebP, and the exam and signature presets save JPG, which is what most application portals require. SVG, GIF, PDF, and other formats are not accepted.",
   },
   {
     question: "Does this work on mobile?",
@@ -116,16 +116,16 @@ const toolsList = [
     primary: true,
   },
   {
-    href: "/compress-jpg-to-100kb",
-    title: "Compress JPG to 100KB",
-    desc: "Reduce JPG and JPEG images to 100KB or less with private browser processing.",
-    badge: "JPG",
+    href: "/reduce-image-size-in-kb",
+    title: "Reduce Image Size in KB",
+    desc: "Set a limit in kilobytes and bring any JPG, PNG, or WebP image under it.",
+    badge: "KB",
   },
   {
-    href: "/compress-png-to-100kb",
-    title: "Compress PNG to 100KB",
-    desc: "Compress PNG images to 100KB or less and download optimized WebP output.",
-    badge: "PNG",
+    href: "/signature-resize",
+    title: "Signature Resize",
+    desc: "Resize a scanned signature to a 10-20 KB or 20-50 KB JPG for application forms.",
+    badge: "Forms",
   },
   {
     href: "/jpg-to-webp",
@@ -158,10 +158,10 @@ const toolsList = [
     badge: "50KB",
   },
   {
-    href: "/compress-webp-to-100kb",
-    title: "Compress WebP to 100KB",
-    desc: "Reduce WebP images to 100KB or less with local browser compression.",
-    badge: "WebP",
+    href: "/image-compressor-to-20kb",
+    title: "Compress to 20KB",
+    desc: "Shrink a photo to 20KB or less for strict upload fields.",
+    badge: "20KB",
   },
 ];
 
@@ -187,8 +187,10 @@ export default function Home() {
             name: "100KB Converter",
             description: pageDescription,
             featureList: [
+              "Reduce image size to a target in KB",
+              "Photo and signature resize presets for SSC and UPSC applications",
               "Client-side image compression",
-              "WebP image output",
+              "JPG or WebP image output",
               "Compress images under 100KB",
               "Bulk image to WebP conversion",
               "JPG to WebP conversion",
@@ -205,12 +207,15 @@ export default function Home() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16 motion-safe:animate-fade-in-up">
         <div>
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-5 leading-tight">
-            Compress and Convert Images Under 100KB
+            Reduce Image Size in KB
           </h1>
+          <p className="text-base sm:text-lg text-zinc-500 dark:text-zinc-400 mb-4 max-w-xl leading-relaxed">
+            Exam and job application forms reject photos and signatures that are
+            over their KB limit. Resize yours to 20KB, 50KB, 100KB or any target
+            in a few seconds, or use a one-click preset for SSC and UPSC uploads.
+          </p>
           <p className="text-base sm:text-lg text-zinc-500 dark:text-zinc-400 mb-8 max-w-xl leading-relaxed">
-            Use browser-based tools to compress JPG, PNG, and WebP images into
-            lightweight WebP files under 100KB. Your images stay private
-            because compression runs on your device — no uploads ever.
+            Everything runs on your device, so your photo is never uploaded to us.
           </p>
 
           <div className="flex flex-wrap gap-3 mb-8">
@@ -232,8 +237,8 @@ export default function Home() {
           <div className="flex flex-wrap gap-2">
             {[
               "No uploads",
-              "WebP output",
-              "Under 100KB",
+              "Any KB target",
+              "SSC & UPSC presets",
               "No signup",
               "Client-side processing",
             ].map((chip) => (
@@ -257,7 +262,50 @@ export default function Home() {
           <h2 className="text-lg font-semibold text-zinc-500 dark:text-zinc-400 mb-6 text-center">
             Try it now — upload an image to compress
           </h2>
-          <ImageCompressor targetKB={100} pageIntent="general" />
+          <ImageCompressor targetKB={100} pageIntent="general" defaultOutputFormat="jpeg" />
+        </div>
+      </section>
+
+      {/* Exam and form presets */}
+      <section className="mb-20" aria-labelledby="exam-presets">
+        <h2 id="exam-presets" className="text-2xl sm:text-3xl font-bold mb-3 text-center">
+          Photo and Signature Resize for Exam Forms
+        </h2>
+        <p className="text-base text-zinc-500 dark:text-zinc-400 text-center mb-10 max-w-2xl mx-auto">
+          Government exam portals want a JPG within an exact KB range and size. These presets
+          follow the official instructions, link to the source, and check the file before you
+          download it. The general tool above also saves JPG, but only a preset sets the exact
+          dimensions a portal asks for.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          {[
+            {
+              href: "/ssc-photo-signature-resize",
+              title: "SSC Signature Resize",
+              desc: "JPG, 10-20 KB, 6.0 × 2.0 cm. Plus the SSC live photo rules.",
+            },
+            {
+              href: "/upsc-photo-signature-resize",
+              title: "UPSC Photo and Signature",
+              desc: "Photo JPG 20-200 KB; three-signature JPG 20-100 KB at 350-500 px.",
+            },
+            {
+              href: "/signature-resize",
+              title: "Signature Resize in KB",
+              desc: "Any form: signature JPG at 10-20 KB or 20-50 KB.",
+            },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="group rounded-2xl border-2 border-blue-200 dark:border-blue-800 bg-blue-50/30 dark:bg-blue-950/20 p-6 motion-safe:transition-all motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-lg"
+            >
+              <h3 className="font-semibold text-base mb-2 group-hover:text-blue-700 dark:group-hover:text-blue-400">
+                {item.title}
+              </h3>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">{item.desc}</p>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -306,8 +354,8 @@ export default function Home() {
             icon: "✓",
           },
           {
-            title: "WebP-first output",
-            desc: "All downloads are WebP format — smaller than JPG and PNG, better for website speed and bandwidth.",
+            title: "JPG or WebP output",
+            desc: "Save JPG for upload forms that only accept it, or WebP for the smallest files on websites.",
             icon: "W",
           },
           {
@@ -380,7 +428,7 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
           {[
             { step: "1", label: "Upload your image" },
-            { step: "2", label: "Convert to WebP in your browser" },
+            { step: "2", label: "Choose JPG or WebP output" },
             { step: "3", label: "Compress under target size" },
             { step: "4", label: "Download your optimized file" },
           ].map((item) => (
@@ -410,7 +458,7 @@ export default function Home() {
           </h2>
           <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
             Your images stay on your device. Compression runs entirely in your
-            browser using the Canvas API and WebP encoder, so files are not
+            browser using the Canvas API, so files are not
             uploaded, stored, viewed, or sent to a server. Once you close the
             page, all image data is gone.
           </p>
@@ -489,7 +537,7 @@ export default function Home() {
           keeping dimensions and higher quality settings when the target size
           allows. <strong>Smallest File</strong> uses stronger compression and
           reduces dimensions earlier, which is useful when you need the
-          smallest possible WebP file.
+          smallest possible file.
         </p>
         <p>
           You can also enable the optional resize control to set a max width
