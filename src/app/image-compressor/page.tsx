@@ -102,11 +102,11 @@ export default function ImageCompressorPage() {
         items={[
           {
             title: "Best Quality",
-            desc: "Prioritizes visual quality. The tool tries harder to keep original dimensions and uses higher quality settings. Best for images where clarity matters more than file size.",
+            desc: "Prioritizes visual quality. The tool tries harder to keep original dimensions and uses higher quality settings, and will not drop below 30% quality or 80% of the original size, so it reports a miss on very small targets rather than degrading the image.",
           },
           {
             title: "Balanced",
-            desc: "Recommended for most uses. Balances file size and visual quality with a sensible tradeoff that works well for website images, product photos, and general use.",
+            desc: "Recommended for most uses. Full-size output whenever it fits; for small targets such as 10KB or 20KB it reduces the width and height in steps until the file is under the limit, stopping at about 240px on the longer side.",
           },
           {
             title: "Smallest File",

@@ -533,9 +533,11 @@ export default function Home() {
           The single-image tool offers three compression modes to suit
           different needs. <strong>Balanced</strong> (the default) provides a
           sensible trade-off between file size and visual quality for most
-          images. <strong>Best Quality</strong> prioritizes visual clarity,
-          keeping dimensions and higher quality settings when the target size
-          allows. <strong>Smallest File</strong> uses stronger compression and
+          images: it keeps the original dimensions when the file fits, and
+          otherwise scales the picture down step by step (to roughly 240px on
+          the long side at most) until it does. <strong>Best Quality</strong>{" "}
+          prioritizes visual clarity, keeping dimensions and higher quality
+          settings, and tells you when a target is too small for it. <strong>Smallest File</strong> uses stronger compression and
           reduces dimensions earlier, which is useful when you need the
           smallest possible file.
         </p>
