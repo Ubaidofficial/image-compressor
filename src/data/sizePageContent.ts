@@ -15,8 +15,10 @@ import {
  * sections; nothing in this file is shared between pages. Observations that
  * quote numbers read them from src/data/sizeEvidence.json, so re-running
  * scripts/measure-size-evidence.mjs keeps the figures current. The wording
- * around them was written against the 2026-11-26 run: if a re-run flips a
- * pass/fail outcome, re-read the observations for that page.
+ * around them was written against the 2026-11-26 run, re-measured the same
+ * day after Balanced mode was changed to keep shrinking past half size (down
+ * to a 240px long side): if a re-run flips a pass/fail outcome, re-read the
+ * observations for that page.
  *
  * Pages not listed here (the consolidated, noindexed variants) keep the
  * generic template.
@@ -69,17 +71,17 @@ const CONTENT: Record<string, SizePageContent> = {
     evidenceHeading: "What Actually Fits in 10KB",
     evidence: { kind: "formats", kb: 10 },
     observations: [
-      `In the default Balanced mode, only the signature reached 10KB as a JPG: ${kbText(j(10, "signature").outputBytes)} at ${px(j(10, "signature"))}. The portrait, the A4 scan and the landscape all stopped above the limit, because Balanced never shrinks a picture below half its original width.`,
-      `WebP got ${fits(10, "webp")} of the 5 test images under 10KB against ${fits(10, "jpeg")} for JPG. The portrait made it at ${px(w(10, "portrait"))}, and the screenshot stayed at full 1080p.`,
-      "For a camera photo at this size, switch to Smallest File mode, which keeps scaling down to a quarter of the original width, or set a small width under Advanced options before compressing.",
+      `In the default Balanced mode, ${fits(10, "jpeg")} of the 5 test images reached 10KB as a JPG. Balanced keeps reducing the width and height until the file fits, so the portrait came out at ${px(j(10, "portrait"))} and the landscape at ${px(j(10, "landscape"))}.`,
+      `The A4 scan fitted too, but only at ${px(j(10, "document"))} as a JPG, close to the 240px floor Balanced will not go below. At that size a full page of text is no longer legible; crop to the part you need first.`,
+      `WebP kept more pixels in the same 10KB: the portrait at ${px(w(10, "portrait"))} against ${px(j(10, "portrait"))} for JPG, and the screenshot at its full 1080p.`,
     ],
     useCaseHeading: "Forms That Ask for About 10KB",
     useCaseNote: "A file at or just under 10KB satisfies only the very bottom of the range below, so aim slightly higher than 10KB if the form also sets a minimum.",
     faqHeading: "10KB Questions",
     faqs: [
       {
-        question: "Why does my photo stay above 10KB?",
-        answer: `Balanced mode stops shrinking at half the original width. Our test portrait (${imageInfo("portrait").width} × ${imageInfo("portrait").height} px) still came out at ${kbText(j(10, "portrait").outputBytes)} as a JPG at the lowest quality. Choose Smallest File, or set a smaller width in Advanced options, and try again.`,
+        question: "How small will my photo get at 10KB?",
+        answer: `Much smaller in pixels than the original. Our test portrait (${imageInfo("portrait").width} × ${imageInfo("portrait").height} px) came out at ${px(j(10, "portrait"))} as a JPG, quality ${q(j(10, "portrait"))}. If the form states pixel dimensions, set that width under Advanced options first, so the 10KB is spent on the size you actually need.`,
       },
       {
         question: "Is a 10KB signature still readable?",
@@ -107,15 +109,15 @@ const CONTENT: Record<string, SizePageContent> = {
     observations: [
       `The portrait fitted as a JPG only after shrinking to ${px(j(20, "portrait"))}, ${pct(j(20, "portrait"), "portrait")}% of its original height, while WebP kept ${pct(w(20, "portrait"), "portrait")}% at ${px(w(20, "portrait"))}.`,
       `The screenshot shows the gap most clearly: JPG had to drop it to ${px(j(20, "screenshot"))}, but WebP kept the full 1920 × 1080 picture at just ${kbText(w(20, "screenshot").outputBytes)}.`,
-      "The A4 scan and the landscape missed 20KB in both formats in Balanced mode. Detailed, full-size images need Smallest File mode or a manual resize here.",
+      `Balanced got all ${fits(20, "jpeg")} images under 20KB as JPG. The A4 scan paid the most: ${px(j(20, "document"))}, against ${px(w(20, "document"))} as a WebP.`,
     ],
     useCaseHeading: "Where a 20KB Limit Comes From",
     useCaseNote: "Every row below accepts a 20KB file, but for UPSC 20 KB is the minimum, not the maximum, so a file that lands at 19.9 KB is too small there.",
     faqHeading: "20KB Questions",
     faqs: [
       {
-        question: "My scanned document will not go below 20KB. Why?",
-        answer: `A full A4 page at 300 DPI is a lot of detail. Our test scan stayed at ${kbText(j(20, "document").outputBytes)} in Balanced mode and ${kbText(modeRunFor(20, "document", "smallest-file").outputBytes)} even in Smallest File. Crop to the part of the page you need, or set a much smaller width in Advanced options.`,
+        question: "Can a scanned A4 page fit in 20KB?",
+        answer: `Only as a small image. Balanced brought our 300 DPI test scan down to ${px(j(20, "document"))} (${kbText(j(20, "document").outputBytes)}), where small print is hard to read; Smallest File stopped at ${kbText(modeRunFor(20, "document", "smallest-file").outputBytes)} because it will not shrink below a quarter of the width. Cropping to the part of the page you need keeps the text larger.`,
       },
       {
         question: "Will a file compressed to 20KB pass UPSC's upload check?",
@@ -127,7 +129,7 @@ const CONTENT: Record<string, SizePageContent> = {
       },
       {
         question: "Which mode works best for a 20KB photo?",
-        answer: `On our tests Balanced and Smallest File both got the portrait under 20KB at ${px(modeRunFor(20, "portrait", "balanced"))}; Best Quality missed (${kbText(modeRunFor(20, "portrait", "best-quality").outputBytes)}) because it refuses to drop quality below 0.30.`,
+        answer: `On our tests Balanced got the portrait under 20KB at ${px(modeRunFor(20, "portrait", "balanced"))} and Smallest File at ${px(modeRunFor(20, "portrait", "smallest-file"))}; Best Quality missed (${kbText(modeRunFor(20, "portrait", "best-quality").outputBytes)}) because it refuses to drop quality below 0.30 or the size below 80%, and says so instead of producing a file.`,
       },
     ],
   },
@@ -142,7 +144,7 @@ const CONTENT: Record<string, SizePageContent> = {
     evidence: { kind: "formats", kb: 50 },
     observations: [
       `At 50KB the portrait keeps almost its full size as a JPG (${px(j(50, "portrait"))}), so a typical phone photo does not need resizing first.`,
-      `The A4 scan is the exception: as a JPG it stayed at ${kbText(j(50, "document").outputBytes)}, nearly three times the limit, while WebP fitted the whole page at ${kbText(w(50, "document").outputBytes)}.`,
+      `The A4 scan is the exception: as a JPG it fitted only after shrinking to ${px(j(50, "document"))}, ${pct(j(50, "document"), "document")}% of its height, while WebP fitted the whole page at ${kbText(w(50, "document").outputBytes)}.`,
       `The screenshot came out at ${kbText(j(50, "screenshot").outputBytes)} as a JPG, larger than the ${kbText(imageInfo("screenshot").bytes)} PNG we started from. Screenshots, logos and other flat graphics are better left as PNG or saved as WebP.`,
     ],
     useCaseHeading: "Official Limits That Accept a 50KB File",
@@ -158,8 +160,8 @@ const CONTENT: Record<string, SizePageContent> = {
         answer: "JPG is built for photographs. Flat colours and sharp text compress far better in PNG or WebP, so converting a screenshot to JPG can add bytes instead of removing them, as our test shows.",
       },
       {
-        question: "Why does my scanned page fit as WebP but not as JPG?",
-        answer: "In Balanced mode the compressor will only shrink a scan to half its width, and an A4 page at that size is still too detailed for 50KB of JPG. WebP encodes text-on-paper much more efficiently. If the form needs JPG, try Smallest File mode or crop the page.",
+        question: "Why is my scanned page smaller in pixels as a JPG?",
+        answer: "WebP encodes text on paper much more efficiently, so a whole A4 page fits in 50KB at full size. As a JPG the compressor has to reduce the width and height to get there. If the form needs JPG and the text must stay sharp, crop the page to the area that matters.",
       },
       {
         question: "How close to 50KB will the file be?",
@@ -389,8 +391,8 @@ const CONTENT: Record<string, SizePageContent> = {
     evidenceHeading: "One Photo and One Scan at Every KB Target",
     evidence: { kind: "ladder", keys: ["portrait", "document"] },
     observations: [
-      `The portrait first fitted at 20KB, shrunk to ${px(j(20, "portrait"))}. It reached its full ${imageInfo("portrait").width} × ${imageInfo("portrait").height} at 100KB and stayed there.`,
-      `The A4 scan did not fit as a JPG until 100KB, and even then only at ${px(j(100, "document"))}. In this test the scan needed five times the budget of the photo.`,
+      `Both images fitted at every target, even 10KB, where the portrait became ${px(j(10, "portrait"))}. It reached its full ${imageInfo("portrait").width} × ${imageInfo("portrait").height} at 100KB and stayed there.`,
+      `The A4 scan paid far more for each target: ${px(j(20, "document"))} at 20KB against ${px(j(20, "portrait"))} for the photo, and still only ${px(j(100, "document"))} at 100KB.`,
       `Above 200KB the extra kilobytes only buy quality: from quality ${q(j(200, "portrait"))} at 200KB to ${q(j(1024, "portrait"))} at 1MB for the portrait.`,
     ],
     useCaseKb: 20,
@@ -417,7 +419,7 @@ const CONTENT: Record<string, SizePageContent> = {
       },
       {
         question: "Why does my image look worse at the same KB than someone else's?",
-        answer: "Detail decides it. In our tests a portrait fitted 20KB while an A4 scan needed 100KB. Busy, sharp, noisy images need more bytes for the same visual quality.",
+        answer: `Detail decides it. At 20KB our test portrait kept ${px(j(20, "portrait"))} while an A4 scan was cut to ${px(j(20, "document"))}. Busy, sharp, noisy images need more bytes for the same visual quality.`,
       },
       {
         question: "Can the tool make my image bigger to reach a minimum KB?",
@@ -435,7 +437,7 @@ const CONTENT: Record<string, SizePageContent> = {
     evidenceHeading: "A Mixed Batch at 50, 100 and 200KB",
     evidence: { kind: "batch", targets: [50, 100, 200] },
     observations: [
-      `As WebP, all five images fitted at every one of the three targets, including the A4 scan at 50KB, which fails as a JPG at that size.`,
+      `As WebP, all five images fitted at every one of the three targets, including the A4 scan at its full ${imageInfo("document").width} × ${imageInfo("document").height} at 50KB; as a JPG it would have shrunk to ${px(j(50, "document"))}.`,
       `The batch went from ${kbText(["portrait", "document", "signature", "screenshot", "landscape"].reduce((s, k) => s + imageInfo(k as ImageKey).bytes, 0))} to ${kbText((["portrait", "document", "signature", "screenshot", "landscape"] as ImageKey[]).reduce((s, k) => s + w(50, k).outputBytes, 0))} at the 50KB target.`,
       "The bulk tool saves WebP. If your files are going into an upload form that accepts only JPG, compress them one at a time with JPG selected instead.",
     ],

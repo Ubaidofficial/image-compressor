@@ -283,7 +283,8 @@ export async function compressToWebp(
 
   /**
    * Highest quality under target at this size, or null. One probe at the
-   * quality floor first: if even that is too big, skip the binary search.
+   * quality floor first: if even that is too big, skip the binary search
+   * (which would find nothing) and move to the next size.
    */
   const tryAt = async (w: number, h: number) => {
     const floor = await encodeAtQuality(img, w, h, modeDefaults.minQuality, outputFormat);
@@ -300,8 +301,9 @@ export async function compressToWebp(
       modeDefaults.maxQuality,
       outputFormat
     );
-    // The search never probes exactly at the floor; fall back to the probe.
-    return result ?? { blob: floor, quality: modeDefaults.minQuality };
+    // Like before, a size counts only if the search finds a quality that
+    // fits; the floor probe just skips sizes that cannot.
+    return result;
   };
 
   // Try with effective dimensions first
