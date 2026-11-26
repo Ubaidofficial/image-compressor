@@ -12,7 +12,7 @@ import {
   LadderEvidenceTable,
   ModeEvidenceTable,
   UseCaseTable,
-  useCasesFor,
+  officialUseCasesFor,
 } from "./SizeEvidence";
 import {
   createBreadcrumbSchema,
@@ -51,7 +51,7 @@ export default function IndexableSizePage({
   const target = formatTarget(page.targetSizeKb);
   const isBulk = page.pageType === "bulk";
   const useCaseKb = content.useCaseKb ?? page.targetSizeKb ?? 100;
-  const hasUseCases = content.useCaseNote !== undefined && useCasesFor(useCaseKb).length > 0;
+  const hasUseCases = content.useCaseNote !== undefined && officialUseCasesFor(useCaseKb).length > 0;
   const label = page.h1.replace(/ Online$/u, "");
   const breadcrumbs = [
     { name: "Home", path: "/" },

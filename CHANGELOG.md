@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0] - 2026-11-26
+
+### Added
+- `npm run check:seo` now also fails when more than 25% of an indexable page's sentences (6+ words, numbers masked) appear on 3 or more other indexable pages. Shared UI marked `data-boilerplate="shared"` (the compressor widgets, the How it works box, the evidence method note) and the site header/footer are excluded. `--verbose` lists the shared sentences.
+- `scripts/measure-size-evidence.mjs`: runs the site's own compressor in Chromium on five generated test images at every size target (JPG and WebP), plus a compression-mode comparison, and writes `src/data/sizeEvidence.json`.
+- Indexable size pages (`compress-image-to-{10,50,100,200,500}kb`, `compress-image-to-1mb`, `image-compressor-to-{20,100,200}kb`, `reduce-image-size-in-kb`, `bulk-image-compressor`) get their own intro, a measured results table with written observations, official use cases from `uploadSpecs.ts` where one applies, and their own FAQ (`src/data/sizePageContent.ts`).
+- Shared `HowItWorks` box (under 60 words) linking to the homepage's `#how-it-works`.
+
+### Changed
+- Size pages default the compressor to JPG output.
+- The generic how-to steps, format notes, privacy line and "WebP is deliberate" paragraph are no longer repeated on indexable size pages. Consolidated (noindex) variants keep the old template.
+- URLs, canonicals, the consolidation map and the sitemap are unchanged.
+
 ## [0.5.0] - 2026-11-26
 
 ### Added

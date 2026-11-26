@@ -37,7 +37,7 @@ function parse(file) {
   const stripped = noCode.replace(/<[^>]*>/g, " ");
   // For the sentence check, drop the site header/footer and the one shared
   // "how it works" box, which are the same on every page by design.
-  const body = stripMarked(noCode)
+  const body = stripMarked(noCode.replace(/<head[\s\S]*?<\/head>/, " "))
     .replace(/<header[\s\S]*?<\/header>/g, " ")
     .replace(/<footer[\s\S]*?<\/footer>/g, " ")
     .replace(/<\/(p|li|h[1-6]|td|th|summary|div|dt|dd)>/g, ". ")
@@ -182,10 +182,12 @@ const shares = pages
 console.log(
   `\nSentences shared with ${MIN_OTHER_PAGES}+ other indexable pages (limit ${MAX_SHARED_SHARE * 100}%):`
 );
+const verbose = process.argv.includes("--verbose");
 for (const row of shares) {
   console.log(
     `  ${(row.share * 100).toFixed(0).padStart(3)}%  ${String(row.shared).padStart(3)}/${String(row.total).padEnd(3)}  ${row.slug}`
   );
+  if (verbose) for (const sentence of row.examples) console.log(`          - ${sentence.slice(0, 120)}`);
 }
 
 const repeated = shares.filter((row) => row.share > MAX_SHARED_SHARE);
