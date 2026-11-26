@@ -17,6 +17,8 @@ import {
   type PSEOPage,
 } from "@/data/pseoPages";
 import { getFormatProfile, getResolvedProfile } from "@/data/pseoContent";
+import { getSizePageContent } from "@/data/sizePageContent";
+import IndexableSizePage from "./IndexableSizePage";
 
 type LinkItem = {
   href: string;
@@ -251,6 +253,20 @@ function headings(page: PSEOPage): SectionHeadings {
 }
 
 export default function PseoLandingPage({ page }: { page: PSEOPage }) {
+  // Indexable size pages have their own written content and measured
+  // evidence. Consolidated (noindex) variants keep the generic template.
+  const content = getSizePageContent(page.slug);
+  if (content) {
+    return (
+      <IndexableSizePage
+        page={page}
+        content={content}
+        related={relatedLinks(page)}
+        hub={hubByFormat[page.inputFormat ?? "image"] ?? hubByFormat.image}
+      />
+    );
+  }
+
   const path = pagePath(page);
   const target = formatTarget(page.targetSizeKb);
   const isBulk = page.pageType === "bulk";

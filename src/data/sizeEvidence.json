@@ -1,0 +1,982 @@
+{
+  "generatedBy": "scripts/measure-size-evidence.mjs",
+  "measuredOn": "2026-11-26",
+  "browser": "Chromium 158.0.8127.36",
+  "settings": "compressToWebp() defaults: no pre-resize; Balanced mode unless stated",
+  "images": [
+    {
+      "key": "portrait",
+      "label": "Portrait photo",
+      "detail": "Head-and-shoulders, phone-camera size",
+      "type": "image/jpeg",
+      "bytes": 1752654,
+      "width": 2448,
+      "height": 3264
+    },
+    {
+      "key": "document",
+      "label": "Document scan",
+      "detail": "A4 page at 300 DPI, printed text",
+      "type": "image/jpeg",
+      "bytes": 1356679,
+      "width": 2480,
+      "height": 3508
+    },
+    {
+      "key": "signature",
+      "label": "Signature on paper",
+      "detail": "Phone photo of a signature, off-white paper",
+      "type": "image/jpeg",
+      "bytes": 467167,
+      "width": 1800,
+      "height": 1000
+    },
+    {
+      "key": "screenshot",
+      "label": "Screenshot",
+      "detail": "1080p app screenshot, flat colours and text",
+      "type": "image/png",
+      "bytes": 46331,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "key": "landscape",
+      "label": "Landscape photo",
+      "detail": "Outdoor scene, phone-camera size",
+      "type": "image/jpeg",
+      "bytes": 1823035,
+      "width": 3264,
+      "height": 2448
+    }
+  ],
+  "byTarget": {
+    "10": {
+      "portrait": {
+        "jpeg": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 54773,
+          "quality": 0.1,
+          "reachedTarget": false
+        },
+        "webp": {
+          "outputWidth": 1224,
+          "outputHeight": 1632,
+          "outputBytes": 10210,
+          "quality": 0.25,
+          "reachedTarget": true
+        }
+      },
+      "document": {
+        "jpeg": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 146371,
+          "quality": 0.1,
+          "reachedTarget": false
+        },
+        "webp": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 47428,
+          "quality": 0.1,
+          "reachedTarget": false
+        }
+      },
+      "signature": {
+        "jpeg": {
+          "outputWidth": 1080,
+          "outputHeight": 600,
+          "outputBytes": 10114,
+          "quality": 0.15,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1620,
+          "outputHeight": 900,
+          "outputBytes": 10134,
+          "quality": 0.11,
+          "reachedTarget": true
+        }
+      },
+      "screenshot": {
+        "jpeg": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 23953,
+          "quality": 0.1,
+          "reachedTarget": false
+        },
+        "webp": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 9998,
+          "quality": 0.89,
+          "reachedTarget": true
+        }
+      },
+      "landscape": {
+        "jpeg": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 89934,
+          "quality": 0.1,
+          "reachedTarget": false
+        },
+        "webp": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 67510,
+          "quality": 0.1,
+          "reachedTarget": false
+        }
+      }
+    },
+    "20": {
+      "portrait": {
+        "jpeg": {
+          "outputWidth": 1346,
+          "outputHeight": 1795,
+          "outputBytes": 20349,
+          "quality": 0.15,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1958,
+          "outputHeight": 2611,
+          "outputBytes": 20424,
+          "quality": 0.28,
+          "reachedTarget": true
+        }
+      },
+      "document": {
+        "jpeg": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 146371,
+          "quality": 0.1,
+          "reachedTarget": false
+        },
+        "webp": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 47428,
+          "quality": 0.1,
+          "reachedTarget": false
+        }
+      },
+      "signature": {
+        "jpeg": {
+          "outputWidth": 1710,
+          "outputHeight": 950,
+          "outputBytes": 19910,
+          "quality": 0.14,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 19744,
+          "quality": 0.33,
+          "reachedTarget": true
+        }
+      },
+      "screenshot": {
+        "jpeg": {
+          "outputWidth": 1344,
+          "outputHeight": 756,
+          "outputBytes": 20176,
+          "quality": 0.11,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 11736,
+          "quality": 0.94,
+          "reachedTarget": true
+        }
+      },
+      "landscape": {
+        "jpeg": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 89934,
+          "quality": 0.1,
+          "reachedTarget": false
+        },
+        "webp": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 67510,
+          "quality": 0.1,
+          "reachedTarget": false
+        }
+      }
+    },
+    "50": {
+      "portrait": {
+        "jpeg": {
+          "outputWidth": 2326,
+          "outputHeight": 3101,
+          "outputBytes": 50792,
+          "quality": 0.12,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 46940,
+          "quality": 0.41,
+          "reachedTarget": true
+        }
+      },
+      "document": {
+        "jpeg": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 146371,
+          "quality": 0.1,
+          "reachedTarget": false
+        },
+        "webp": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 50576,
+          "quality": 0.18,
+          "reachedTarget": true
+        }
+      },
+      "signature": {
+        "jpeg": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 49221,
+          "quality": 0.38,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 49144,
+          "quality": 0.54,
+          "reachedTarget": true
+        }
+      },
+      "screenshot": {
+        "jpeg": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 50148,
+          "quality": 0.88,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 11736,
+          "quality": 0.94,
+          "reachedTarget": true
+        }
+      },
+      "landscape": {
+        "jpeg": {
+          "outputWidth": 2285,
+          "outputHeight": 1714,
+          "outputBytes": 50474,
+          "quality": 0.11,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 2611,
+          "outputHeight": 1958,
+          "outputBytes": 51182,
+          "quality": 0.15,
+          "reachedTarget": true
+        }
+      }
+    },
+    "100": {
+      "portrait": {
+        "jpeg": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 97937,
+          "quality": 0.35,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 94486,
+          "quality": 0.56,
+          "reachedTarget": true
+        }
+      },
+      "document": {
+        "jpeg": {
+          "outputWidth": 1612,
+          "outputHeight": 2280,
+          "outputBytes": 101249,
+          "quality": 0.11,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 99098,
+          "quality": 0.67,
+          "reachedTarget": true
+        }
+      },
+      "signature": {
+        "jpeg": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 100221,
+          "quality": 0.62,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 90742,
+          "quality": 0.68,
+          "reachedTarget": true
+        }
+      },
+      "screenshot": {
+        "jpeg": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 58952,
+          "quality": 0.94,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 11736,
+          "quality": 0.94,
+          "reachedTarget": true
+        }
+      },
+      "landscape": {
+        "jpeg": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 92999,
+          "quality": 0.11,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 102106,
+          "quality": 0.35,
+          "reachedTarget": true
+        }
+      }
+    },
+    "200": {
+      "portrait": {
+        "jpeg": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 202826,
+          "quality": 0.51,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 171020,
+          "quality": 0.66,
+          "reachedTarget": true
+        }
+      },
+      "document": {
+        "jpeg": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 201305,
+          "quality": 0.3,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 173234,
+          "quality": 0.77,
+          "reachedTarget": true
+        }
+      },
+      "signature": {
+        "jpeg": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 196705,
+          "quality": 0.81,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 203372,
+          "quality": 0.8,
+          "reachedTarget": true
+        }
+      },
+      "screenshot": {
+        "jpeg": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 58952,
+          "quality": 0.94,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 11736,
+          "quality": 0.94,
+          "reachedTarget": true
+        }
+      },
+      "landscape": {
+        "jpeg": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 200334,
+          "quality": 0.34,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 203036,
+          "quality": 0.62,
+          "reachedTarget": true
+        }
+      }
+    },
+    "500": {
+      "portrait": {
+        "jpeg": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 508850,
+          "quality": 0.73,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 489036,
+          "quality": 0.78,
+          "reachedTarget": true
+        }
+      },
+      "document": {
+        "jpeg": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 501879,
+          "quality": 0.75,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 483232,
+          "quality": 0.84,
+          "reachedTarget": true
+        }
+      },
+      "signature": {
+        "jpeg": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 487405,
+          "quality": 0.93,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 492284,
+          "quality": 0.92,
+          "reachedTarget": true
+        }
+      },
+      "screenshot": {
+        "jpeg": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 58952,
+          "quality": 0.94,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 11736,
+          "quality": 0.94,
+          "reachedTarget": true
+        }
+      },
+      "landscape": {
+        "jpeg": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 485342,
+          "quality": 0.65,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 494866,
+          "quality": 0.79,
+          "reachedTarget": true
+        }
+      }
+    },
+    "1024": {
+      "portrait": {
+        "jpeg": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 891498,
+          "quality": 0.83,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 1036400,
+          "quality": 0.86,
+          "reachedTarget": true
+        }
+      },
+      "document": {
+        "jpeg": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 906596,
+          "quality": 0.8,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 981510,
+          "quality": 0.91,
+          "reachedTarget": true
+        }
+      },
+      "signature": {
+        "jpeg": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 522840,
+          "quality": 0.94,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 587598,
+          "quality": 0.94,
+          "reachedTarget": true
+        }
+      },
+      "screenshot": {
+        "jpeg": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 58952,
+          "quality": 0.94,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 11736,
+          "quality": 0.94,
+          "reachedTarget": true
+        }
+      },
+      "landscape": {
+        "jpeg": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 1032041,
+          "quality": 0.83,
+          "reachedTarget": true
+        },
+        "webp": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 1014408,
+          "quality": 0.86,
+          "reachedTarget": true
+        }
+      }
+    }
+  },
+  "byMode": {
+    "20": {
+      "portrait": {
+        "best-quality": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 77384,
+          "quality": 0.3,
+          "reachedTarget": false
+        },
+        "balanced": {
+          "outputWidth": 1346,
+          "outputHeight": 1795,
+          "outputBytes": 20349,
+          "quality": 0.15,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 1346,
+          "outputHeight": 1795,
+          "outputBytes": 20349,
+          "quality": 0.15,
+          "reachedTarget": true
+        }
+      },
+      "document": {
+        "best-quality": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 201305,
+          "quality": 0.3,
+          "reachedTarget": false
+        },
+        "balanced": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 146371,
+          "quality": 0.1,
+          "reachedTarget": false
+        },
+        "smallest-file": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 127964,
+          "quality": 0.05,
+          "reachedTarget": false
+        }
+      },
+      "signature": {
+        "best-quality": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 35384,
+          "quality": 0.3,
+          "reachedTarget": false
+        },
+        "balanced": {
+          "outputWidth": 1710,
+          "outputHeight": 950,
+          "outputBytes": 19910,
+          "quality": 0.14,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 1530,
+          "outputHeight": 850,
+          "outputBytes": 20169,
+          "quality": 0.23,
+          "reachedTarget": true
+        }
+      },
+      "screenshot": {
+        "best-quality": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 32120,
+          "quality": 0.3,
+          "reachedTarget": false
+        },
+        "balanced": {
+          "outputWidth": 1344,
+          "outputHeight": 756,
+          "outputBytes": 20176,
+          "quality": 0.11,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 1440,
+          "outputHeight": 810,
+          "outputBytes": 19642,
+          "quality": 0.09,
+          "reachedTarget": true
+        }
+      },
+      "landscape": {
+        "best-quality": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 182199,
+          "quality": 0.3,
+          "reachedTarget": false
+        },
+        "balanced": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 89934,
+          "quality": 0.1,
+          "reachedTarget": false
+        },
+        "smallest-file": {
+          "outputWidth": 1469,
+          "outputHeight": 1102,
+          "outputBytes": 19463,
+          "quality": 0.09,
+          "reachedTarget": true
+        }
+      }
+    },
+    "100": {
+      "portrait": {
+        "best-quality": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 97937,
+          "quality": 0.35,
+          "reachedTarget": true
+        },
+        "balanced": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 97937,
+          "quality": 0.35,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 2081,
+          "outputHeight": 2774,
+          "outputBytes": 97164,
+          "quality": 0.51,
+          "reachedTarget": true
+        }
+      },
+      "document": {
+        "best-quality": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 201305,
+          "quality": 0.3,
+          "reachedTarget": false
+        },
+        "balanced": {
+          "outputWidth": 1612,
+          "outputHeight": 2280,
+          "outputBytes": 101249,
+          "quality": 0.11,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 1860,
+          "outputHeight": 2631,
+          "outputBytes": 98262,
+          "quality": 0.06,
+          "reachedTarget": true
+        }
+      },
+      "signature": {
+        "best-quality": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 100221,
+          "quality": 0.62,
+          "reachedTarget": true
+        },
+        "balanced": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 100221,
+          "quality": 0.62,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 1530,
+          "outputHeight": 850,
+          "outputBytes": 96858,
+          "quality": 0.76,
+          "reachedTarget": true
+        }
+      },
+      "screenshot": {
+        "best-quality": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 66058,
+          "quality": 0.96,
+          "reachedTarget": true
+        },
+        "balanced": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 58952,
+          "quality": 0.94,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 1632,
+          "outputHeight": 918,
+          "outputBytes": 62575,
+          "quality": 0.84,
+          "reachedTarget": true
+        }
+      },
+      "landscape": {
+        "best-quality": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 182199,
+          "quality": 0.3,
+          "reachedTarget": false
+        },
+        "balanced": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 92999,
+          "quality": 0.11,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 2774,
+          "outputHeight": 2081,
+          "outputBytes": 100102,
+          "quality": 0.19,
+          "reachedTarget": true
+        }
+      }
+    },
+    "200": {
+      "portrait": {
+        "best-quality": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 202826,
+          "quality": 0.51,
+          "reachedTarget": true
+        },
+        "balanced": {
+          "outputWidth": 2448,
+          "outputHeight": 3264,
+          "outputBytes": 202826,
+          "quality": 0.51,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 2081,
+          "outputHeight": 2774,
+          "outputBytes": 196277,
+          "quality": 0.67,
+          "reachedTarget": true
+        }
+      },
+      "document": {
+        "best-quality": {
+          "outputWidth": 2182,
+          "outputHeight": 3087,
+          "outputBytes": 203741,
+          "quality": 0.33,
+          "reachedTarget": true
+        },
+        "balanced": {
+          "outputWidth": 2480,
+          "outputHeight": 3508,
+          "outputBytes": 201305,
+          "quality": 0.3,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 2108,
+          "outputHeight": 2982,
+          "outputBytes": 204320,
+          "quality": 0.38,
+          "reachedTarget": true
+        }
+      },
+      "signature": {
+        "best-quality": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 196705,
+          "quality": 0.81,
+          "reachedTarget": true
+        },
+        "balanced": {
+          "outputWidth": 1800,
+          "outputHeight": 1000,
+          "outputBytes": 196705,
+          "quality": 0.81,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 1530,
+          "outputHeight": 850,
+          "outputBytes": 146029,
+          "quality": 0.84,
+          "reachedTarget": true
+        }
+      },
+      "screenshot": {
+        "best-quality": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 66058,
+          "quality": 0.96,
+          "reachedTarget": true
+        },
+        "balanced": {
+          "outputWidth": 1920,
+          "outputHeight": 1080,
+          "outputBytes": 58952,
+          "quality": 0.94,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 1632,
+          "outputHeight": 918,
+          "outputBytes": 62575,
+          "quality": 0.84,
+          "reachedTarget": true
+        }
+      },
+      "landscape": {
+        "best-quality": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 200334,
+          "quality": 0.34,
+          "reachedTarget": true
+        },
+        "balanced": {
+          "outputWidth": 3264,
+          "outputHeight": 2448,
+          "outputBytes": 200334,
+          "quality": 0.34,
+          "reachedTarget": true
+        },
+        "smallest-file": {
+          "outputWidth": 2774,
+          "outputHeight": 2081,
+          "outputBytes": 201441,
+          "quality": 0.51,
+          "reachedTarget": true
+        }
+      }
+    }
+  }
+}

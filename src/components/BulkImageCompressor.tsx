@@ -284,7 +284,9 @@ export default function BulkImageCompressor({
     );
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    // data-boilerplate: identical tool UI on every page; excluded from the
+    // duplicate-content check in scripts/check-pseo-uniqueness.mjs.
+    <div className="w-full max-w-2xl mx-auto" data-boilerplate="shared">
       {/* Settings panel */}
       <div className="mb-5 p-5 bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-200 dark:border-zinc-700 rounded-xl space-y-4">
         {/* Target size */}
