@@ -54,11 +54,11 @@
     "10": {
       "portrait": {
         "jpeg": {
-          "outputWidth": 2448,
-          "outputHeight": 3264,
-          "outputBytes": 54773,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 884,
+          "outputHeight": 1179,
+          "outputBytes": 10104,
+          "quality": 0.14,
+          "reachedTarget": true
         },
         "webp": {
           "outputWidth": 1224,
@@ -70,18 +70,18 @@
       },
       "document": {
         "jpeg": {
-          "outputWidth": 2480,
-          "outputHeight": 3508,
-          "outputBytes": 146371,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 244,
+          "outputHeight": 345,
+          "outputBytes": 10132,
+          "quality": 0.14,
+          "reachedTarget": true
         },
         "webp": {
-          "outputWidth": 2480,
-          "outputHeight": 3508,
-          "outputBytes": 47428,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 287,
+          "outputHeight": 406,
+          "outputBytes": 10190,
+          "quality": 0.16,
+          "reachedTarget": true
         }
       },
       "signature": {
@@ -102,11 +102,11 @@
       },
       "screenshot": {
         "jpeg": {
-          "outputWidth": 1920,
-          "outputHeight": 1080,
-          "outputBytes": 23953,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 694,
+          "outputHeight": 390,
+          "outputBytes": 10081,
+          "quality": 0.16,
+          "reachedTarget": true
         },
         "webp": {
           "outputWidth": 1920,
@@ -118,18 +118,18 @@
       },
       "landscape": {
         "jpeg": {
-          "outputWidth": 3264,
-          "outputHeight": 2448,
-          "outputBytes": 89934,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 852,
+          "outputHeight": 639,
+          "outputBytes": 10008,
+          "quality": 0.13,
+          "reachedTarget": true
         },
         "webp": {
-          "outputWidth": 3264,
-          "outputHeight": 2448,
-          "outputBytes": 67510,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 852,
+          "outputHeight": 639,
+          "outputBytes": 10168,
+          "quality": 0.17,
+          "reachedTarget": true
         }
       }
     },
@@ -152,18 +152,18 @@
       },
       "document": {
         "jpeg": {
-          "outputWidth": 2480,
-          "outputHeight": 3508,
-          "outputBytes": 146371,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 398,
+          "outputHeight": 562,
+          "outputBytes": 20151,
+          "quality": 0.15,
+          "reachedTarget": true
         },
         "webp": {
-          "outputWidth": 2480,
-          "outputHeight": 3508,
-          "outputBytes": 47428,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 1054,
+          "outputHeight": 1491,
+          "outputBytes": 20286,
+          "quality": 0.11,
+          "reachedTarget": true
         }
       },
       "signature": {
@@ -200,18 +200,18 @@
       },
       "landscape": {
         "jpeg": {
-          "outputWidth": 3264,
-          "outputHeight": 2448,
-          "outputBytes": 89934,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 1179,
+          "outputHeight": 884,
+          "outputBytes": 19621,
+          "quality": 0.15,
+          "reachedTarget": true
         },
         "webp": {
-          "outputWidth": 3264,
-          "outputHeight": 2448,
-          "outputBytes": 67510,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 1387,
+          "outputHeight": 1040,
+          "outputBytes": 19914,
+          "quality": 0.14,
+          "reachedTarget": true
         }
       }
     },
@@ -234,11 +234,11 @@
       },
       "document": {
         "jpeg": {
-          "outputWidth": 2480,
-          "outputHeight": 3508,
-          "outputBytes": 146371,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 762,
+          "outputHeight": 1077,
+          "outputBytes": 50602,
+          "quality": 0.16,
+          "reachedTarget": true
         },
         "webp": {
           "outputWidth": 2480,
@@ -630,9 +630,9 @@
     "20": {
       "portrait": {
         "best-quality": {
-          "outputWidth": 2448,
-          "outputHeight": 3264,
-          "outputBytes": 77384,
+          "outputWidth": 1958,
+          "outputHeight": 2611,
+          "outputBytes": 46576,
           "quality": 0.3,
           "reachedTarget": false
         },
@@ -653,32 +653,32 @@
       },
       "document": {
         "best-quality": {
-          "outputWidth": 2480,
-          "outputHeight": 3508,
-          "outputBytes": 201305,
+          "outputWidth": 1984,
+          "outputHeight": 2806,
+          "outputBytes": 166639,
           "quality": 0.3,
           "reachedTarget": false
         },
         "balanced": {
-          "outputWidth": 2480,
-          "outputHeight": 3508,
-          "outputBytes": 146371,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 398,
+          "outputHeight": 562,
+          "outputBytes": 20151,
+          "quality": 0.15,
+          "reachedTarget": true
         },
         "smallest-file": {
-          "outputWidth": 2480,
-          "outputHeight": 3508,
-          "outputBytes": 127964,
+          "outputWidth": 620,
+          "outputHeight": 877,
+          "outputBytes": 23306,
           "quality": 0.05,
           "reachedTarget": false
         }
       },
       "signature": {
         "best-quality": {
-          "outputWidth": 1800,
-          "outputHeight": 1000,
-          "outputBytes": 35384,
+          "outputWidth": 1440,
+          "outputHeight": 800,
+          "outputBytes": 21251,
           "quality": 0.3,
           "reachedTarget": false
         },
@@ -699,9 +699,9 @@
       },
       "screenshot": {
         "best-quality": {
-          "outputWidth": 1920,
-          "outputHeight": 1080,
-          "outputBytes": 32120,
+          "outputWidth": 1536,
+          "outputHeight": 864,
+          "outputBytes": 31740,
           "quality": 0.3,
           "reachedTarget": false
         },
@@ -722,18 +722,18 @@
       },
       "landscape": {
         "best-quality": {
-          "outputWidth": 3264,
-          "outputHeight": 2448,
-          "outputBytes": 182199,
+          "outputWidth": 2611,
+          "outputHeight": 1958,
+          "outputBytes": 122687,
           "quality": 0.3,
           "reachedTarget": false
         },
         "balanced": {
-          "outputWidth": 3264,
-          "outputHeight": 2448,
-          "outputBytes": 89934,
-          "quality": 0.1,
-          "reachedTarget": false
+          "outputWidth": 1179,
+          "outputHeight": 884,
+          "outputBytes": 19621,
+          "quality": 0.15,
+          "reachedTarget": true
         },
         "smallest-file": {
           "outputWidth": 1469,
@@ -770,9 +770,9 @@
       },
       "document": {
         "best-quality": {
-          "outputWidth": 2480,
-          "outputHeight": 3508,
-          "outputBytes": 201305,
+          "outputWidth": 1984,
+          "outputHeight": 2806,
+          "outputBytes": 166639,
           "quality": 0.3,
           "reachedTarget": false
         },
@@ -839,9 +839,9 @@
       },
       "landscape": {
         "best-quality": {
-          "outputWidth": 3264,
-          "outputHeight": 2448,
-          "outputBytes": 182199,
+          "outputWidth": 2611,
+          "outputHeight": 1958,
+          "outputBytes": 122687,
           "quality": 0.3,
           "reachedTarget": false
         },

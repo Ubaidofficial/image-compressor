@@ -129,7 +129,7 @@ const CONTENT: Record<string, SizePageContent> = {
       },
       {
         question: "Which mode works best for a 20KB photo?",
-        answer: `On our tests Balanced got the portrait under 20KB at ${px(modeRunFor(20, "portrait", "balanced"))} and Smallest File at ${px(modeRunFor(20, "portrait", "smallest-file"))}; Best Quality missed (${kbText(modeRunFor(20, "portrait", "best-quality").outputBytes)}) because it refuses to drop quality below 0.30 or the size below 80%, and says so instead of producing a file.`,
+        answer: `On our tests Balanced and Smallest File both got the portrait under 20KB at ${px(modeRunFor(20, "portrait", "balanced"))}; Best Quality missed (${kbText(modeRunFor(20, "portrait", "best-quality").outputBytes)}) because it refuses to drop quality below 0.30 or the size below 80%, and says so instead of producing a file.`,
       },
     ],
   },

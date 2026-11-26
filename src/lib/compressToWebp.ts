@@ -155,7 +155,7 @@ export function describeMiss(
     case "best-quality":
       return `Best Quality will not go below ${floor} quality or shrink the image below 80% of its size. At that limit (${size}) it is still ${got}KB, over ${result.targetKB}KB. Switch to Balanced or Smallest File, which reduce the dimensions further.`;
     case "smallest-file":
-      return `Even at ${size} and ${floor} quality, Smallest File could only get this image to ${got}KB, over ${result.targetKB}KB. This image has too much fine detail for the target; try a higher target size.`;
+      return `Smallest File stops at a quarter of the original width. At that size (${size}) and ${floor} quality this image is still ${got}KB, over ${result.targetKB}KB. Balanced can shrink it further, down to about ${MIN_LONG_SIDE_PX}px on the long side, or try a higher target size.`;
     default:
       return `Balanced reduced this image to ${size}, about as small as it can go and still be usable, at ${floor} quality, and it is still ${got}KB, over ${result.targetKB}KB. Try Smallest File or a higher target size.`;
   }
