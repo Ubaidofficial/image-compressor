@@ -738,24 +738,80 @@ export const pseoRolloutSchedule = [
   ...phase3Schedule,
 ];
 
-/**
- * Pure synonyms of a stronger page. Each carries under ~800 global searches
- * while rendering near-identical content to a page targeting tens of
- * thousands, so they are noindexed and canonicalised to the head page rather
- * than left to split signals with it. The URLs stay live and functional.
- */
-const CONSOLIDATION: Record<string, string> = {
-  "compress-image-under-100kb": "compress-image-to-100kb",
-  "compress-image-below-100kb": "compress-image-to-100kb",
-  "free-image-compressor-to-100kb": "image-compressor-to-100kb",
-  "online-image-compressor-to-100kb": "image-compressor-to-100kb",
-  "image-size-compressor-to-100kb": "image-compressor-to-100kb",
-  "compress-png-under-100kb": "compress-png-to-100kb",
-  "png-compressor-to-100kb": "compress-png-to-100kb",
-  "png-compressor-to-50kb": "compress-png-to-50kb",
-  "compress-webp-under-100kb": "compress-webp-to-100kb",
-  "webp-compressor-to-100kb": "compress-webp-to-100kb",
+/* ------------------------------------------------------------------ */
+/* Consolidation (2026-11-26, issue #3)                                */
+/*                                                                     */
+/* Google read the 65-URL sitemap but never crawled 50 of the URLs:    */
+/* too many templated pages for the same intent on a domain with no    */
+/* authority. So there is now one indexable page per size target, and  */
+/* every format/verb variant (compress-jpg-to-*, resize-image-to-*,    */
+/* photo-compressor-to-*, ...) is noindexed and canonicalised to it.   */
+/* Those URLs stay live and fully usable; they are only removed from   */
+/* the sitemap.                                                        */
+/*                                                                     */
+/* Pages Google had already indexed by 2026-11-26 (SEOConsole URL      */
+/* Inspection) are kept indexable even when they overlap a head page:  */
+/* dropping an indexed URL to chase a cleaner structure throws away    */
+/* the only crawl signal the site has.                                 */
+/* ------------------------------------------------------------------ */
+
+/** The one indexable page for each size target. */
+const SIZE_HEADS: ReadonlyArray<readonly [kb: number, slug: string]> = [
+  [10, "compress-image-to-10kb"],
+  // image-compressor-to-20kb is already indexed; compress-image-to-20kb is not.
+  [20, "image-compressor-to-20kb"],
+  [50, "compress-image-to-50kb"],
+  [100, "compress-image-to-100kb"],
+  [200, "compress-image-to-200kb"],
+  [500, "compress-image-to-500kb"],
+  [1024, "compress-image-to-1mb"],
+];
+
+/** Indexed in Google as of 2026-11-26 — never consolidate these. */
+const ALREADY_INDEXED = [
+  "compress-image-to-100kb",
+  "compress-image-to-200kb",
+  "image-compressor-to-20kb",
+  "image-compressor-to-100kb",
+  "image-compressor-to-200kb",
+] as const;
+
+/** Distinct intents that are not a size target and stay indexable. */
+const STANDALONE = ["reduce-image-size-in-kb", "bulk-image-compressor"] as const;
+
+/** Pages whose closest head is not a size page. Targets may be any route slug. */
+const CONSOLIDATION_OVERRIDES: Record<string, string> = {
+  "compress-jpg-online": "jpg-compressor",
+  "convert-image-to-webp-under-100kb": "image-to-webp",
+  "bulk-image-to-webp": "bulk-image-compressor",
 };
+
+const keepIndexable = new Set<string>([
+  ...SIZE_HEADS.map(([, slug]) => slug),
+  ...ALREADY_INDEXED,
+  ...STANDALONE,
+]);
+
+/**
+ * The head for a size variant is the largest head target at or below it, so
+ * a file that meets the head page's target also meets the variant's limit
+ * (a 150KB limit points at the 100KB page, not the 200KB one).
+ */
+function sizeHeadFor(kb: number): string {
+  let head = SIZE_HEADS[0][1];
+  for (const [target, slug] of SIZE_HEADS) {
+    if (target <= kb) head = slug;
+  }
+  return head;
+}
+
+function consolidationTarget(page: PageDraft): string | undefined {
+  if (keepIndexable.has(page.slug)) return undefined;
+  const override = CONSOLIDATION_OVERRIDES[page.slug];
+  if (override) return override;
+  if (page.targetSizeKb) return sizeHeadFor(page.targetSizeKb);
+  return undefined;
+}
 
 const publishDateBySlug = new Map(
   pseoRolloutSchedule.map((item) => [item.slug, item.publishOn])
@@ -790,13 +846,37 @@ export const pseoPages: PSEOPage[] = pages.map((page) => ({
   publishOn: publishDateBySlug.get(page.slug) ?? "2026-06-04",
   contentVariant: page.contentVariant ?? contentVariantFor(page.slug),
   angle: page.angle ?? getPageAngle(page.slug),
-  consolidateInto: page.consolidateInto ?? CONSOLIDATION[page.slug],
+  consolidateInto: page.consolidateInto ?? consolidationTarget(page),
   relatedSlugs: page.relatedSlugs ?? [
     ...sameSizeSlugs(page),
     ...nearbySizeSlugs(page),
     "image-compressor",
   ].filter((slug, index, arr) => arr.indexOf(slug) === index),
 }));
+
+// A consolidated page must point straight at an indexable head, never at
+// another consolidated page: canonical chains are ignored by search engines.
+for (const page of pseoPages) {
+  const target = page.consolidateInto;
+  if (!target) continue;
+  const targetPage = pseoPages.find((item) => item.slug === target);
+  if (targetPage?.consolidateInto) {
+    throw new Error(`${page.slug} consolidates into ${target}, which is itself consolidated`);
+  }
+}
+
+/**
+ * Date the shared landing-page template and content engine last changed
+ * (commit 6d62503, v0.4.0). A page's content cannot be older than this.
+ * Bump it whenever PseoLandingPage, pseoContent or pseoAngles change what
+ * the pages render.
+ */
+export const PSEO_TEMPLATE_UPDATED = "2026-08-10";
+
+/** When this page's visible content last changed: for sitemap <lastmod>. */
+export function pseoContentUpdated(page: PSEOPage): string {
+  return page.publishOn > PSEO_TEMPLATE_UPDATED ? page.publishOn : PSEO_TEMPLATE_UPDATED;
+}
 
 /** Consolidated pages stay live but are excluded from the sitemap and noindexed. */
 export function isPseoPageIndexable(page: PSEOPage, asOf: Date = new Date()): boolean {
