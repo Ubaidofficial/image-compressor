@@ -10,7 +10,7 @@ import {
   type ResizeToSpecResult,
 } from "@/lib/resizeToSpec";
 import { isLargeFile, isValidImageFile, MAX_UPLOAD_MB } from "@/lib/constants";
-import type { UploadPreset } from "@/data/uploadSpecs";
+import { KIND_LABEL, type UploadPreset } from "@/data/uploadSpecs";
 
 type PresetResizerProps = {
   presets: UploadPreset[];
@@ -80,7 +80,7 @@ export default function PresetResizer({ presets, title }: PresetResizerProps) {
     setError(null);
     try {
       const made = await resizeToSpec(input, target.spec, mode, {
-        trimToInk: target.kind === "signature" && trimInk,
+        trimToInk: target.kind !== "photo" && trimInk,
       });
       if (id !== runId.current) return;
       showOutput({ result: made, url: URL.createObjectURL(made.blob) });
@@ -173,7 +173,7 @@ export default function PresetResizer({ presets, title }: PresetResizerProps) {
           className="w-full rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-700 px-6 py-10 text-center hover:border-blue-400 dark:hover:border-blue-600 motion-safe:transition-colors"
         >
           <span className="block font-semibold">
-            {file ? file.name : `Select a ${preset.kind} image`}
+            {file ? file.name : `Select a ${KIND_LABEL[preset.kind]} image`}
           </span>
           <span className="block text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             JPG, PNG or WebP. Processed on your device, never uploaded.
@@ -184,7 +184,7 @@ export default function PresetResizer({ presets, title }: PresetResizerProps) {
           type="file"
           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
           className="sr-only"
-          aria-label={`Select a ${preset.kind} image`}
+          aria-label={`Select a ${KIND_LABEL[preset.kind]} image`}
           onChange={(e) => onFile(e.target.files)}
         />
       </div>
@@ -205,10 +205,10 @@ export default function PresetResizer({ presets, title }: PresetResizerProps) {
         </fieldset>
       )}
 
-      {preset.kind === "signature" && (
+      {preset.kind !== "photo" && (
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={trim} onChange={(e) => chooseTrim(e.target.checked)} />
-          Trim blank paper around the signature so it fills the image
+          Trim blank paper around the ink so it fills the image
         </label>
       )}
 
@@ -224,7 +224,7 @@ export default function PresetResizer({ presets, title }: PresetResizerProps) {
             {/* eslint-disable-next-line @next/next/no-img-element -- local object URL preview */}
             <img
               src={previewUrl}
-              alt={`Resized ${preset.kind} preview`}
+              alt={`Resized ${KIND_LABEL[preset.kind]} preview`}
               width={result.width}
               height={result.height}
               className="max-h-64 w-auto max-w-full border border-zinc-200 dark:border-zinc-700 bg-white"

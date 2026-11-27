@@ -294,6 +294,16 @@ export default function Home() {
               title: "Signature Resize in KB",
               desc: "Any form: signature JPG at 10-20 KB or 20-50 KB.",
             },
+            {
+              href: "/ibps-photo-signature-resize",
+              title: "IBPS Photo, Signature, Thumb",
+              desc: "Photo 200×230, signature 140×60, thumb and declaration at IBPS sizes.",
+            },
+            {
+              href: "/neet-photo-signature-resize",
+              title: "NEET Photo and Signature",
+              desc: "Photo 10-200 KB, signature 10-100 KB, finger and thumb impressions.",
+            },
           ].map((item) => (
             <Link
               key={item.href}

@@ -21,10 +21,18 @@ export type SpecSource = {
   quotes: string[];
 };
 
+export const KIND_LABEL: Record<UploadPreset["kind"], string> = {
+  photo: "photo",
+  signature: "signature",
+  thumb: "thumb impression",
+  declaration: "declaration",
+};
+
 export type UploadPreset = {
   id: string;
   label: string;
-  kind: "photo" | "signature";
+  /** Anything other than "photo" is ink on paper and gets the trim-to-ink option. */
+  kind: "photo" | "signature" | "thumb" | "declaration";
   spec: UploadSpec;
   /** False when the official source states no pixel dimensions. */
   dimensionsOfficial: boolean;
@@ -190,6 +198,181 @@ export const sscPresets: UploadPreset[] = [
     ],
     source: SSC_SOURCES[0],
     verifiedOn: SSC_VERIFIED_ON,
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/* IBPS (CRP PO/MT-XVI and CRP CSA-XVI, both 2026)                     */
+/*                                                                     */
+/* The two notifications give identical upload specs. Pixel sizes are  */
+/* labelled "(preferred)" by IBPS; only the KB ranges are firm. The    */
+/* presets output exactly the preferred size. IBPS also captures a     */
+/* live photo in the form, which has no file spec.                     */
+/* ------------------------------------------------------------------ */
+
+export const IBPS_VERIFIED_ON = "2026-11-27";
+
+export const IBPS_SOURCES: SpecSource[] = [
+  {
+    title: "IBPS Notification CRP PO/MT-XVI (01.07.2026), Annexure III",
+    url: "https://www.ibps.in/wp-content/uploads/Detailed-Notification_CRP-PO-XVI_Final_V1_30.06.2026.pdf",
+    location: "Annexure III, printed pages 36-40",
+    quotes: [
+      "Dimensions 200 x 230 pixels (preferred).",
+      "Size of file should be between 20kb–50 kb.",
+      "Dimensions 140 x 60 pixels (preferred).",
+      "Size of file should be between 10kb – 20kb.",
+      "Dimensions: 240 x 240 pixels in 200 DPI (Preferred for required quality) i.e. 3 cm * 3 cm (Width * Height).",
+      "File Size: 20 KB – 50 KB.",
+      "Dimensions: 800 x 400 pixels in 200 DPI (Preferred for required quality) i.e. 10 cm * 5 cm (Width * Height)",
+      "File Size: 50 KB – 100 KB",
+      "The image file should be JPG or JPEG format.",
+    ],
+  },
+  {
+    title: "IBPS Notification CRP CSA-XVI (Clerks, 01.08.2026), Annexure IV",
+    url: "https://www.ibps.in/wp-content/uploads/Notification_CRP_CSA_XVI-Final.pdf",
+    location: "Annexure IV, printed pages 52-56",
+    quotes: ["Same photo, signature, thumb impression and declaration specifications as CRP PO/MT-XVI."],
+  },
+];
+
+const fixed = (n: number) => ({ min: n, max: n });
+
+export const ibpsPresets: UploadPreset[] = [
+  {
+    id: "ibps-photo",
+    label: "IBPS photo",
+    kind: "photo",
+    spec: { widthPx: fixed(200), heightPx: fixed(230), minKB: 20, maxKB: 50 },
+    dimensionsOfficial: true,
+    dimensionsText: "200 × 230 px (IBPS preferred size)",
+    defaultFit: "crop",
+    downloadName: "ibps-photo.jpg",
+    manualChecks: [
+      "Recent colour photo against a light, preferably white, background",
+      "Looking straight at the camera; no cap, hat or dark glasses",
+      "No harsh shadows; no reflections on glasses",
+    ],
+    source: IBPS_SOURCES[0],
+    verifiedOn: IBPS_VERIFIED_ON,
+  },
+  {
+    id: "ibps-signature",
+    label: "IBPS signature",
+    kind: "signature",
+    spec: { widthPx: fixed(140), heightPx: fixed(60), minKB: 10, maxKB: 20 },
+    dimensionsOfficial: true,
+    dimensionsText: "140 × 60 px (IBPS preferred size)",
+    defaultFit: "fit",
+    downloadName: "ibps-signature.jpg",
+    manualChecks: ["Black ink on white paper", "Not in CAPITAL LETTERS", "Clearly visible, not smudged"],
+    source: IBPS_SOURCES[0],
+    verifiedOn: IBPS_VERIFIED_ON,
+  },
+  {
+    id: "ibps-thumb",
+    label: "IBPS left thumb",
+    kind: "thumb",
+    spec: { widthPx: fixed(240), heightPx: fixed(240), minKB: 20, maxKB: 50, dpi: 200 },
+    dimensionsOfficial: true,
+    dimensionsText: "240 × 240 px at 200 DPI = 3 × 3 cm (IBPS preferred)",
+    defaultFit: "fit",
+    downloadName: "ibps-left-thumb.jpg",
+    manualChecks: ["Left thumb, black or blue ink, on white paper", "Clear ridges, not smudged"],
+    source: IBPS_SOURCES[0],
+    verifiedOn: IBPS_VERIFIED_ON,
+  },
+  {
+    id: "ibps-declaration",
+    label: "IBPS declaration",
+    kind: "declaration",
+    spec: { widthPx: fixed(800), heightPx: fixed(400), minKB: 50, maxKB: 100, dpi: 200 },
+    dimensionsOfficial: true,
+    dimensionsText: "800 × 400 px at 200 DPI = 10 × 5 cm (IBPS preferred)",
+    defaultFit: "fit",
+    downloadName: "ibps-declaration.jpg",
+    manualChecks: [
+      "In your own handwriting, in English, black ink on white paper",
+      "Not in CAPITAL LETTERS",
+      "Exactly the declaration text from the notification, with your name",
+    ],
+    source: IBPS_SOURCES[0],
+    verifiedOn: IBPS_VERIFIED_ON,
+  },
+];
+
+/** The handwritten declaration text, quoted from the IBPS notification. */
+export const IBPS_DECLARATION_TEXT =
+  "I, __________ (Name of the candidate), hereby declare that all the information submitted by me in the application form is correct, true and valid. I will present the supporting documents as and when required.";
+
+/* ------------------------------------------------------------------ */
+/* NEET (UG), NTA Information Bulletin 2026                            */
+/*                                                                     */
+/* The newest official bulletin on 2026-11-27 (no 2027 bulletin yet).  */
+/* It gives format and KB ranges only: no pixel size, DPI or aspect.   */
+/* It states two ranges for finger and thumb impressions (10-200 KB    */
+/* on page 21, 50-300 KB on page 22); the preset uses 50-200 KB, the   */
+/* only range inside both.                                             */
+/* ------------------------------------------------------------------ */
+
+export const NEET_VERIFIED_ON = "2026-11-27";
+
+export const NEET_SOURCE: SpecSource = {
+  title: "NTA Information Bulletin NEET (UG)-2026",
+  url: "https://cdnbbsr.s3waas.gov.in/s37bc1ec1d9c3426357e69acd5bf320061/uploads/2026/02/202602231394640855.pdf",
+  location: "pages 16-17 (PDF pages 21-22)",
+  quotes: [
+    "The recent passport size photograph should be either in colour or black & white with 80% face (without mask) visible including ears against white background. 80% area of the image should be candidate's face. Photograph should be in JPG/JPEG format (clearly legible) between 10 kb to 200 kb.",
+    "Signature file should be in JPG/JPEG format between 10 kb to 100 kb",
+    "Left and Right Hands Fingers and Thumb impressions in JPG/JPEG format between 10 kb to 200 kb",
+    "File size must be between 50 kb to 300 kb.",
+  ],
+};
+
+export const neetPresets: UploadPreset[] = [
+  {
+    id: "neet-photo",
+    label: "NEET photo",
+    kind: "photo",
+    spec: { widthPx: unspecified(1200), heightPx: unspecified(1200), minKB: 10, maxKB: 200 },
+    dimensionsOfficial: false,
+    dimensionsText: "Not specified by NTA",
+    defaultFit: "fit",
+    downloadName: "neet-photo.jpg",
+    manualChecks: [
+      "Taken after 1 January 2026 (2026 bulletin); expect a similar rule for 2027",
+      "Face fills 80% of the photo, ears visible, no mask, white background",
+      "Not a Polaroid or computer-generated photo; spectacles only if worn regularly",
+    ],
+    source: NEET_SOURCE,
+    verifiedOn: NEET_VERIFIED_ON,
+  },
+  {
+    id: "neet-signature",
+    label: "NEET signature",
+    kind: "signature",
+    spec: { widthPx: unspecified(800), heightPx: unspecified(800), minKB: 10, maxKB: 100 },
+    dimensionsOfficial: false,
+    dimensionsText: "Not specified by NTA",
+    defaultFit: "fit",
+    downloadName: "neet-signature.jpg",
+    manualChecks: ["Clearly legible; your own signature"],
+    source: NEET_SOURCE,
+    verifiedOn: NEET_VERIFIED_ON,
+  },
+  {
+    id: "neet-impressions",
+    label: "NEET finger & thumb impressions",
+    kind: "thumb",
+    spec: { widthPx: unspecified(1600), heightPx: unspecified(1600), minKB: 50, maxKB: 200 },
+    dimensionsOfficial: false,
+    dimensionsText: "Not specified by NTA",
+    defaultFit: "fit",
+    downloadName: "neet-finger-thumb-impressions.jpg",
+    manualChecks: ["Left and right hand fingers and thumbs, all clearly visible", "Not smudged; unclear impressions are rejected"],
+    source: NEET_SOURCE,
+    verifiedOn: NEET_VERIFIED_ON,
   },
 ];
 
