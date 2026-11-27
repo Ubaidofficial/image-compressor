@@ -61,8 +61,8 @@ export type CompressToWebpResult = {
   /**
    * Why the target was missed, when it was. `quality-floor`: the mode's
    * lowest quality at its smallest allowed size is still too big (Best
-   * Quality and Smallest File stop here by design). `min-dimensions`:
-   * Balanced shrank down to MIN_LONG_SIDE_PX and still could not fit.
+   * Quality stops here by design). `min-dimensions`: Balanced or Smallest
+   * File shrank down to MIN_LONG_SIDE_PX and still could not fit.
    * Null when the target was reached.
    */
   limit: CompressionLimit | null;
@@ -75,14 +75,14 @@ export type CompressToWebpResult = {
 export type CompressionLimit = "quality-floor" | "min-dimensions";
 
 /**
- * Balanced keeps shrinking until the long side reaches this many pixels.
- * Smaller than this and photos and documents stop being legible; exam
- * photo specs (e.g. SSC, UPSC) are larger than this anyway.
+ * Balanced and Smallest File keep shrinking until the long side reaches
+ * this many pixels. Smaller than this and photos and documents stop being
+ * legible; exam photo specs (e.g. SSC, UPSC) are larger than this anyway.
  */
 export const MIN_LONG_SIDE_PX = 240;
 
-/** Factor between Balanced's extra steps once it is below half size. */
-const BALANCED_EXTRA_STEP = 0.85;
+/** Factor between the extra steps once a mode's fixed steps run out. */
+const EXTRA_STEP = 0.85;
 
 const SCALE_STEPS_BALANCED = [
   0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5,
@@ -121,22 +121,35 @@ function getModeDefaults(mode: CompressionMode) {
 }
 
 /**
- * Balanced's fixed steps stop at half size. Below that, keep going in
- * BALANCED_EXTRA_STEP increments, ending exactly at MIN_LONG_SIDE_PX.
- * Images already small enough are not shrunk past the fixed steps.
+ * A mode's fixed steps, then EXTRA_STEP increments ending exactly at
+ * MIN_LONG_SIDE_PX. Images already small enough at the last fixed step are
+ * not shrunk further.
  */
-export function balancedScaleSteps(longSide: number): number[] {
-  const steps = [...SCALE_STEPS_BALANCED];
+function extendToMinLongSide(fixed: number[], longSide: number): number[] {
+  const steps = [...fixed];
   const minScale = MIN_LONG_SIDE_PX / longSide;
   let scale = steps[steps.length - 1];
   if (scale <= minScale) return steps;
   for (;;) {
-    scale *= BALANCED_EXTRA_STEP;
+    scale *= EXTRA_STEP;
     if (scale <= minScale) break;
     steps.push(scale);
   }
   steps.push(minScale);
   return steps;
+}
+
+/** Balanced: fixed steps stop at half size, then down to MIN_LONG_SIDE_PX. */
+export function balancedScaleSteps(longSide: number): number[] {
+  return extendToMinLongSide(SCALE_STEPS_BALANCED, longSide);
+}
+
+/**
+ * Smallest File: fixed steps stop at a quarter of the size, then down to
+ * MIN_LONG_SIDE_PX, so it never gives up before Balanced does.
+ */
+export function smallestFileScaleSteps(longSide: number): number[] {
+  return extendToMinLongSide(SCALE_STEPS_SMALLEST, longSide);
 }
 
 /**
@@ -155,7 +168,7 @@ export function describeMiss(
     case "best-quality":
       return `Best Quality will not go below ${floor} quality or shrink the image below 80% of its size. At that limit (${size}) it is still ${got}KB, over ${result.targetKB}KB. Switch to Balanced or Smallest File, which reduce the dimensions further.`;
     case "smallest-file":
-      return `Smallest File stops at a quarter of the original width. At that size (${size}) and ${floor} quality this image is still ${got}KB, over ${result.targetKB}KB. Balanced can shrink it further, down to about ${MIN_LONG_SIDE_PX}px on the long side, or try a higher target size.`;
+      return `Smallest File reduced this image to ${size}, about as small as it can go and still be usable, at ${floor} quality, and it is still ${got}KB, over ${result.targetKB}KB. Crop it to the part you need, or try a higher target size.`;
     default:
       return `Balanced reduced this image to ${size}, about as small as it can go and still be usable, at ${floor} quality, and it is still ${got}KB, over ${result.targetKB}KB. Try Smallest File or a higher target size.`;
   }
@@ -315,9 +328,12 @@ export async function compressToWebp(
     }
   }
 
+  const longSide = Math.max(effectiveWidth, effectiveHeight);
   const scaleSteps =
     compressionMode === "balanced"
-      ? balancedScaleSteps(Math.max(effectiveWidth, effectiveHeight))
+      ? balancedScaleSteps(longSide)
+      : compressionMode === "smallest-file"
+      ? smallestFileScaleSteps(longSide)
       : modeDefaults.scaleSteps;
 
   // Scale down if initial dimensions didn't produce a result
@@ -356,7 +372,7 @@ export async function compressToWebp(
       );
     }
     bestQuality = modeDefaults.minQuality;
-    limit = compressionMode === "balanced" ? "min-dimensions" : "quality-floor";
+    limit = compressionMode === "best-quality" ? "quality-floor" : "min-dimensions";
   }
 
   const smallestScale = scaleSteps.length ? scaleSteps[scaleSteps.length - 1] : 1;

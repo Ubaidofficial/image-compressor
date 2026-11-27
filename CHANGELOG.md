@@ -4,6 +4,7 @@
 
 ### Changed
 - Sitemap `<lastmod>` now reflects the size-page rewrites: the 11 indexable size pages, the homepage and `/image-compressor` are dated 2026-11-27, the day #6's content went live (#5 changed the layout and content on 2026-11-26; #6 re-measured `sizeEvidence.json` and rewrote mode descriptions). New `INDEXABLE_SIZE_PAGES_UPDATED` in `src/data/pseoPages.ts`; consolidated (noindex) pages are not affected. No URL added or removed.
+- Smallest File no longer stops at a quarter of the original width. After its usual steps it keeps shrinking in 0.85x steps down to the same 240px long side as Balanced (`MIN_LONG_SIDE_PX`), so it never gives up before Balanced does; it still reduces dimensions earlier and may use lower quality than Balanced. Its miss message no longer points to Balanced. `sizeEvidence.json` re-measured: the only changed result is the A4 scan at 20KB in Smallest File (22.8KB at 620×877, missed → 19.9KB at 527×745, fits); the 20KB page's scan FAQ is updated to match.
 
 ## [0.6.1] - 2026-11-26
 

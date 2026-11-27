@@ -1,6 +1,6 @@
 {
   "generatedBy": "scripts/measure-size-evidence.mjs",
-  "measuredOn": "2026-11-26",
+  "measuredOn": "2026-11-27",
   "browser": "Chromium 158.0.8127.36",
   "settings": "compressToWebp() defaults: no pre-resize; Balanced mode unless stated",
   "images": [
@@ -667,11 +667,11 @@
           "reachedTarget": true
         },
         "smallest-file": {
-          "outputWidth": 620,
-          "outputHeight": 877,
-          "outputBytes": 23306,
-          "quality": 0.05,
-          "reachedTarget": false
+          "outputWidth": 527,
+          "outputHeight": 745,
+          "outputBytes": 20340,
+          "quality": 0.06,
+          "reachedTarget": true
         }
       },
       "signature": {

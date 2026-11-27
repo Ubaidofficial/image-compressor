@@ -117,7 +117,7 @@ const CONTENT: Record<string, SizePageContent> = {
     faqs: [
       {
         question: "Can a scanned A4 page fit in 20KB?",
-        answer: `Only as a small image. Balanced brought our 300 DPI test scan down to ${px(j(20, "document"))} (${kbText(j(20, "document").outputBytes)}), where small print is hard to read; Smallest File stopped at ${kbText(modeRunFor(20, "document", "smallest-file").outputBytes)} because it will not shrink below a quarter of the width. Cropping to the part of the page you need keeps the text larger.`,
+        answer: `Only as a small image. Balanced brought our 300 DPI test scan down to ${px(j(20, "document"))} (${kbText(j(20, "document").outputBytes)}), where small print is hard to read. Smallest File kept more pixels, ${px(modeRunFor(20, "document", "smallest-file"))}, by dropping to quality ${q(modeRunFor(20, "document", "smallest-file"))}, so its text is larger but blockier. Cropping to the part of the page you need keeps the text both larger and cleaner.`,
       },
       {
         question: "Will a file compressed to 20KB pass UPSC's upload check?",
