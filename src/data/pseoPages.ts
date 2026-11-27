@@ -873,9 +873,21 @@ for (const page of pseoPages) {
  */
 export const PSEO_TEMPLATE_UPDATED = "2026-08-10";
 
+/**
+ * Date the indexable size-page layout and its content last changed: the
+ * IndexableSizePage layout, sizePageContent.ts and sizeEvidence.json (#5,
+ * live 2026-11-26; #6 re-measured the evidence and rewrote the 10/20/50 KB
+ * wording, live 2026-11-27). Consolidated (noindex) pages keep the old
+ * template, so this applies only to pages that are not consolidated.
+ * Bump it whenever those files change what the indexable pages render.
+ */
+export const INDEXABLE_SIZE_PAGES_UPDATED = "2026-11-27";
+
 /** When this page's visible content last changed: for sitemap <lastmod>. */
 export function pseoContentUpdated(page: PSEOPage): string {
-  return page.publishOn > PSEO_TEMPLATE_UPDATED ? page.publishOn : PSEO_TEMPLATE_UPDATED;
+  const dates = [page.publishOn, PSEO_TEMPLATE_UPDATED];
+  if (!page.consolidateInto) dates.push(INDEXABLE_SIZE_PAGES_UPDATED);
+  return dates.reduce((latest, d) => (d > latest ? d : latest));
 }
 
 /** Consolidated pages stay live but are excluded from the sitemap and noindexed. */

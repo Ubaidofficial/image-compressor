@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+- Sitemap `<lastmod>` now reflects the size-page rewrites: the 11 indexable size pages, the homepage and `/image-compressor` are dated 2026-11-27, the day #6's content went live (#5 changed the layout and content on 2026-11-26; #6 re-measured `sizeEvidence.json` and rewrote mode descriptions). New `INDEXABLE_SIZE_PAGES_UPDATED` in `src/data/pseoPages.ts`; consolidated (noindex) pages are not affected. No URL added or removed.
+
 ## [0.6.1] - 2026-11-26
 
 ### Changed

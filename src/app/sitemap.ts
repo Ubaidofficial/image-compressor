@@ -17,8 +17,9 @@ import {
 type StaticEntry = { path: string; lastmod: string; priority: number };
 
 const STATIC_PAGES: StaticEntry[] = [
-  // Homepage retargeted to "reduce image size in KB" for exam/form uploads.
-  { path: "/", lastmod: "2026-11-26", priority: 1.0 },
+  // Homepage retargeted to "reduce image size in KB" for exam/form uploads
+  // (2026-11-26); compression-mode descriptions rewritten in #6 (2026-11-27).
+  { path: "/", lastmod: "2026-11-27", priority: 1.0 },
 
   // Exam and form presets (issue #3, phase 1).
   { path: "/ssc-photo-signature-resize", lastmod: "2026-11-26", priority: 0.9 },
@@ -27,7 +28,8 @@ const STATIC_PAGES: StaticEntry[] = [
 
   // Hubs: page files last changed 2026-06-20; their child-page lists last
   // changed when the final expansion page published (see hubLastmod below).
-  { path: "/image-compressor", lastmod: "2026-06-20", priority: 0.9 },
+  // /image-compressor: compression-mode descriptions rewritten in #6.
+  { path: "/image-compressor", lastmod: "2026-11-27", priority: 0.9 },
   { path: "/jpg-compressor", lastmod: "2026-06-20", priority: 0.8 },
   { path: "/png-compressor", lastmod: "2026-06-20", priority: 0.8 },
   { path: "/webp-compressor", lastmod: "2026-06-20", priority: 0.8 },
