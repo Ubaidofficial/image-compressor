@@ -25,6 +25,9 @@ const STATIC_PAGES: StaticEntry[] = [
   { path: "/ssc-photo-signature-resize", lastmod: "2026-11-26", priority: 0.9 },
   { path: "/upsc-photo-signature-resize", lastmod: "2026-11-26", priority: 0.9 },
   { path: "/signature-resize", lastmod: "2026-11-26", priority: 0.9 },
+  // Exam presets, batch 2 (added 2026-11-27).
+  { path: "/ibps-photo-signature-resize", lastmod: "2026-11-27", priority: 0.9 },
+  { path: "/neet-photo-signature-resize", lastmod: "2026-11-27", priority: 0.9 },
 
   // Hubs: page files last changed 2026-06-20; their child-page lists last
   // changed when the final expansion page published (see hubLastmod below).
