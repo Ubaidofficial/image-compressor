@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.0] - 2026-11-27
+
+### Added
+- `/ibps-photo-signature-resize`: IBPS photo (200×230 px, 20-50 KB), signature (140×60 px, 10-20 KB), left thumb impression (240×240 px at 200 DPI, 20-50 KB) and handwritten declaration (800×400 px at 200 DPI, 50-100 KB) presets, from the CRP PO/MT-XVI and CRP CSA-XVI notifications (2026). Pixel sizes are IBPS's "preferred" sizes.
+- `/neet-photo-signature-resize`: NEET (UG) photo (10-200 KB), signature (10-100 KB) and finger/thumb impressions (50-200 KB) presets, from the NTA Information Bulletin NEET (UG)-2026. NTA gives no pixel dimensions.
+- Preset kinds "thumb" and "declaration"; the trim-to-ink option applies to every non-photo preset.
+
+### Not added
+- PAN card preset: no official source states a current upload spec. Protean's guideline table (20 KB / 10 KB) and Protean's own articles (50 KB / 50 KB) disagree, and the post-April-2026 Form 93 changes the photo size to 4.5 × 3.5 cm without an upload spec.
+
 ## [Unreleased]
 
 ### Changed
