@@ -6,6 +6,7 @@ import {
   type CompressToWebpResult,
   type CompressionMode,
   COMPRESSION_MODE_CONFIG,
+  describeMiss,
 } from "@/lib/compressToWebp";
 import { formatBytes } from "@/lib/formatBytes";
 import { isValidImageFile, isLargeFile, MAX_OUTPUT_KB } from "@/lib/constants";
@@ -171,7 +172,7 @@ export default function BulkImageCompressor({
             ...updated[idx],
             result: res,
             status: "failed",
-            error: `Could not fit under ${targetKB}KB. Try Smallest File mode or enable resize.`,
+            error: describeMiss(res, compressionMode) ?? `Could not fit under ${targetKB}KB.`,
           };
         } else {
           updated[idx] = {

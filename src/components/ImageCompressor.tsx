@@ -8,6 +8,7 @@ import {
   type OutputFormat,
   COMPRESSION_MODE_CONFIG,
   OUTPUT_FORMAT_CONFIG,
+  describeMiss,
 } from "@/lib/compressToWebp";
 import { formatBytes } from "@/lib/formatBytes";
 import { slugifyFilename } from "@/lib/slugify";
@@ -121,10 +122,6 @@ const MAX_WIDTH_OPTIONS = [
   { label: "1200px", value: 1200 },
   { label: "800px", value: 800 },
 ] as const;
-
-function buildFailureMessage(): string {
-  return `This image may not compress cleanly to the selected size without heavy quality loss. Try a smaller width, a stronger compression mode, or a higher target size.`;
-}
 
 export default function ImageCompressor({
   targetKB,
@@ -244,7 +241,7 @@ export default function ImageCompressor({
         setResult(res);
 
         if (!res.reachedTarget) {
-          setError(buildFailureMessage());
+          setError(describeMiss(res, compressionMode));
         }
       } catch (err) {
         setError(
@@ -621,9 +618,10 @@ export default function ImageCompressor({
             ))}
           </div>
 
-          {dimensionsChanged && (
+          {dimensionsChanged && result.reachedTarget && (
             <p className="text-sm text-amber-600 dark:text-amber-400 text-center">
-              The image was resized slightly to keep it under the target file size.
+              The image was resized from {result.originalWidth} × {result.originalHeight} to{" "}
+              {result.outputWidth} × {result.outputHeight} to fit under {result.targetKB}KB.
             </p>
           )}
 

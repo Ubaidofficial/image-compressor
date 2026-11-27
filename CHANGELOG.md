@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.1] - 2026-11-26
+
+### Changed
+- Balanced mode (the default) no longer stops at half the original width. After its usual steps it keeps shrinking in 0.85x steps, ending at a 240px long side, so 10KB and 20KB targets fit on phone photos and A4 scans. Images that fit at full size are unchanged: dimensions first, highest quality under the target.
+- Each size is probed once at the mode's lowest quality before the quality search; sizes that cannot fit are skipped after one encode. Results are unchanged; failing cases are faster.
+- When a target is missed, the result is the smallest attempt (not a full-size encode), and the message names the mode's limit: Best Quality's 30% quality / 80% size floor, Smallest File's quarter-width floor, or Balanced's 240px floor.
+- `src/data/sizeEvidence.json` re-measured: Balanced now fits all five test images at 10, 20 and 50KB in JPG and WebP (previously 1/5 at 10KB JPG, 3/5 at 20KB, 4/5 at 50KB JPG). Size-page observations and FAQs updated to match.
+- SSC/UPSC presets (`resizeToSpec`) are untouched.
+
 ## [0.6.0] - 2026-11-26
 
 ### Added
