@@ -873,9 +873,37 @@ for (const page of pseoPages) {
  */
 export const PSEO_TEMPLATE_UPDATED = "2026-08-10";
 
+/**
+ * Pages whose own visible content changed after PSEO_TEMPLATE_UPDATED, with
+ * the date the change was merged into main. Found by building main before and
+ * after each merge and comparing page text, excluding the site header/footer
+ * and shared UI (data-boilerplate="shared"). Add an entry, or move a date
+ * forward, in the same PR that changes a page's content.
+ *
+ *   2026-11-26  PR #5: own intro, measured evidence and FAQ for all 11
+ *               indexable size pages
+ *   2026-11-27  PR #6: Balanced mode reaches 10-50KB; re-measured evidence
+ *               and rewritten observations on the pages below
+ */
+const CONTENT_UPDATED_BY_SLUG: Record<string, string> = {
+  "compress-image-to-100kb": "2026-11-26",
+  "compress-image-to-200kb": "2026-11-26",
+  "compress-image-to-500kb": "2026-11-26",
+  "compress-image-to-1mb": "2026-11-26",
+  "image-compressor-to-200kb": "2026-11-26",
+  "compress-image-to-10kb": "2026-11-27",
+  "compress-image-to-50kb": "2026-11-27",
+  "image-compressor-to-20kb": "2026-11-27",
+  "image-compressor-to-100kb": "2026-11-27",
+  "reduce-image-size-in-kb": "2026-11-27",
+  "bulk-image-compressor": "2026-11-27",
+};
+
 /** When this page's visible content last changed: for sitemap <lastmod>. */
 export function pseoContentUpdated(page: PSEOPage): string {
-  return page.publishOn > PSEO_TEMPLATE_UPDATED ? page.publishOn : PSEO_TEMPLATE_UPDATED;
+  return [page.publishOn, PSEO_TEMPLATE_UPDATED, CONTENT_UPDATED_BY_SLUG[page.slug] ?? ""].reduce(
+    (latest, date) => (date > latest ? date : latest)
+  );
 }
 
 /** Consolidated pages stay live but are excluded from the sitemap and noindexed. */
