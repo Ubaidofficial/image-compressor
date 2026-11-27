@@ -877,7 +877,8 @@ export const PSEO_TEMPLATE_UPDATED = "2026-08-10";
  * Date the indexable size-page layout and its content last changed: the
  * IndexableSizePage layout, sizePageContent.ts and sizeEvidence.json (#5,
  * live 2026-11-26; #6 re-measured the evidence and rewrote the 10/20/50 KB
- * wording, live 2026-11-27). Consolidated (noindex) pages keep the old
+ * wording, live 2026-11-27; Smallest File's floor lowered to a 240px long
+ * side and the 20 KB wording updated the same day). Consolidated (noindex) pages keep the old
  * template, so this applies only to pages that are not consolidated.
  * Bump it whenever those files change what the indexable pages render.
  */
